@@ -1,0 +1,157 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<title>高校毕设管理系统</title>
+  <head>
+        <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+        <link rel="shortcut icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
+  </head>
+  <style>
+      li.head_navi{
+          padding: 10px;
+      }
+      li:hover{
+          border: 1px solid #F5F5F5;
+          border-radius: 5px;
+      }
+  </style>
+  <body style="height: 100%; display: block">
+        <script>
+            function $(id) {
+                return document.getElementById(id);
+            }
+            function ShowSecondNav(id){
+                $("second-nav").style.display = "block"
+                if(id===1){
+                    $("nav1").style.display = "inline"
+                    $("nav2").style.display = "none"
+                }
+                else{
+                    $("nav1").style.display = "none"
+                    $("nav2").style.display = "inline"
+                }
+            }
+            function CheckStudentRole(role){
+                if(role === "学生"){
+                    return true;
+                }else{
+                    alert("您不是学生，无法访问该页面！")
+                    return false;
+                }
+            }
+            function CheckTeacherRole(role){
+                if(role === "教师"){
+                    return true;
+                }else{
+                    alert("您不是教师，无法访问该页面！")
+                    return false;
+                }
+            }
+            function SubmitRole(role,t_role){
+                if(CheckTeacherRole(role)){
+                    $("role").value = t_role
+                    $("role-form").submit()
+                    return false
+                }
+                return false
+            }
+        </script>
+
+        <!-- 背景动效 -->
+        <script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
+        <canvas height="926" width="1920" style="position: fixed; top: 0px; left: 0px; z-index: -1; opacity: 0.5; " id="c_n1"></canvas>
+
+        <!-- 导航栏 -->
+        <nav>
+          <div class="logo">
+          <span><img src="{% static 'img/logo_white.png' %}" alt="中国石油大学（华东）"/></span>
+          <span><img src="{% static 'img/text-white.png' %}" alt=""/></span>
+          <h1 style="display: inline; align-self: center; color: #F5F5F5">高校毕业设计管理系统</h1>
+          </div>
+              <ul id = 'student' class="nav-links">
+                <li class="head_navi"><a href="/reindex">首页</a></li>
+                <li class="head_navi"><a href="/student" onmouseover="ShowSecondNav(1)">学生中心</a></li>
+                <li class="head_navi"><a href="/teacher" onmouseover="ShowSecondNav(2)">教师中心</a></li>
+                <li class="head_navi"><a href="../">退出系统</a></li>
+              </ul>
+
+        </nav>
+        <nav id = "second-nav" style="display: none;transition: all 0.5s ease;background-color: #27496d35; height:53px">
+            <div id="nav1" style="float: right">
+              <ul class="second-links">
+                <li style="color: #27496d"><a href="/student/project_selection/">学生选题</a></li>
+                  <li style="color: #27496d"><a href="/reindex">查看任务书</a></li>
+                  <li style="color: #27496d"><a href="/reindex">材料信息</a></li>
+                  <li style="color: #27496d"><a href="/reindex">中期检查</a></li>
+                  <li style="color: #27496d"><a href="/reindex">周进度记录</a></li>
+                  <li style="color: #27496d"><a href="/reindex">论文草稿</a></li>
+                  <li style="color: #27496d"><a href="/reindex">论文定稿</a></li>
+                  <li style="color: #27496d"><a href="/reindex">查看答辩信息</a></li>
+              </ul>
+            </div>
+            <div id="nav2" style="float: right">
+              <ul class="second-links">
+                <li style="color: #27496d"><a href="/teacher/supervisor/">指导教师</a></li>
+                <li style="color: #27496d"><a href="/teacher/manager/" >毕业设计负责人</a></li>
+                <li style="color: #27496d"><a href="/teacher/dean/" >教学院长</a></li>
+                <li style="color: #27496d"><a href="/teacher/teaching_secretary/" >教学秘书</a></li>
+                 <li style="color: #27496d"><a href="/teacher/defense_secretary/" >答辩秘书</a></li>
+              </ul>
+            </div>
+            <form id="role-form" style="display: none" method="post" action="/role/">
+                <label>
+                    {% csrf_token %}
+                    <input type="text" name="role" value="">
+                </label>
+                <input type="submit">
+            </form>
+        </nav>
+
+        <!-- 左侧边栏 -->
+        <aside style = 'width: 14%; position: absolute; left: 0%; height: 100%'>
+        <hr/><br/>
+            <div class="img_center_div" style="">
+                <img style="height: auto;width: 72%" src="{% static 'img/word.png' %}" alt=""/>
+            </div>
+            <br/><hr/><br/>
+            {% block aside %}
+            {% endblock %}
+             <br/><hr/><br/>
+        </aside>
+
+        <!-- 内容部分 -->
+        <main style= "display:block; width: 69%; position: absolute; left: 14%; height: 90%">
+            <br/><hr>
+            <div style="margin-top: 96px; margin-bottom: 60px;">
+                {% block content %}
+                {% endblock %}
+                <div class="footer" style="vertical-align:bottom; display: block">
+                   <address>
+                      <p>@TochusC</p>
+                      <ul>
+                        <li>中国石油大学（华东） 青岛软件学院、计算机科学与技术学院</li>
+                        <li>邮箱: <a href="mailto:tochusc@gmail.com">tochusc@gmail.com</a></li>
+                      </ul>
+                   </address>
+                </div>
+                <br/><hr>
+            </div>
+
+        </main>
+
+        <!-- 右侧边栏 -->
+        <aside style = 'position: absolute; left: 83%;width: 17%; z-index:-1; height: 100%'>
+            <hr/><br/>
+            <div class="img_center_div">
+                <img style="height: auto;width: 48%" src="{% static 'img/logo.png' %}" alt=""/>
+            </div>
+            <br/><hr/><br/>
+            <div class="calendar"></div>
+            <script src = "{% static '/js/calender.js' %}"></script>
+            <br/><hr/><br/>
+        </aside>
+
+  </body>
+
+</html>

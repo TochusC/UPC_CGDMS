@@ -1,0 +1,157 @@
+﻿input[type="text"] {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  width: 100%;
+  height: -webkit-calc(3em + 2px);
+  height: calc(3em + 2px);
+  margin: 0 0 1em;
+  padding: 1em;
+  border: 1px solid #cccccc;
+  border-radius: 1.5em;
+  background: #fff;
+  resize: none;
+  outline: none;
+}
+input[type="text"][required]:focus {
+  border-color: #00bafa;
+}
+input[type="text"][required]:focus + label[placeholder]:before {
+  color: #00bafa;
+}
+input[type="text"][required]:focus + label[placeholder]:before,
+input[type="text"][required]:valid + label[placeholder]:before {
+  -webkit-transition-duration: .2s;
+  transition-duration: .2s;
+  -webkit-transform: translate(0, -1.5em) scale(0.9, 0.9);
+  -ms-transform: translate(0, -1.5em) scale(0.9, 0.9);
+  transform: translate(0, -1.5em) scale(0.9, 0.9);
+}
+input[type="text"][required]:invalid + label[placeholder][alt]:before {
+  content: attr(alt);
+}
+input[type="text"][required] + label[placeholder] {
+  display: block;
+  pointer-events: none;
+  line-height: 2.3em;
+  margin-top: -webkit-calc(-3em - 2px);
+  margin-top: calc(-3em - 2px);
+  margin-bottom: -webkit-calc((3em - 1em) + 2px);
+  margin-bottom: calc((3em - 1em) + 2px);
+}
+input[type="text"][required] + label[placeholder]:before {
+  content: attr(placeholder);
+  display: inline-block;
+  margin: 0 -webkit-calc(1em + 2px);
+  margin: 0 calc(1em + 2px);
+  padding: 0 2px;
+  color: #898989;
+  white-space: nowrap;
+  -webkit-transition: 0.3s ease-in-out;
+  transition: 0.3s ease-in-out;
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ffffff));
+  background-image: -webkit-linear-gradient(top, #ffffff, #ffffff);
+  background-image: linear-gradient(to bottom, #ffffff, #ffffff);
+  -webkit-background-size: 100% 5px;
+  background-size: 100% 5px;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+.container {
+  height: 100%;
+  background: linear-gradient(to right, #fbc2eb, #a6c1ee);
+}
+
+.login-form {
+  background-color: #f8f8f8;
+  width: 350px;
+  height: 500px;
+  border-radius: 15px;
+
+  /* 定位到中心 */
+  text-align: center;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.text {
+  /* height: 80px; */
+  /* 标题Login的样式 */
+  font-size: 27px;
+  font-weight: 700;
+  /* 800px; */
+
+  text-align: center;
+  line-height: 80px;
+
+  margin-top: 40px;
+}
+
+.form-item,
+.btn,
+.other {
+  margin: 20px auto;
+  width: 80%;
+}
+
+input {
+  width: 80%;
+  margin-top: 20px;
+  padding: 10px;
+
+  /* 边框效果 */
+  border: 0;
+  outline: none;
+  border-bottom: 1px solid #fbc2eb;
+}
+
+input::placeholder {
+  font-weight: bold;
+  color: #acb7c9;
+}
+
+input:focus {
+  /* 当输入框获取焦点时的效果 */
+  /* box-shadow: 0px 0px 5px #fbc2eb;
+  border-bottom: 1px solid #fff; */
+  animation: bBottom 2s infinite;
+}
+
+@keyframes bBottom {
+  50% {
+    border-bottom: 1px solid #a6c1ee;
+  }
+}
+
+.btn {
+  font-size: 17px;
+  height: 40px;
+  line-height: 30px;
+  /* 字体 */
+  color: #fff;
+  font-weight: bold;
+  letter-spacing: 10px;
+  /* 鼠标样式 */
+  cursor: pointer;
+  /* 边框、背景 */
+  border-radius: 10px;
+  background: linear-gradient(to right, #fbc2eb, #a6c1ee, #fbc2eb);
+  background-size: 200%;
+}
+
+.btn:hover {
+  animation: btnAnimate 1s infinite;
+}
+
+@keyframes btnAnimate {
+  50% {
+    background-position: 200%;
+  }
+}
+
+a {
+  text-decoration: none;
+  color: #fbc2eb;
+}

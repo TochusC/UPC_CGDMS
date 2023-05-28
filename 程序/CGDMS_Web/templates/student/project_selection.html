@@ -1,0 +1,168 @@
+{% extends 'student/student_structure.html' %}
+{% block content %}
+    <style>
+        input[type="submit"]{
+          border-radius: 4px;
+          color: #333;
+          text-decoration: none;
+          transition: all 0.3s ease;
+            background-color: #FDFDFD;
+        }
+
+        input[type="submit"]:hover {
+          background-color: #27496d;
+          color: #fff;
+        }
+
+    </style>
+    <h1>学生选题</h1>
+    <br/><br/><hr><br/><br/>
+    <script>
+        var index = 1;
+        function WriteLevel(){
+            switch (index){
+                case 1:
+                    document.write("第一志愿");
+                    break;
+                case 2:
+                    document.write("第二志愿");
+                    break;
+                case 3:
+                    document.write("第三志愿");
+                    break;
+            }
+            index++
+        }
+        function WritePlaceholder(){
+            document.write("<tr><td>")
+            WriteLevel()
+            document.write("&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td><td>&nbsp</td></tr>")
+        }
+    </script>
+    <table style="width: 72%; text-align: left">
+        <tr><th style="text-align: center">相关提示</th></tr>
+        <tr><td style="text-align: left">1、学生根据自身特点选择课题，每人可选择三个志愿。</td></tr>
+        <tr><td style="text-align: left">2、在选题日期截止日期前,您可以修改您的志愿。</td></tr>
+        <tr><td style="text-align: left">3、您选择完课题后，对应课题教师即可以查看到您的信息。您的流程处于教师确认课题中，在教师最终确认您的选题前，您还可以重新选择您的课题。</td></tr>
+        <tr><td style="text-align: left">4、如果教师已确认您的选题，则您的三个志愿选择界面将会自动消失，只显示您当前被教师确认的课题。</td></tr>
+    </table>
+    <br/><br/>
+    <hr><h3 style="text-align: center">已选课题：</h3>
+    <br/><br/>
+    {% if selected == True %}
+        <h3>您的课题预选已被指导老师确认！</h3>
+        <br/>
+        <table style="width: 72%;">
+             <tr>
+                <th>志愿顺序</th>
+                <th>课题名称</th>
+                <th>课题类型</th>
+                <th>指导教师</th>
+                <th>信息操作</th>
+            </tr>
+             <tr>
+                 <td>已选志愿</td>
+                <td>{{ selected_project.name }}</td>
+                <td>{{ selected_project.type }}</td>
+                <td>{{ selected_project.supervisor }}</td>
+                <td><input class="disable" type="submit" style="margin: auto;" value="已选"></td>
+            </tr>
+        </table>
+    {% else %}
+        <table style="width: 60%;">
+            <tr>
+                <th>志愿顺序</th>
+                <th>课题名称</th>
+                <th>课题类型</th>
+                <th>指导教师</th>
+                <th>信息操作</th>
+            </tr>
+            {% for project in pre_select_list %}
+                <tr>
+                    <td><script>
+                        WriteLevel()
+                    </script></td>
+                    <td>{{ project.name }}</td>
+                    <td>{{ project.type }}</td>
+                    <td>{{ project.supervisor }}</td>
+                    <td>
+                        <form method="post" action="/student/project_selection/cancel/" onsubmit="return confirm('您确定取消选择此课题吗？')">
+                            {% csrf_token %}
+                            <input type="text" hidden="hidden" name="project_name" value={{ project.name }}>
+                            <input type="submit" style="margin: auto" value="取消">
+                        </form>
+                    </td>
+                </tr>
+            {% empty %}
+                <script>
+                    WritePlaceholder()
+                    WritePlaceholder()
+                    WritePlaceholder()
+                </script>
+            {% endfor %}
+            {% if pre_select_list|length == 2 %}
+                <script>
+                    WritePlaceholder()
+                </script>
+            {% endif %}
+            {% if pre_select_list|length == 1 %}
+                <script>
+                    WritePlaceholder()
+                    WritePlaceholder()
+                </script>
+            {% endif %}
+        </table>
+    {% endif %}
+    <br/><br/><hr><h3 style="text-align: center">可选课题</h3><br/><br/>
+    <table style="width: 60%;">
+        <tr>
+            <th>课题名称</th>
+            <th>课题类型</th>
+            <th>申报教师</th>
+            <th>被选次数</th>
+            <th>信息操作</th>
+        </tr>
+        {% for project in project_list %}
+            <tr>
+                <td>{{ project.name }}</td>
+                <td>{{ project.type }}</td>
+                <td>{{ project.supervisor }}</td>
+                <td>
+                    {% if project.selected_times == -1%}
+                        1
+                    {% else %}
+                        {{ project.selected_times }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% if selected == True %}
+                        <input class="disable" type="submit" style="margin: auto;" value="已选">
+                    {% else %}
+                        {% if project.selected_times == -1 or project.selected_times == 4%}
+                            <input class="disable" type="submit" style="margin: auto;" value="已选">
+                        {% else %}
+                            {% if project.selected_times == 4  %}
+                                <input class="disable" type="submit" style="margin: auto;" value="已满">
+                            {% else %}
+                                <form method="post" action="/student/project_selection/select/" onsubmit="return confirm('您确定选择此课题吗？')">
+                                    {% csrf_token %}
+                                    <input type="text" hidden="hidden" name="project_name" value={{ project.name }}>
+                                    <input type="submit" style="margin: auto" value="选择">
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+             <tr>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <br/><br/><br/><hr/>
+{% endblock %}

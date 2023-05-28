@@ -1,0 +1,27 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>CodeForces题面获取</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+	<script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
+	<canvas height="926" width="1920" style="position: fixed; top: 0px; left: 0px; z-index: -1; opacity: 0.5;" id="c_n1"></canvas>
+    <div class="login-form">
+      <div class="text">CodeForces题面获取</div>
+	  <p>啊对对对队</p>
+      <div style="width:300px;height:50px;margin:125px auto">
+        <form action="/search/" method="get">
+            <input required='' type='text' name="q">
+            <label alt='请在这里输入目标题目编号' placeholder='题目编号'></label>
+			<input class = 'btn' type="submit" value = '开始'>
+        </form>
+	  </div>
+	<a href="/visualize" target="_blank">前往查询用户积分变化 &gt;&gt;</a>
+    </div>
+  </div>
+<div class="footer-banner" style="width:728px; margin:200px auto 0"></div>
+</body>
+</html>

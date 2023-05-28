@@ -1,0 +1,144 @@
+<mxfile host="Electron" modified="2023-05-08T08:50:47.917Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.1 Chrome/112.0.5615.87 Electron/24.1.2 Safari/537.36" etag="2q1IYhaxmnxOf8TTbjHz" version="21.2.1" type="device">
+  <diagram name="第 1 页" id="ziG5TAODmwmBnbJpqB5O">
+    <mxGraphModel dx="894" dy="1254" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-4" value="用户账号信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-2" target="jz2McsZ3znvhsZjpb7ZU-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-2" value="用户" style="html=1;dashed=0;whiteSpace=wrap;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="60" y="245" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-10" value="验证通过信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" target="jz2McsZ3znvhsZjpb7ZU-9">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="382" y="300" as="sourcePoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-3" value="用户登录验证系统" style="html=1;dashed=0;whiteSpace=wrap;shape=mxgraph.dfd.start;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="314" y="240" width="136" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-13" value="用户信息&lt;br&gt;" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-7" target="jz2McsZ3znvhsZjpb7ZU-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="470" y="390" />
+              <mxPoint x="470" y="390" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-14" value="验证" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=1;entryY=0.5;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-7" target="jz2McsZ3znvhsZjpb7ZU-3">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-7" value="用户信息表" style="html=1;dashed=0;whiteSpace=wrap;shape=partialRectangle;right=0;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="566" y="372.5" width="110" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-40" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=8.79;exitDy=51.209999999999994;exitPerimeter=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-9" target="jz2McsZ3znvhsZjpb7ZU-25">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="323" y="413" />
+              <mxPoint x="262" y="413" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-41" value="个人信息" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="jz2McsZ3znvhsZjpb7ZU-40">
+          <mxGeometry x="0.1109" y="-1" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-51" value="修改密码" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=127.21000000000001;exitDy=51.209999999999994;exitPerimeter=0;entryX=0;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-9" target="jz2McsZ3znvhsZjpb7ZU-7">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="441" y="414" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-54" value="修改课题信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=30;exitPerimeter=0;entryX=0.348;entryY=-0.02;entryDx=0;entryDy=0;entryPerimeter=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-9" target="jz2McsZ3znvhsZjpb7ZU-42">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="370" y="430" />
+              <mxPoint x="370" y="460" />
+              <mxPoint x="267" y="460" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-9" value="毕业设计管理系统" style="html=1;dashed=0;whiteSpace=wrap;shape=mxgraph.dfd.start;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="314" y="370" width="136" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-21" value="个人信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-16" target="jz2McsZ3znvhsZjpb7ZU-9">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-16" value="个人基本信息系统" style="html=1;dashed=0;whiteSpace=wrap;shape=mxgraph.dfd.start;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="430" y="522.5" width="136" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-22" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-17" target="jz2McsZ3znvhsZjpb7ZU-16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="507" />
+              <mxPoint x="660" y="549" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-17" value="教师信息表" style="html=1;dashed=0;whiteSpace=wrap;shape=partialRectangle;right=0;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="710" y="485" width="110" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-23" value="" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-18" target="jz2McsZ3znvhsZjpb7ZU-16">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="660" y="587" />
+              <mxPoint x="660" y="549" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-24" value="个人基本信息" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="jz2McsZ3znvhsZjpb7ZU-23">
+          <mxGeometry x="0.5037" y="-4" relative="1" as="geometry">
+            <mxPoint as="offset" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-18" value="学生信息表" style="html=1;dashed=0;whiteSpace=wrap;shape=partialRectangle;right=0;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="710" y="565" width="110" height="55" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-38" value="修改信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=1;exitY=0.25;exitDx=0;exitDy=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-25" target="jz2McsZ3znvhsZjpb7ZU-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="387" />
+              <mxPoint x="290" y="387" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-25" value="用户" style="html=1;dashed=0;whiteSpace=wrap;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="60" y="375" width="100" height="50" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-44" value="毕业课题信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.5;exitY=0.5;exitDx=0;exitDy=-30;exitPerimeter=0;entryX=0.5;entryY=0.5;entryDx=0;entryDy=30;entryPerimeter=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-42" target="jz2McsZ3znvhsZjpb7ZU-9">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="290" y="523" />
+              <mxPoint x="290" y="476" />
+              <mxPoint x="382" y="476" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-57" value="修改课题信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0;exitY=0;exitDx=8.79;exitDy=51.209999999999994;exitPerimeter=0;entryX=1;entryY=0.75;entryDx=0;entryDy=0;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-42" target="jz2McsZ3znvhsZjpb7ZU-48">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="229" y="564" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-42" value="毕业课题管理系统" style="html=1;dashed=0;whiteSpace=wrap;shape=mxgraph.dfd.start;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="220" y="522.5" width="136" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-49" value="课题信息" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;" edge="1" parent="1" source="jz2McsZ3znvhsZjpb7ZU-48" target="jz2McsZ3znvhsZjpb7ZU-42">
+          <mxGeometry relative="1" as="geometry">
+            <Array as="points">
+              <mxPoint x="200" y="540" />
+              <mxPoint x="200" y="540" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="jz2McsZ3znvhsZjpb7ZU-48" value="课题信息表" style="html=1;dashed=0;whiteSpace=wrap;shape=partialRectangle;right=0;fillColor=#f5f5f5;fontColor=#333333;strokeColor=#666666;" vertex="1" parent="1">
+          <mxGeometry x="20" y="522.5" width="110" height="55" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

@@ -1,0 +1,36 @@
+{% extends "structure.html" %}
+{% block content %}
+<style>
+</style>
+    {% if role == '管理员' %}
+        <h3>{{ name }}管理员，您好！</h3><br/>
+        <h4>人生的价值，即以其人对于当代所做的工作为尺度。</h4><br/>
+    {% endif %}
+
+    {% if role == '学生' %}
+        <h3>{{ name }}同学，你好！</h3><br/>
+        <h4>自我认同与自我热爱是疗愈一切的关键!</h4><br/>
+    {% endif %}
+
+    {% if role == '教师' %}
+        <h3>{{ name }}老师，您好！</h3><br/>
+        <h4>鹤发银丝映日月，丹心热血沃新花。</h4><br/>
+    {% endif %}
+    <h3>账户信息</h3><br/>
+    <h4>账户名称：{{ uno }}</h4><br/>
+    <h4>修改密码</h4>
+    <div style="margin: auto; width: 400px">
+        <form method="post" action="/change_password/">
+        {% csrf_token %}
+            <input type="hidden" name="uno" value="{{ uno }}" />
+          <label><strong>当前密码:</strong></label><br />
+          <input type="password" name="current_password" required /><br /><br />
+          <label><strong>新密码:</strong></label><br />
+          <input type="password" name="new_password" required /><br /><br />
+          <label><strong>确认新密码:</strong></label><br />
+          <input type="password" name="new_password_confirm" required /><br /><br />
+          <div style="margin: auto"><input type="submit" value="修改" />
+          </div>
+        </form>
+    </div>
+{% endblock %}

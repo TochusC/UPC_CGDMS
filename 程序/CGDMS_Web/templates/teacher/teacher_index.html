@@ -1,0 +1,36 @@
+{% extends 'structure.html' %}
+{% block content %}
+    <style>
+        label {
+          font-weight: bold;
+          font-size: 16px;
+        }
+        select {
+          font-size: 14px;
+          padding: 8px;
+          border: 1px solid #ddd;
+          border-radius: 4px;
+        }
+    </style>
+        <h1>欢迎来到教师中心！</h1><br/>
+        <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
+        <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p>
+
+        <div style="margin: auto; margin-top: 48px; width: 300px; text-align: center">
+            <h3>请选择您的功能角色:</h3><br/>
+            <form method="post" action="/role/">
+                    {% csrf_token %}
+
+                    <label for="role">选择角色：</label>
+                    <select id="role" name="role">
+                          <option value="supervisor">指导教师</option>
+                          <option value="manager">毕业设计负责人</option>
+                          <option value="dean">教学院长</option>
+                          <option value="teaching_secretary">教学秘书</option>
+                          <option value="defence_secretary">答辩秘书</option>
+                    </select>
+                     <input type="submit" value="进入教师中心" />
+            <form>
+        </div>
+
+{% endblock %}

@@ -1,0 +1,52 @@
+<mxfile host="Electron" modified="2023-05-10T08:38:23.583Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.1 Chrome/112.0.5615.87 Electron/24.1.2 Safari/537.36" etag="BBQA9T1igsb4pCmBClis" version="21.2.1" type="device">
+  <diagram name="第 1 页" id="NtrTlK0trMR8k3vnxrRd">
+    <mxGraphModel dx="605" dy="815" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-45" value="高校毕业设计管理系统" style="shape=table;startSize=30;container=1;collapsible=0;childLayout=tableLayout;fixedRows=1;rowLines=0;fontStyle=0;strokeColor=default;fontSize=16;fillColor=#DDDDDD;" vertex="1" parent="1">
+          <mxGeometry x="230" y="241" width="330" height="520" as="geometry" />
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-46" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-45">
+          <mxGeometry y="30" width="330" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-47" value="输入" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;fillColor=#DDDDDD;top=0;left=0;bottom=0;right=0;overflow=hidden;pointerEvents=1;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-46">
+          <mxGeometry width="39" height="170" as="geometry">
+            <mxRectangle width="39" height="170" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-48" value="• 账号信息&lt;br&gt;&lt;br&gt;• 课题内容&lt;br&gt;&lt;br&gt;• 毕业设计（论文）资料" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;fillColor=#EFEFEF;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-46">
+          <mxGeometry x="39" width="291" height="170" as="geometry">
+            <mxRectangle width="291" height="170" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-49" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-45">
+          <mxGeometry y="200" width="330" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-50" value="处理" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;fillColor=#DDDDDD;top=0;left=0;bottom=0;right=0;overflow=hidden;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-49">
+          <mxGeometry width="39" height="150" as="geometry">
+            <mxRectangle width="39" height="150" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-51" value="• 管理账号信息&lt;br&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;• 学生选题&lt;br&gt;&lt;br&gt;• 教师发布课题&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;• 毕业设计（论文）内容修改与审阅" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;fillColor=#EFEFEF;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-49">
+          <mxGeometry x="39" width="291" height="150" as="geometry">
+            <mxRectangle width="291" height="150" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-52" value="" style="shape=tableRow;horizontal=0;startSize=0;swimlaneHead=0;swimlaneBody=0;top=0;left=0;bottom=0;right=0;collapsible=0;dropTarget=0;fillColor=none;points=[[0,0.5],[1,0.5]];portConstraint=eastwest;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-45">
+          <mxGeometry y="350" width="330" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-53" value="输出" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;fillColor=#DDDDDD;top=0;left=0;bottom=0;right=0;overflow=hidden;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-52">
+          <mxGeometry width="39" height="170" as="geometry">
+            <mxRectangle width="39" height="170" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="aq6D9RCbNZm9ccCuyQML-54" value="• 用户基本信息&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;• 课题相关信息&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;&lt;br style=&quot;border-color: var(--border-color);&quot;&gt;• 毕业设计（论文）相关信息" style="shape=partialRectangle;html=1;whiteSpace=wrap;connectable=0;fillColor=#EFEFEF;top=0;left=0;bottom=0;right=0;align=left;spacingLeft=6;overflow=hidden;strokeColor=inherit;fontSize=16;" vertex="1" parent="aq6D9RCbNZm9ccCuyQML-52">
+          <mxGeometry x="39" width="291" height="170" as="geometry">
+            <mxRectangle width="291" height="170" as="alternateBounds" />
+          </mxGeometry>
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

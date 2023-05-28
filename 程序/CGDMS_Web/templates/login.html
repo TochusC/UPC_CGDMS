@@ -1,0 +1,38 @@
+﻿{% load static %}
+<!DOCTYPE html>
+<html lang="zh-cn">
+<head>
+    <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
+    <title>-明悟-高校毕业设计管理系统</title>
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+    <style>
+        input[type="submit"]{
+          border-radius: 4px;
+          color: #FAFAFA;
+          text-decoration: none;
+          transition: all 0.3s ease;
+        }
+    </style>
+</head>
+<body>
+    <script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
+	<canvas height="926" width="1920" style="position: fixed; top: 0px; left: 0px; z-index: -1; opacity: 0.5;" id="c_n1"></canvas>
+    <div class="login-form"; style="height: 575px">
+        <img src="{%static 'img/logo.png' %}" alt="中国石油大学（华东）" style="width: 120px; height: 120px; margin-top: 20px; margin-bottom: 1px"/>
+        <div class="text", style="margin-top: 1px">高校毕业设计管理系统</div>
+          <p>-明悟-</p>
+          <div style="width:300px;height:50px;margin:75px auto">
+            <form action="/index/" method="post">
+                {% csrf_token %}
+                <input required='' type='text' name="Uno">
+                <label alt='请输入您的账号' placeholder='用户账号'></label>
+                <input required='' type='password' name="Upwd">
+                <label alt='请输入您的密码' placeholder='用户密码'></label>
+                <input class = 'btn' type="submit" value = '登录'>
+            </form>
+          </div>
+    </div>
+  </div>
+<div class="footer-banner" style="width:728px; margin:200px auto 0"></div>
+</body>
+</html>
