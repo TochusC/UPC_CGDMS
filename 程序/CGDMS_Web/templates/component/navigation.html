@@ -66,9 +66,8 @@
         <div>
             <nav>
                   <div class="logo">
-                  <span><img src="{% static 'img/logo_white.png' %}" alt="中国石油大学（华东）"/></span>
-                  <span><img src="{% static 'img/text-white.png' %}" alt=""/></span>
-                      <h1 style="display: inline;color: #F5F5F5;">高校毕业设计管理系统</h1>
+                      <span><img src="{% static 'img/logo_white.png' %}" alt="中国石油大学（华东）"/></span>
+                      <span><img src="{% static 'img/text-white.png' %}" alt=""/></span>
                   </div>
                       <ul id = 'student' class="nav-links">
                         <li class="head_navi"><a href="/reindex">首页</a></li>
@@ -112,7 +111,7 @@
             <aside style = 'width: 14%; position: absolute; left: 0%; height: 100%'>
             <hr/><br/>
                 <div class="img_center_div" style="">
-                    <img style="height: auto;width: 72%" src="{% static 'img/word.png' %}" alt=""/>
+                    <img style="height: auto;width: 74%" src="{% static 'img/word.png' %}" alt=""/>
                 </div>
                 <br/><hr/><br/>
                 {% block aside %}
@@ -126,8 +125,7 @@
                 <div style="margin-top: 96px; margin-bottom: 60px;">
                     {% block content %}
                     {% endblock %}
-                    <div class="footer" style="background-color: #F6F6F666;
-                        box-shadow: 0 0 2px #999;z-index: -10">
+                    <div class="footer">
                        <address>
                           <p>@TochusC</p>
                           <ul>
@@ -150,7 +148,7 @@
                 <br/><hr/><br/>
                 <div class="calendar"></div>
                 <script src = "{% static '/js/calender.js' %}"></script>
-                <br/><hr/><br/>
+                <br/><br/><hr/><br/>
             </aside>
         </div>
   </body>

@@ -1,5 +1,8 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&display=swap');
 
+body{
+    background-color: #E6E6E6;
+}
 /*登录表单样式*/
 input[type="text"] {
   -webkit-box-sizing: border-box;
@@ -12,7 +15,7 @@ input[type="text"] {
   padding: 1em;
   border: 1px solid #cccccc;
   border-radius: 1.5em;
-  background: #fff;
+  background: #ffffffAA;
   resize: none;
   outline: none;
 }
@@ -49,13 +52,13 @@ input[type="text"][required] + label[placeholder]:before {
   margin: 0 -webkit-calc(1em + 2px);
   margin: 0 calc(1em + 2px);
   padding: 0 2px;
-  color: #898989;
+  color: #89898988;
   white-space: nowrap;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ffffff));
-  background-image: -webkit-linear-gradient(top, #ffffff, #ffffff);
-  background-image: linear-gradient(to bottom, #ffffff, #ffffff);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff88), to(#ffffff88));
+  background-image: -webkit-linear-gradient(top, #ffffff88, #ffffff88);
+  background-image: linear-gradient(to bottom, #ffffff88, #ffffff88);
   -webkit-background-size: 100% 5px;
   background-size: 100% 5px;
   background-repeat: no-repeat;
@@ -73,7 +76,7 @@ input[type="password"] {
   padding: 1em;
   border: 1px solid #cccccc;
   border-radius: 1.5em;
-  background: #fff;
+  background: #fffffFAA;
   resize: none;
   outline: none;
 }
@@ -109,13 +112,13 @@ input[type="password"][required] + label[placeholder]:before {
   margin: 0 -webkit-calc(1em + 2px);
   margin: 0 calc(1em + 2px);
   padding: 0 2px;
-  color: #898989;
+  color: #89898988;
   white-space: nowrap;
   -webkit-transition: 0.3s ease-in-out;
   transition: 0.3s ease-in-out;
-  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff), to(#ffffff));
-  background-image: -webkit-linear-gradient(top, #ffffff, #ffffff);
-  background-image: linear-gradient(to bottom, #ffffff, #ffffff);
+  background-image: -webkit-gradient(linear, left top, left bottom, from(#ffffff88), to(#ffffff88));
+  background-image: -webkit-linear-gradient(top, #ffffff88, #ffffff88);
+  background-image: linear-gradient(to bottom, #ffffff88, #ffffff88);
   -webkit-background-size: 100% 5px;
   background-size: 100% 5px;
   background-repeat: no-repeat;
@@ -544,8 +547,11 @@ label {
 
 /* 页脚样式 */
 .footer {
+    background-color: #FFFFFF66;
+    box-shadow: 0 0 2px #999;
+    z-index: -10;
     vertical-align: bottom;
-  background-color: #ECECEC55;
+
   padding: 20px;
   text-align: center;
   margin-top: 50px; /* 可根据需要进行修改 */
