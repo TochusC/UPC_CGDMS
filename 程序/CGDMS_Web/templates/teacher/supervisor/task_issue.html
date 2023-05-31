@@ -1,67 +1,85 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
 {% block content %}
-    <style>
-        div{
-            margin-top: 20px;
-            margin-bottom: 20px
+    <script>
+        function $(id){
+            return document.getElementById(id);
         }
-        select{
-            margin-right: 60px;
-            width: 30%;
+        function showPop(project_name, student_name){
+            document.getElementsByClassName('pop')[0].style.display = 'block';
+            $('project_name').value = project_name;
+            $('student_name').value = student_name;
         }
-        textarea {
-            margin-top: 20px;
-          display: block;
-          width: 100%;
-          padding: 10px;
-          font-size: 14px;
-          line-height: 1.5;
-          border: 1px solid #ccc;
-          border-radius: 4px;
-          box-sizing: border-box;
-          margin-bottom: 20px;
-            height: 240px;
-        }
-    </style>
-    <h1>课题申报</h1>
-    <div style="text-align: center">
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%;left: 8%; text-align: left">
+    </script>
+    <h3>课题管理</h3><br/>
+    <table>
+        <tr>
+            <th>课题名称</th>
+            <th>课题类型</th>
+            <th>选题学生</th>
+            <th>申报教师</th>
+            <th>信息操作</th>
+            <th>课题状态</th>
+        </tr>
+        {% for project in project_list %}
+            <tr>
+                <td>{{ project.project_name }}</td>
+                <td>{{ project.project_type }}</td>
+                <td>{{ project.student_name }}</td>
+                <td>{{ project.supervisor_name }}</td>]
+                <td>
+                   {% if project.status == "已填写" %}
+                        <input type="submit" class="disable" style="margin: auto" value="已下达">
+                    {% else %}
+                       <input type="submit" onclick="showPop('{{ project.project_name }}', '{{ project.student_name }}')" style="margin: auto" value="下达">
+                    {% endif %}
+                </td>
+                <td>
+                    {% if project.status == 1 %}
+                        <p style=" color: #27496d">已通过</p>
+                    {% else %}
+                        <p style=" color: #888">未填写</p>
+                    {% endif %}
+                </td>
+            </tr>
+        {% empty %}
+             <tr>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                <td>&nbsp</td>
+                 <td>&nbsp</td>
+            </tr>
+        {% endfor %}
+    </table>
+    <div class="pop">
+        <h3>下达任务书</h3>
+        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%;left: 10%; text-align: left; margin-bottom: 64px">
             <form method="post" action="/teacher/supervisor/propose_project/">
                 {% csrf_token %}
+
                 <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
                 <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
-                <div style="margin-top: 20px; margin-bottom: 20px">
-                   <label style="padding-right: 96px;">是否是学生自拟：</label>
-                    <select name="is_self_choose">
-                          <option value="true">是</option>
-                          <option value="false">否</option>
-                    </select>
-                </div>
-                <div style="margin-top: 20px; margin-bottom: 20px">
-                    <label style="padding-right: 144px;">题目类型：</label>
-                    <select name="project_type">
-                          <option value="设计">设计</option>
-                          <option value="论文">论文</option>
-                    </select>
-                </div>
-                <div style="margin-top: 20px; margin-bottom: 20px">
-                    <label style="padding-right: 112px;">是否结合科研：</label>
-                    <select name="is_scientific">
-                          <option value="true">是</option>
-                          <option value="false">否</option>
-                    </select>
-                </div>
-                <div style="margin-top: 20px; margin-bottom: 20px">
-                    <label>是否结合生产实践和社会实际：</label>
-                    <select name="is_practical">
-                          <option value="true">是</option>
-                          <option value="false">否</option>
-                    </select>
+
+                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
+                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
+                <div>
+                    <label>研究的主要内容:</label>
+                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
                 </div>
                 <div>
-                    <label>主要研究内容及要求:</label>
-                    <textarea name="project_info" placeholder="在此输入主要研究内容及要求..."></textarea>
+                    <label>涉及的知识和基本要求:</label>
+                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
+                </div>
+                <div>
+                    <label>预期目标</label>
+                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
+                </div>
+                <div>
+                    <label>进展安排:</label>
+                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
                 </div>
                 <input type="submit" value="申报" />
             </form>

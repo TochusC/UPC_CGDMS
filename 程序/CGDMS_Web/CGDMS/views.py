@@ -341,7 +341,38 @@ def cancel_pre_selection(request):
 
 
 def task_issue(request):
-    return render(request, "teacher/supervisor/task_issue.html", self_info)
+    # 获取该老师所有的已选课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + self_info["no"] + "' AND Pstatus = '已选';")
+    project_list = []
+    # 遍历每个课题，构造课题信息字典
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        pname = project_info[0]
+        # 获取选择该课题的学生信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Select_Project WHERE PNAME = '" + pname + "';")
+        select_info = cursor1.fetchone()
+        # 获取学生姓名
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE SNO = '" + select_info[0] + "';")
+        student_info = cursor2.fetchone()
+        project = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "student_name": student_info[1],
+            "supervisor_name": self_info["name"],
+
+        }
+        if project_info[4] is None:
+            project.update({"task_status": "未填写"})
+        else:
+            project.update({"task_status": "已填写"})
+        project_list.append(project)
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    return render(request, "teacher/supervisor/task_issue.html", tmp)
 
 
 def issue_task(request):
@@ -484,40 +515,7 @@ def announce_project(request):
 
 def result_announcement(request):
     # 获取选题表信息
-    cursor = db.cursor()
-    selection_info_list = []
-    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SPrecommend = '0'")
-    # 遍历所有选题信息
-    for num in range(cursor.rowcount):
-        selection_info = cursor.fetchone()
-        # 获取学生信息
-        sno = selection_info[0]
-        cursor2 = db.cursor()
-        cursor2.execute("SELECT * FROM STUDENT WHERE Sno = '" + sno + "'")
-        student_info = cursor2.fetchone()
-        # 获取课题信息
-        project_name = selection_info[1]
-        cursor3 = db.cursor()
-        cursor3.execute("SELECT * FROM PROJECT WHERE Pname = '" + project_name + "'")
-        project_info = cursor3.fetchone()
-        # 获取教师信息
-        tno = project_info[5]
-        cursor4 = db.cursor()
-        cursor4.execute("SELECT * FROM TEACHER WHERE Tno = '" + tno + "'")
-        teacher_info = cursor4.fetchone()
-        # 构造双选信息字典
-        selection_info = {
-            "project_name": project_info[0],
-            "project_type": project_info[1],
-            "project_supervisor": teacher_info[1],
-            "student_name": student_info[1],
-            "student_no": student_info[0],
-        }
-        selection_info_list.append(selection_info)
-    tmp = {}
-    tmp.update({"selection_info_list": selection_info_list})
-    tmp.update(self_info)
-    return render(request, "teacher/dean/result_announcement.html", tmp)
+    4096
 
 
 def announce_result(request):
