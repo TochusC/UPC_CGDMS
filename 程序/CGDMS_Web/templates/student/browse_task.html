@@ -1,0 +1,28 @@
+{% extends "student/student_structure.html" %}
+{% block content %}
+    <!-- 内容部分 -->
+    <style>
+        td{;
+            width: 78%;
+        }
+    </style>
+    <h3>任务书信息</h3><br/>
+        <table>
+            <tr>
+                <th>研究的主要内容</th>
+                <td>{{ main_content }}</td>
+            </tr>
+            <tr>
+                <th>涉及的知识和基本要求</th>
+                <td>{{ knowledge_requirements }}</td>
+            </tr>
+            <tr>
+                <th>预期目标</th>
+                <td>{{ target_goal }}</td>
+            </tr>
+            <tr>
+                <th>进展安排</th>
+                <td>{{ procedure_management }}</td>
+            </tr>
+        </table>
+{% endblock %}

@@ -24,6 +24,7 @@ from . import views
 urlpatterns = [
     #通用模块
     path('', views.login),
+    path('login/', views.login),
     path('index/', views.index),
     path('reindex/', views.reindex),
     path('admin/', admin.site.urls),
@@ -35,6 +36,9 @@ urlpatterns = [
     path('student/project_selection/', views.project_selection),
     path('student/project_selection/select/', views.select_project),
     path('student/project_selection/cancel/', views.cancel_project),
+    path('student/browse_task/', views.browse_task),
+    path('student/open_report/', views.open_report),
+    path('student/open_report/submit_report/', views.submit_report),
     #教师模块
     path('teacher/', views.teacher),
     path('role/', views.role),
@@ -56,9 +60,10 @@ urlpatterns = [
     path('teacher/supervisor/propose_project/', views.propose_project),
     #专业毕设负责人模块
     path('teacher/manager/', views.manager),
-    path('teacher/manager/project_review', views.project_review),
+    path('teacher/manager/project_review/', views.project_review),
     path('teacher/manager/pass_project/', views.pass_project),
-    path('teacher/manager/task_review', views.task_review),
+    path('teacher/manager/task_review/', views.task_review),
+    path('teacher/manager/task_review/pass_task/', views.pass_task),
     path('teacher/manager/defense_assignment', views.defense_assignment),
     path('teacher/manager/group_assignment', views.group_assignment),
     path('teacher/manager/information_summary', views.information_summary),

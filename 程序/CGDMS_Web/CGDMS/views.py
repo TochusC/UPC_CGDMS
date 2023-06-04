@@ -99,6 +99,7 @@ def student(request):
         return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': self_info["name"]})
 
 
+# 选题界面
 def project_selection(request):
     if not checkRole("学生"):
         return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': self_info["name"]})
@@ -106,7 +107,7 @@ def project_selection(request):
     pre_select_list = []
     pre_select_names = []
     tmp = {}
-
+    # 获取选题表中的项目
     cursor = db.cursor()
     cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
     # 如果选题表中有记录
@@ -210,11 +211,102 @@ def select_project(request):
     return redirect("/student/project_selection")
 
 
+# 取消预选
 def cancel_project(request):
     cursor = db.cursor()
     pname = request.POST["project_name"]
     cursor.execute("DELETE FROM Pre_Select WHERE SNO = '" + self_info["no"] + "' AND PNAME = '" + pname + "';")
     return redirect("/student/project_selection")
+
+
+# 浏览任务书
+def browse_task(request):
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    if cursor.rowcount == 1:
+        # 获取项目名称
+        pname = cursor.fetchone()[1]
+        # 从任务书表中，获取项目的任务书信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Task_Book WHERE PNAME = '" + pname + "'")
+        # 如果任务书存在
+        if cursor1.rowcount == 1:
+            # 获取任务书信息
+            task_book_info = cursor1.fetchone()
+            # 如果任务书已审核
+            if task_book_info[6] == "1":
+                # 构造任务书字典
+                task_book = {
+                    "main_content": task_book_info[1],
+                    "knowledge_requirements": task_book_info[2],
+                    "target_goal": task_book_info[3],
+                    "project_schedule": task_book_info[4],
+                }
+                tmp = {}
+                tmp.update(task_book)
+                tmp.update(self_info)
+                return render(request, "student/browse_task.html", tmp)
+            else:
+                return render(request, "announce.html",
+                              {'message': '指导教师下达的任务书正在审核中...', 'name': self_info["name"]})
+        else:
+            return render(request, "announce.html", {'message': '指导教师尚未下达任务书...', 'name': self_info["name"]})
+    else:
+        return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': self_info["name"]})
+
+
+# 开题报告页面
+def open_report(request):
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 如果学生已选题
+    if cursor.rowcount == 1:
+        # 获取选题信息
+        selected_project_info = cursor.fetchone()
+        # 获取开题报告信息
+        open_report_info = selected_project_info[2]
+        open_report_info = open_report_info.decode("utf-8")
+        # 获取项目名称
+        pname = selected_project_info[1]
+        # 获取项目信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM PROJECT WHERE PNAME = '" + pname + "'")
+        project_info = cursor1.fetchone()
+        # 教师信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + project_info[5] + "'")
+        teacher_info = cursor2.fetchone()
+        # 构造开题报告字典
+        open_report = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "project_supervisor": teacher_info[1],
+            "open_report": open_report_info,
+        }
+        tmp = {}
+        tmp.update(open_report)
+        tmp.update(self_info)
+        return render(request, "student/open_report.html", tmp)
+    else:
+        return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': self_info["name"]})
+
+
+# 开题报告提交
+def submit_report(request):
+    # 获取开题报告内容
+    open_report = request.POST["open_report"]
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 获取课题名称
+    pname = cursor.fetchone()[1]
+    # 更新开题报告
+    cursor.execute(
+        "UPDATE SELECT_PROJECT SET SPopen_report = '" + open_report + "' WHERE SNO = '" + self_info["no"] + "'")
+    db.commit()
+    return redirect("/student/open_report")
 
 
 # 教师模块
@@ -362,21 +454,42 @@ def task_issue(request):
             "project_type": project_info[1],
             "student_name": student_info[1],
             "supervisor_name": self_info["name"],
-
         }
-        if project_info[4] is None:
-            project.update({"task_status": "未填写"})
+        # 从任务书表中获取该课题的任务书
+        cursor3 = db.cursor()
+        cursor3.execute("SELECT * FROM Task_Book WHERE PNAME = '" + pname + "';")
+        # 如果任务书不存在，则状态为未填写
+        if cursor3.rowcount == 0:
+            project.update({"status": "未填写"})
         else:
-            project.update({"task_status": "已填写"})
+            project.update({"status": "已填写"})
+        # 将课题信息字典添加到课题列表中
         project_list.append(project)
+    # 构造tmp字典
     tmp = {}
     tmp.update({"project_list": project_list})
     tmp.update(self_info)
+    # 渲染课题任务书页面
     return render(request, "teacher/supervisor/task_issue.html", tmp)
 
 
 def issue_task(request):
-    return None
+    # 获取课题名称
+    pname = request.POST["project_name"]
+    # 获取课题任务书
+    main_content = request.POST["main_content"]
+    knowledge_requirements = request.POST["knowledge_requirements"]
+    target_goal = request.POST["target_goal"]
+    procedure_management = request.POST["procedure_management"]
+    # 将任务书内容写入任务书表
+    cursor = db.cursor()
+    cursor.execute(
+        "INSERT INTO Task_Book(PNAME, Main_Content, Knowledge_Requirements, Target_Goal, Procedure_Management,Task_Status) VALUES "
+        "('" + pname + "','" + main_content + "','" + knowledge_requirements + "','" + target_goal + "','" + procedure_management + "','0');")
+    # 提交事务
+    db.commit()
+    # 重定向至课题任务书页面
+    return redirect("/teacher/supervisor/task_issue")
 
 
 def report_review(request):
@@ -452,7 +565,49 @@ def pass_project(request):
 
 
 def task_review(request):
-    return render(request, "teacher/manager/task_review.html", self_info)
+    # 获取任务书表中未审核的任务书信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Task_Book WHERE Task_Status = '0';")
+    project_list = []
+    # 遍历课题
+    for num in range(cursor.rowcount):
+        # 获取课题名称
+        project_name = cursor.fetchone()[0]
+        # 获取课题信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM PROJECT WHERE Pname = '" + project_name + "';")
+        project_info = cursor2.fetchone()
+        # 获取指导教师信息
+        no = project_info[5]
+        cursor3 = db.cursor()
+        cursor3.execute("SELECT * FROM TEACHER WHERE Tno = '" + no + "';")
+        teacher_info = cursor3.fetchone()
+        # 构造课题字典
+        project = {
+            "name": project_info[0],
+            "type": project_info[1],
+            "supervisor": teacher_info[1],
+        }
+        # 将课题字典添加至课题列表
+        project_list.append(project)
+    # 构造临时字典
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    # 返回课题任务书审核页面
+    return render(request, "teacher/manager/task_review.html", tmp)
+
+
+def pass_task(request):
+    # 获取课题名称
+    project_name = request.POST["project_name"]
+    # 将课题状态改为任务书已审核
+    cursor = db.cursor()
+    cursor.execute("UPDATE Task_Book SET Task_Status = '1' WHERE Pname = '" + project_name + "';")
+    # 提交事务
+    db.commit()
+    # 重定向至课题任务书页面
+    return redirect("/teacher/manager/task_review/")
 
 
 def defense_assignment(request):
@@ -515,7 +670,38 @@ def announce_project(request):
 
 def result_announcement(request):
     # 获取选题表信息
-    4096
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SPrecommend = '0'")
+    select_list = []
+    for num in range(cursor.rowcount):
+        select_info = cursor.fetchone()
+        # 获取学生信息
+        no = select_info[0]
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE Sno = '" + no + "'")
+        student_info = cursor2.fetchone()
+        # 获取教师信息
+        no = select_info[2]
+        cursor3 = db.cursor()
+        cursor3.execute("SELECT * FROM TEACHER WHERE Tno = '" + no + "'")
+        teacher_info = cursor3.fetchone()
+        # 获取课题信息
+        project_name = select_info[1]
+        cursor4 = db.cursor()
+        cursor4.execute("SELECT * FROM PROJECT WHERE Pname = '" + project_name + "'")
+        project_info = cursor4.fetchone()
+        project = {
+            "project_name": project_info[0],
+            "project_type": project_info[1],
+            "project_supervisor": teacher_info[1],
+            "student_name": student_info[1],
+            "student_no": student_info[0],
+        }
+        select_list.append(project)
+    tmp = {}
+    tmp.update({"selection_info_list": select_list})
+    tmp.update(self_info)
+    return render(request, "teacher/dean/result_announcement.html", tmp)
 
 
 def announce_result(request):

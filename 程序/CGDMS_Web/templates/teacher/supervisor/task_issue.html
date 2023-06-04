@@ -10,6 +10,7 @@
             $('student_name').value = student_name;
         }
     </script>
+    <div>
     <h3>课题管理</h3><br/>
     <table>
         <tr>
@@ -25,16 +26,16 @@
                 <td>{{ project.project_name }}</td>
                 <td>{{ project.project_type }}</td>
                 <td>{{ project.student_name }}</td>
-                <td>{{ project.supervisor_name }}</td>]
+                <td>{{ project.supervisor_name }}</td>
                 <td>
                    {% if project.status == "已填写" %}
-                        <input type="submit" class="disable" style="margin: auto" value="已下达">
+                        <input type="submit" class="disable" style="margin: auto; width: 96%" value="已下达">
                     {% else %}
                        <input type="submit" onclick="showPop('{{ project.project_name }}', '{{ project.student_name }}')" style="margin: auto" value="下达">
                     {% endif %}
                 </td>
                 <td>
-                    {% if project.status == 1 %}
+                    {% if project.status == "已填写" %}
                         <p style=" color: #27496d">已通过</p>
                     {% else %}
                         <p style=" color: #888">未填写</p>
@@ -52,10 +53,11 @@
             </tr>
         {% endfor %}
     </table>
+    </div>
     <div class="pop">
-        <h3>下达任务书</h3>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%;left: 10%; text-align: left; margin-bottom: 64px">
-            <form method="post" action="/teacher/supervisor/propose_project/">
+        <h3>下达任务书</h3><br/>
+        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+            <form method="post" action="/teacher/supervisor/task_issue/issue_task/">
                 {% csrf_token %}
 
                 <label style="padding-right: 25px;" for="project_name">课题名称：</label>
@@ -71,17 +73,17 @@
                 </div>
                 <div>
                     <label>涉及的知识和基本要求:</label>
-                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
+                    <textarea name="knowledge_requirements" placeholder="在此输入涉及的知识和基本要求..."></textarea>
                 </div>
                 <div>
                     <label>预期目标</label>
-                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
+                    <textarea name="target_goal" placeholder="在此输入预期目标..."></textarea>
                 </div>
                 <div>
                     <label>进展安排:</label>
-                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
+                    <textarea name="procedure_management" placeholder="在此输入进展安排..."></textarea>
                 </div>
-                <input type="submit" value="申报" />
+                <input type="submit" value="下达" />
             </form>
         </div>
     </div>

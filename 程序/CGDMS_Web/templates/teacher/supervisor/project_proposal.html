@@ -23,9 +23,9 @@
             height: 240px;
         }
     </style>
-    <h1>课题申报</h1>
-    <div style="text-align: center">
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%;left: 8%; text-align: left">
+    <div class = "form" style="text-align: center">
+        <h1>课题申报</h1>
+        <div class = 'child-form'>
             <form method="post" action="/teacher/supervisor/propose_project/">
                 {% csrf_token %}
                 <label style="padding-right: 25px;" for="project_name">课题名称：</label>
@@ -61,7 +61,7 @@
                 </div>
                 <div>
                     <label>主要研究内容及要求:</label>
-                    <textarea name="project_info" placeholder="在此输入主要研究内容及要求..."></textarea>
+                    <textarea class="proposal" name="project_info" placeholder="在此输入主要研究内容及要求..."></textarea>
                 </div>
                 <input type="submit" value="申报" />
             </form>
