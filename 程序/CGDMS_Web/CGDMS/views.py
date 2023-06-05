@@ -1,3 +1,5 @@
+import datetime
+
 import pymysql
 import random
 
@@ -309,6 +311,227 @@ def submit_report(request):
     return redirect("/student/open_report")
 
 
+# 中期检查页面
+def mid_term_check(request):
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 如果学生已选题
+    if cursor.rowcount == 1:
+        # 获取选题信息
+        selected_project_info = cursor.fetchone()
+        # 获取中期检查信息
+        progress_info = selected_project_info[5]
+        progress_info = progress_info.decode("utf-8")
+        # 获取项目名称
+        pname = selected_project_info[1]
+        # 获取项目信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM PROJECT WHERE PNAME = '" + pname + "'")
+        project_info = cursor1.fetchone()
+        # 教师信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + project_info[5] + "'")
+        teacher_info = cursor2.fetchone()
+        # 构造中期检查字典
+        mid_term_check = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "project_supervisor": teacher_info[1],
+            "progress_info": progress_info,
+        }
+        tmp = {}
+        tmp.update(mid_term_check)
+        tmp.update(self_info)
+        return render(request, "student/mid_term_check.html", tmp)
+    else:
+        return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': self_info["name"]})
+
+
+# 中期检查提交
+def submit_progress(request):
+    # 获取开题报告内容
+    progress_info = request.POST["progress_info"]
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 获取课题名称
+    pname = cursor.fetchone()[1]
+    # 更新开题报告
+    cursor.execute(
+        "UPDATE SELECT_PROJECT SET SPreview = '" + progress_info + "' WHERE SNO = '" + self_info["no"] + "'")
+    db.commit()
+    return redirect("/student/mid_term_check/")
+
+
+# 周进度报告
+def weekly_report(request):
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 如果学生已选题
+    if cursor.rowcount == 1:
+        # 获取选题信息
+        selected_project_info = cursor.fetchone()
+        # 获取周进度报告信息
+        week_progress_info = selected_project_info[4]
+        if week_progress_info is not None:
+            week_progress_info = week_progress_info.decode("utf-8")
+        # 获取项目名称
+        pname = selected_project_info[1]
+        # 获取项目信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM PROJECT WHERE PNAME = '" + pname + "'")
+        project_info = cursor1.fetchone()
+        # 教师信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + project_info[5] + "'")
+        teacher_info = cursor2.fetchone()
+        # 构造周进度报告字典
+        weekly_report = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "project_supervisor": teacher_info[1],
+            "weekly_report": week_progress_info,
+        }
+        tmp = {}
+        tmp.update(weekly_report)
+        tmp.update(self_info)
+        return render(request, "student/weekly_report.html", tmp)
+    else:
+        return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': self_info["name"]})
+
+
+def submit_weekly_report(request):
+    # 获取开题报告内容
+    weekly_report_info = request.POST["weekly_report"]
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 获取课题名称
+    pname = cursor.fetchone()[1]
+    # 获取当前日期
+    now = datetime.datetime.now()
+    # 更新开题报告
+    cursor.execute(
+        "UPDATE SELECT_PROJECT SET SPweekly_report = '报告时间：" + now.strftime("%Y-%m-%d %H:%M:%S") + " " + weekly_report_info + "' WHERE SNO = '" + self_info["no"] + "'")
+    db.commit()
+    return redirect("/student/weekly_report/")
+
+
+# 毕业论文（草稿）
+def thesis_draft(request):
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 如果学生已选题
+    if cursor.rowcount == 1:
+        # 获取选题信息
+        selected_project_info = cursor.fetchone()
+        # 获取毕业论文草稿信息
+        thesis_info = selected_project_info[6]
+        if thesis_info is not None:
+            thesis_info = thesis_info.decode("utf-8")
+        # 获取项目名称
+        pname = selected_project_info[1]
+        # 获取项目信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM PROJECT WHERE PNAME = '" + pname + "'")
+        project_info = cursor1.fetchone()
+        # 教师信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + project_info[5] + "'")
+        teacher_info = cursor2.fetchone()
+        # 构造周进度报告字典
+        weekly_report = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "project_supervisor": teacher_info[1],
+            "thesis_info": thesis_info,
+        }
+        tmp = {}
+        tmp.update(weekly_report)
+        tmp.update(self_info)
+        return render(request, "student/thesis_draft.html", tmp)
+    else:
+        return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': self_info["name"]})
+
+
+def submit_draft(request):
+    # 获取论文草稿内容
+    thesis_info = request.POST["thesis_info"]
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 获取课题名称
+    pname = cursor.fetchone()[1]
+    # 获取当前日期
+    now = datetime.datetime.now()
+    # 更新论文草稿
+    cursor.execute(
+        "UPDATE SELECT_PROJECT SET SPthesis = '" + thesis_info + "' WHERE SNO = '" +
+        self_info["no"] + "'")
+    db.commit()
+    return redirect("/student/thesis_draft/")
+
+
+
+# 毕业论文（定稿）
+def thesis_final(request):
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 如果学生已选题
+    if cursor.rowcount == 1:
+        # 获取选题信息
+        selected_project_info = cursor.fetchone()
+        # 获取毕业论文信息
+        thesis_info = selected_project_info[6]
+        if thesis_info is not None:
+            thesis_info = thesis_info.decode("utf-8")
+        # 获取项目名称
+        pname = selected_project_info[1]
+        # 获取项目信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM PROJECT WHERE PNAME = '" + pname + "'")
+        project_info = cursor1.fetchone()
+        # 教师信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + project_info[5] + "'")
+        teacher_info = cursor2.fetchone()
+        # 构造周进度报告字典
+        weekly_report = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "project_supervisor": teacher_info[1],
+            "thesis_info": thesis_info,
+        }
+        tmp = {}
+        tmp.update(weekly_report)
+        tmp.update(self_info)
+        return render(request, "student/thesis_final.html", tmp)
+    else:
+        return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': self_info["name"]})
+
+
+def submit_final(request):
+    # 获取论文定稿内容
+    thesis_info = request.POST["thesis_info"]
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + self_info["no"] + "'")
+    # 获取课题名称
+    pname = cursor.fetchone()[1]
+    # 获取当前日期
+    now = datetime.datetime.now()
+    # 更新论文定稿
+    cursor.execute(
+        "UPDATE SELECT_PROJECT SET SPthesis = '" + thesis_info + "' WHERE SNO = '" +
+        self_info["no"] + "'")
+    db.commit()
+    return redirect("/student/thesis_final/")
+
+
 # 教师模块
 def teacher(request):
     if self_info["role"] == "教师":
@@ -432,6 +655,7 @@ def cancel_pre_selection(request):
     return redirect("/teacher/supervisor/project_confirmation")
 
 
+# 下达任务书页面
 def task_issue(request):
     # 获取该老师所有的已选课题
     cursor = db.cursor()
@@ -473,6 +697,7 @@ def task_issue(request):
     return render(request, "teacher/supervisor/task_issue.html", tmp)
 
 
+# 下达任务书操作
 def issue_task(request):
     # 获取课题名称
     pname = request.POST["project_name"]
@@ -492,28 +717,229 @@ def issue_task(request):
     return redirect("/teacher/supervisor/task_issue")
 
 
+# 审阅开题报告页面
 def report_review(request):
-    return render(request, "teacher/supervisor/report_review.html", self_info)
+    # 获取该老师的所有已选课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + self_info["no"] + "' AND Pstatus = '已选';")
+    project_list = []
+    # 遍历每个课题，构造课题信息字典
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        pname = project_info[0]
+        # 获取选择该课题的学生信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Select_Project WHERE PNAME = '" + pname + "';")
+        select_info = cursor1.fetchone()
+        # 获取学生姓名
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE SNO = '" + select_info[0] + "';")
+        student_info = cursor2.fetchone()
+        # 获取开题报告
+        open_report_info = select_info[2]
+        # 构造课题信息字典
+        project = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "student_name": student_info[1],
+            "supervisor_name": self_info["name"],
+            "open_report": "",
+        }
+        # 如果开题报告不存在，则状态为未填写
+        if open_report_info == "" or open_report_info is None:
+            project.update({"status": "未填写"})
+        else:
+            project["open_report"] = open_report_info.decode("utf-8")
+            project.update({"status": "已填写"})
+        # 将课题信息字典添加到课题列表中
+        project_list.append(project)
+    # 构造tmp字典
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    # 渲染开题报告页面
+    return render(request, "teacher/supervisor/report_review.html", tmp)
 
 
+# 审阅外文翻译页面（未实装）
 def translation_review(request):
     return render(request, "teacher/supervisor/translation_review.html", self_info)
 
 
-def mid_term_check(request):
-    return render(request, "teacher/supervisor/mid_term_check.html", self_info)
+# 审阅中期检查页面
+def mid_term_review(request):
+    # 获取该老师的所有已选课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + self_info["no"] + "' AND Pstatus = '已选';")
+    project_list = []
+    # 遍历每个课题，构造课题信息字典
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        pname = project_info[0]
+        # 获取选择该课题的学生信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Select_Project WHERE PNAME = '" + pname + "';")
+        select_info = cursor1.fetchone()
+        # 获取学生姓名
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE SNO = '" + select_info[0] + "';")
+        student_info = cursor2.fetchone()
+        # 获取中期检查
+        open_report_info = select_info[5]
+        # 构造课题信息字典
+        project = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "student_name": student_info[1],
+            "supervisor_name": self_info["name"],
+            "mid_term_info": "",
+        }
+        # 如果中期检查不存在，则状态为未填写
+        if open_report_info == "" or open_report_info is None:
+            project.update({"status": "未填写"})
+        else:
+            project["mid_term_info"] = open_report_info.decode("utf-8")
+            project.update({"status": "已填写"})
+        # 将课题信息字典添加到课题列表中
+        project_list.append(project)
+    # 构造tmp字典
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    # 渲染中期检查页面
+    return render(request, "teacher/supervisor/mid-term-review.html", tmp)
 
 
+# 周进度审阅页面
 def weekly_review(request):
-    return render(request, "teacher/supervisor/weekly_review.html", self_info)
+    # 获取该老师的所有已选课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + self_info["no"] + "' AND Pstatus = '已选';")
+    project_list = []
+    # 遍历每个课题，构造课题信息字典
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        pname = project_info[0]
+        # 获取选择该课题的学生信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Select_Project WHERE PNAME = '" + pname + "';")
+        select_info = cursor1.fetchone()
+        # 获取学生姓名
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE SNO = '" + select_info[0] + "';")
+        student_info = cursor2.fetchone()
+        # 获取周进度报告
+        weekly_report_info = select_info[4]
+        # 构造课题信息字典
+        project = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "student_name": student_info[1],
+            "supervisor_name": self_info["name"],
+            "weekly_report": "",
+        }
+        # 如果周进度报告不存在，则状态为未填写
+        if weekly_report_info == "" or weekly_report_info is None:
+            project.update({"status": "未填写"})
+        else:
+            project["weekly_report"] = weekly_report_info.decode("utf-8")
+            project.update({"status": "已填写"})
+        # 将课题信息字典添加到课题列表中
+        project_list.append(project)
+    # 构造tmp字典
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    # 渲染周进度报告页面
+    return render(request, "teacher/supervisor/weekly_review.html", tmp)
 
 
-def final_review(request):
-    return render(request, "teacher/supervisor/final_review.html", self_info)
-
-
+# 论文草稿审阅页面
 def draft_review(request):
-    return render(request, "teacher/supervisor/draft_review.html", self_info)
+    # 获取该老师的所有已选课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + self_info["no"] + "' AND Pstatus = '已选';")
+    project_list = []
+    # 遍历每个课题，构造课题信息字典
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        pname = project_info[0]
+        # 获取选择该课题的学生信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Select_Project WHERE PNAME = '" + pname + "';")
+        select_info = cursor1.fetchone()
+        # 获取学生姓名
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE SNO = '" + select_info[0] + "';")
+        student_info = cursor2.fetchone()
+        # 获取毕业论文信息
+        thesis_info = select_info[6]
+        # 构造课题信息字典
+        project = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "student_name": student_info[1],
+            "supervisor_name": self_info["name"],
+            "thesis_info": "",
+        }
+        # 如果论文信息不存在，则状态为未填写
+        if thesis_info == "" or thesis_info is None:
+            project.update({"status": "未填写"})
+        else:
+            project["thesis_info"] = thesis_info.decode("utf-8")
+            project.update({"status": "已填写"})
+        # 将课题信息字典添加到课题列表中
+        project_list.append(project)
+    # 构造tmp字典
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    # 渲染论文草稿审阅页面
+    return render(request, "teacher/supervisor/draft_review.html", tmp)
+
+
+# 论文定稿审阅页面
+def final_review(request):
+    # 获取该老师的所有已选课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + self_info["no"] + "' AND Pstatus = '已选';")
+    project_list = []
+    # 遍历每个课题，构造课题信息字典
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        pname = project_info[0]
+        # 获取选择该课题的学生信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Select_Project WHERE PNAME = '" + pname + "';")
+        select_info = cursor1.fetchone()
+        # 获取学生姓名
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM STUDENT WHERE SNO = '" + select_info[0] + "';")
+        student_info = cursor2.fetchone()
+        # 获取毕业论文信息
+        thesis_info = select_info[6]
+        # 构造课题信息字典
+        project = {
+            "project_name": pname,
+            "project_type": project_info[1],
+            "student_name": student_info[1],
+            "supervisor_name": self_info["name"],
+            "thesis_info": "",
+        }
+        # 如果论文信息不存在，则状态为未填写
+        if thesis_info == "" or thesis_info is None:
+            project.update({"status": "未填写"})
+        else:
+            project["thesis_info"] = thesis_info.decode("utf-8")
+            project.update({"status": "已填写"})
+        # 将课题信息字典添加到课题列表中
+        project_list.append(project)
+    # 构造tmp字典
+    tmp = {}
+    tmp.update({"project_list": project_list})
+    tmp.update(self_info)
+    # 渲染论文定稿审阅页面
+    return render(request, "teacher/supervisor/final_review.html", tmp)
 
 
 def project_recommendation(request):

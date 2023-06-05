@@ -39,6 +39,14 @@ urlpatterns = [
     path('student/browse_task/', views.browse_task),
     path('student/open_report/', views.open_report),
     path('student/open_report/submit_report/', views.submit_report),
+    path('student/mid_term_check/', views.mid_term_check),
+    path('student/mid_term_check/submit_progress/', views.submit_progress),
+    path('student/weekly_report/', views.weekly_report),
+    path('student/weekly_report/submit_report/', views.submit_weekly_report),
+    path('student/thesis_draft/', views.thesis_draft),
+    path('student/thesis_draft/submit_draft/', views.submit_draft),
+    path('student/thesis_final/', views.thesis_final),
+    path('student/thesis_final/submit_final/', views.submit_final),
     #教师模块
     path('teacher/', views.teacher),
     path('role/', views.role),
@@ -51,7 +59,7 @@ urlpatterns = [
     path('teacher/supervisor/task_issue/', views.task_issue),
     path('teacher/supervisor/task_issue/issue_task/', views.issue_task),
     path('teacher/supervisor/report_review/', views.report_review),
-    path('teacher/supervisor/mid-term_check/', views.mid_term_check),
+    path('teacher/supervisor/mid_term_review/', views.mid_term_review),
     path('teacher/supervisor/translation_review/', views.translation_review),
     path('teacher/supervisor/weekly_review/', views.weekly_review),
     path('teacher/supervisor/draft_review/', views.draft_review),
@@ -67,7 +75,6 @@ urlpatterns = [
     path('teacher/manager/defense_assignment', views.defense_assignment),
     path('teacher/manager/group_assignment', views.group_assignment),
     path('teacher/manager/information_summary', views.information_summary),
-
     #教学院长模块
     path('teacher/dean/', views.dean),
     path('teacher/dean/project_announcement/', views.project_announcement),

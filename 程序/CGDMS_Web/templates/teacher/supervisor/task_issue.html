@@ -6,11 +6,16 @@
         }
         function showPop(project_name, student_name){
             document.getElementsByClassName('pop')[0].style.display = 'block';
+            $('main-content').style.display = 'none';
             $('project_name').value = project_name;
             $('student_name').value = student_name;
         }
+        function hidePop(){
+            $('main-content').style.display = 'block';
+            document.getElementsByClassName('pop')[0].style.display = 'none';
+        }
     </script>
-    <div>
+    <div id = 'main-content'>
     <h3>课题管理</h3><br/>
     <table>
         <tr>
@@ -83,7 +88,11 @@
                     <label>进展安排:</label>
                     <textarea name="procedure_management" placeholder="在此输入进展安排..."></textarea>
                 </div>
-                <input type="submit" value="下达" />
+                <div class="form-group">
+                    <input style="display: inline; width: 48%" type="submit" value="下达" />
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
+                </div>
             </form>
         </div>
     </div>

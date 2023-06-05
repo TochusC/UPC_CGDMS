@@ -1,0 +1,30 @@
+{% extends 'student/student_structure.html' %}
+{% block content %}
+    <div class="form" style="text-align: center">
+        <h1>中期检查</h1><br/>
+        <div class="child-form">
+            <form method="post" action="/student/mid_term_check/submit_progress/">
+                {% csrf_token %}
+                <div>
+                     <label style="padding-right: 25px;" for="project_name">课题名称：</label>
+                     <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project_name }}" disabled>
+                </div>
+                <div>
+                    <label style="padding-right: 25px;" for="project_type">课题类型：</label>
+                    <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_type" value="{{ project_type }}" disabled>
+                </div>
+                <div>
+                    <label style="padding-right: 25px;" for="project_supervisor">指导教师:</label>
+                    <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor" value="{{ project_supervisor }}" disabled>
+                </div>
+                <div>
+                    <label>进展情况:</label>
+                    <textarea class="proposal" name="progress_info" placeholder="在此撰写您的进展情况...">{{ progress_info }}</textarea>
+                </div>
+                <input type="submit" value="提交" />
+            </form>
+        </div>
+    </div>
+    <br/><br/><hr>
+
+{% endblock %}
