@@ -1,27 +1,91 @@
 {% extends 'student/student_structure.html' %}
 {% block content %}
+    <style>
+        label{
+            padding-right: 25px;
+        }
+    </style>
+    <script>
+        function $(id){
+            return document.getElementById(id);
+        }
+        if('{{ status }}' === "已提交"){
+            $('extra').style.display = "block";
+            if('{{ thesis_info }}' === "通过") {
+                //将论文内容设为不可修改
+                $('score').style.display = "block";
+                $('content').setAttribute('disabled', 'disabled');
+                $('attachment').setAttribute('disabled', 'disabled');
+                //将提交按钮设为不可用
+                var submit_button = $('submit_button');
+                submit_button.setAttribute('disabled', 'disabled');
+                submit_button.value="已审核"
+            }else{
+                $('action').value = "修改";
+                $('submit_button').value = "提交修改";
+            }
+        }
+    </script>
     <div class="form" style="text-align: center">
-        <h1>论文定稿提交</h1><br/>
+        <h1>论文草稿提交</h1><br/>
         <div class="child-form">
-            <form method="post" action="/student/thesis_final/submit_final/">
+            <form method="post" action="/student/thesis_draft/submit_draft/">
                 {% csrf_token %}
                 <div>
-                     <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                     <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project_name }}" disabled>
+                     <label style="padding-right: 25px;" for="project_name">课题名称：
+                        <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project_name }}" disabled>
+                     </label>
                 </div>
                 <div>
-                    <label style="padding-right: 25px;" for="project_type">课题类型：</label>
-                    <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_type" value="{{ project_type }}" disabled>
+                    <label style="padding-right: 25px;" for="project_type">课题类型：
+                        <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_type" value="{{ project_type }}" disabled>
+                    </label>
                 </div>
                 <div>
-                    <label style="padding-right: 25px;" for="project_supervisor">指导教师:</label>
-                    <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor" value="{{ project_supervisor }}" disabled>
+                    <label style="padding-right: 25px;" for="project_supervisor">指导教师:
+                        <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor" value="{{ project_supervisor }}" disabled>
+                    </label>
                 </div>
                 <div>
-                    <label>论文定稿:</label>
-                    <textarea class="proposal" name="thesis_info" placeholder="请在此撰写您的论文定稿...">{{ thesis_info }}</textarea>
+                    <label>论文草稿:
+                        <textarea class="proposal" id="content" name="thesis_info" placeholder="请在此撰写您的论文草稿...">{{ thesis_info }}</textarea>
+                    </label>
+                    <label>附加文件:
+                        <input type="file" id="attachment" name="attachment"/>
+                    </label>
                 </div>
-                <input type="submit" value="提交" />
+                <div id="extra" style="display: none">
+                    <label>提交时间：
+                        <input type="text" disabled value="{{ thesis_info.time }}">
+                    </label>
+                    <label>审核状态：
+                        <input type='text' name="status" value="{{ status }}" disabled>
+                    </label>
+                    <label>审核意见：
+                        <textarea class="proposal" name="comment" placeholder="请在此撰写审核意见...">{{ comment }}</textarea>
+                    </label>
+                    <label>审核时间:
+                        <input disabled type="text" value="{{ thesis_info.comment_time }}"/>
+                    </label>
+                </div>
+                <div id="score" style="display: none">
+                    <label>评阅教师
+                        <input type="text" name="reviewer" value="{{ thesis_info.reviewer }}" disabled>
+                    </label>
+                    <label>评阅成绩：
+                        <input type="text" name="score" value="{{ thesis_info.score }}" disabled>
+                    </label>
+                    <label>评阅意见：
+                        <textarea class="proposal" name="comment" placeholder="请在此撰写评阅意见...">{{ thesis_info.score_comment }}</textarea>
+                    </label>
+                    <label>评阅时间：
+                        <input type="text" value="{{ thesis_info.score_time }}">
+                    </label>
+                </div>
+                <label>
+                    <input id="action" type="text" name="action" style="display: none" value="提交"/>
+                </label>
+                <input id="submit_button" type="submit" value="提交" />
             </form>
         </div>
     </div>

@@ -23,10 +23,9 @@ from . import views
 
 urlpatterns = [
     #通用模块
-    path('', views.login),
+    path('', views.login_page),
     path('login/', views.login),
     path('index/', views.index),
-    path('reindex/', views.reindex),
     path('admin/', admin.site.urls),
     path('showinfo/', views.showinfo),
     path('account/', views.account),
@@ -35,7 +34,7 @@ urlpatterns = [
     path('student/', views.student),
     path('student/project_selection/', views.project_selection),
     path('student/project_selection/select/', views.select_project),
-    path('student/project_selection/cancel/', views.cancel_project),
+    path('student/project_selection/cancel/', views.cancel_select),
     path('student/browse_task/', views.browse_task),
     path('student/open_report/', views.open_report),
     path('student/open_report/submit_report/', views.submit_report),
@@ -56,9 +55,11 @@ urlpatterns = [
     path('teacher/supervisor/project_confirmation/', views.project_confirmation),
     path('teacher/supervisor/project_confirmation/confirm_project/', views.confirm_project),
     path('teacher/supervisor/project_confirmation/cancel_pre_selection/', views.cancel_pre_selection),
+    path('teacher/supervisor/project_confirmation/cancel_pre_selection/', views.cancel_confirm),
     path('teacher/supervisor/task_issue/', views.task_issue),
     path('teacher/supervisor/task_issue/issue_task/', views.issue_task),
     path('teacher/supervisor/report_review/', views.report_review),
+    path('teacher/supervisor/report_review/pass_report/', views.pass_report),
     path('teacher/supervisor/mid_term_review/', views.mid_term_review),
     path('teacher/supervisor/translation_review/', views.translation_review),
     path('teacher/supervisor/weekly_review/', views.weekly_review),

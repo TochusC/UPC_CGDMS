@@ -4,46 +4,151 @@
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(project_name, student_name){
-            document.getElementsByClassName('pop')[0].style.display = 'block';
+        function showPop(name, type, content, requirements,
+                         goal, management, attachment, time,
+                        status, comment,comment_time){
+            // 设置弹窗的基本属性值
+            $('project_name').value = '{{ name }}'
+            $(type).setAttribute('selected', 'selected')
+            // 隐藏页面主体
             $('main-content').style.display = 'none';
-            $('project_name').value = project_name;
-            $('student_name').value = student_name;
+            // 初始化提交按钮
+            var submit_button;
+            submit_button = $('submit_button');
+            // 依据课题审核状态，修改弹窗内容
+            if( status === "下达"){
+                $('action').value = "下达";
+            }
+            else{
+                // 显示额外信息
+                $('extra').style.display = 'block';
+                // 设置额外信息的值
+                $('content').value = content;
+                $('requirements').value = requirements;
+                $('goal').value = goal;
+                $('management').value = management;
+                $('attachment').src = attachment
+                $('submit_time').value = time;
+                $('project_status').value = status;
+                $('comment').value = comment;
+                $('comment_time').value = comment_time;
+                // 依据课题审核状态，修改弹窗内容
+                if (status === "审核中" || status === "未通过"){
+                    $('action').value = "修改";
+                    submit_button.type = "submit";
+                }
+                else{
+                    submit_button.type = "button";
+                    submit_button.value = "关闭";
+                }
+            }
         }
         function hidePop(){
             $('main-content').style.display = 'block';
             document.getElementsByClassName('pop')[0].style.display = 'none';
+            $('extra').style.display =  'none';
         }
     </script>
+    <div class="pop">
+        <h3>下达任务书</h3><br/>
+        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+            <form method="post" action="/teacher/supervisor/task_issue/issue_task/">
+                {% csrf_token %}
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                    <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
+                </label>
+                <label>课题类型：
+                    <select name="type" style="width: 48%; border-radius: 10px">
+                        <option id="设计" value="设计">设计</option>
+                        <option id="论文" value="论文">论文</option>
+                    </select>
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
+                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
+                <div>
+                    <label>研究的主要内容:
+                        <textarea id="content" name="content" placeholder="在此输入研究的主要内容..."></textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>涉及的知识和基本要求:
+                        <textarea id="requirements" name="requirements" placeholder="在此输入涉及的知识和基本要求..."></textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>预期目标:
+                        <textarea id="goal" name="goal" placeholder="在此输入预期目标..."></textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>进展安排:
+                        <textarea  id="management" name="management" placeholder="在此输入进展安排..."></textarea>
+                    </label>
+                </div>
+                <label>附加文件：
+                    <input id="attachment" type="file" name="attachment" style="width: 48%; border-radius: 10px">
+                </label>
+                <div id="extra">
+                    <label>提交时间：
+                        <input id="submit_time" type="text" name="submit_time" style="width: 48%; border-radius: 10px">
+                    </label>
+                    <label>课题状态：
+                        <input id="project_status" type="text" name="project_status" style="width: 48%; border-radius: 10px">
+                    </label>
+                    <label>审核意见：
+                        <textarea id="comment" name="comment" placeholder="在此输入审核意见..."></textarea>
+                    </label>
+                    <label>审核时间：
+                        <input id="comment_time" type="text" name="comment_time" style="width: 48%; border-radius: 10px">
+                    </label>
+                </div>
+                <div class="form-group">
+                    <input id="submit_button" style="display: inline; width: 48%" type="submit" value="下达" />
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
+                </div>
+            </form>
+        </div>
+    </div>
     <div id = 'main-content'>
-    <h3>课题管理</h3><br/>
+    <h3>任务书管理</h3><br/>
     <table>
         <tr>
             <th>课题名称</th>
             <th>课题类型</th>
             <th>选题学生</th>
-            <th>申报教师</th>
+            <th>任务书状态</th>
             <th>信息操作</th>
-            <th>课题状态</th>
         </tr>
         {% for project in project_list %}
             <tr>
                 <td>{{ project.project_name }}</td>
                 <td>{{ project.project_type }}</td>
                 <td>{{ project.student_name }}</td>
-                <td>{{ project.supervisor_name }}</td>
+                <td>{{ project.status }}</td>
                 <td>
-                   {% if project.status == "已填写" %}
-                        <input type="submit" class="disable" style="margin: auto; width: 96%" value="已下达">
+                   {% if project.status == "未下达" %}
+                       <input type="button" onclick="showPop('{{ project.task_book.content}}',
+                                            '{{ project.task_book.file }}','{{ project.task_book.requirements }}',
+                                            '{{ project.task_book.goal }}','{{ project.task_book.management }}',
+                                            '{{ project.task_book.time }}','{{ project.task_book.status }}',
+                                            '{{ project.task_book.comment }}','{{ project.task_book.comment_time }}')">
                     {% else %}
-                       <input type="submit" onclick="showPop('{{ project.project_name }}', '{{ project.student_name }}')" style="margin: auto" value="下达">
-                    {% endif %}
-                </td>
-                <td>
-                    {% if project.status == "已填写" %}
-                        <p style=" color: #27496d">已通过</p>
-                    {% else %}
-                        <p style=" color: #888">未填写</p>
+                       {% if project.status == "通过" %}
+                            <input type="button" style="margin: auto; width: 96%" value="查看" onclick="showPop('{{ project.task_book.content}}',
+                                            '{{ project.task_book.file }}','{{ project.task_book.requirements }}',
+                                            '{{ project.task_book.goal }}','{{ project.task_book.management }}',
+                                            '{{ project.task_book.time }}','{{ project.task_book.status }}',
+                                            '{{ project.task_book.comment }}','{{ project.task_book.comment_time }}')">
+                       {% else %}
+                            <input type="button" style="margin: auto; width: 96%" value="修改" onclick="showPop('{{ project.task_book.content}}',
+                                            '{{ project.task_book.file }}','{{ project.task_book.requirements }}',
+                                            '{{ project.task_book.goal }}','{{ project.task_book.management }}',
+                                            '{{ project.task_book.time }}','{{ project.task_book.status }}',
+                                            '{{ project.task_book.comment }}','{{ project.task_book.comment_time }}')">
+                       {% endif %}
                     {% endif %}
                 </td>
             </tr>
@@ -54,48 +159,11 @@
                 <td>&nbsp</td>
                 <td>&nbsp</td>
                 <td>&nbsp</td>
-                 <td>&nbsp</td>
             </tr>
         {% endfor %}
     </table>
     </div>
-    <div class="pop">
-        <h3>下达任务书</h3><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
-            <form method="post" action="/teacher/supervisor/task_issue/issue_task/">
-                {% csrf_token %}
 
-                <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
-                <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
-
-                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
-                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
-                <div>
-                    <label>研究的主要内容:</label>
-                    <textarea name="main_content" placeholder="在此输入研究的主要内容..."></textarea>
-                </div>
-                <div>
-                    <label>涉及的知识和基本要求:</label>
-                    <textarea name="knowledge_requirements" placeholder="在此输入涉及的知识和基本要求..."></textarea>
-                </div>
-                <div>
-                    <label>预期目标</label>
-                    <textarea name="target_goal" placeholder="在此输入预期目标..."></textarea>
-                </div>
-                <div>
-                    <label>进展安排:</label>
-                    <textarea name="procedure_management" placeholder="在此输入进展安排..."></textarea>
-                </div>
-                <div class="form-group">
-                    <input style="display: inline; width: 48%" type="submit" value="下达" />
-                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
-                    <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
-                </div>
-            </form>
-        </div>
-    </div>
     <br/><br/><hr>
 
 {% endblock %}

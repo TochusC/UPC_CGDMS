@@ -1,30 +1,142 @@
 {% extends 'student/student_structure.html' %}
 {% block content %}
-    <div class="form" style="text-align: center">
-        <h1>周进度报告</h1><br/>
-        <div class="child-form">
-            <form method="post" action="/student/weekly_report/submit_report/">
+    <style>
+        label{padding-right: 25px}
+    </style>
+    <script>
+        function $(id){
+            return document.getElementById(id);
+        }
+        function showPop(content, file, time, status, comment, comment_time){
+            // 隐藏页面主体
+            $('main-content').style.display = 'none';
+            // 设置弹窗的基本属性值
+            $('project_name').value = {{ project.name }}
+            $('project_type').value = {{ project.type }}
+            $('project_supervisor').value = {{ project.supervisor }}
+            // 初始化提交按钮
+            var submit_button;
+            submit_button = $('submit_button');
+            // 依据课题审核状态，修改弹窗内容
+            if( status === "新建"){
+                $('action').value = "新建";
+                submit_button.type = "submit";
+                submit_button.value = "提交";
+            }
+            else{
+                // 显示额外信息
+                $('extra').style.display = 'block';
+                // 设置额外信息的值
+                $('weekly_report').value = content;
+                $('attachment').src = file
+                $('submit_time').value = time;
+                $('report_status').value = status;
+                $('comment').value = comment;
+                $('comment_time').value = comment_time;
+                // 依据课题审核状态，修改弹窗内容
+                if (status === "通过"){
+                    submit_button.type = "button";
+                    submit_button.value = "关闭";
+                }
+                else if (status === "未通过"){
+                    $('action').value = "修改";
+                    submit_button.type = "submit";
+                    submit_button.value = "提交";
+                }
+            }
+        }
+        function hidePop(){
+            $('main-content').style.display = 'block';
+            document.getElementsByClassName('pop')[0].style.display = 'none';
+            $('extra').style.display =  'none';
+        }
+    </script>
+    <div class="pop" style="margin: auto; left: 0; top:0">
+        <h3>周进度报告</h3><br/>
+        <div id = 查看 style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+            <form method="post" action="/student/weekly_report/submit_report">
                 {% csrf_token %}
-                <div>
-                     <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                     <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project_name }}" disabled>
+                <label>课题名称：
+                    <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>课题类型：
+                    <input id="project_type" style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                </label>
+                <label>指导教师：
+                    <input id="project_supervisor" style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor">
+                </label>
+                <div id="content">
+                    <label>进展情况:
+                        <textarea disabled id = "weekly_report" name="weekly_report" placeholder="在此输入开题报告的主要内容..."></textarea>
+                    </label>
+                    <label>附加文件：
+                        <input id="attachment" type="file" name="attachment"/>
+                    </label>
                 </div>
-                <div>
-                    <label style="padding-right: 25px;" for="project_type">课题类型：</label>
-                    <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_type" value="{{ project_type }}" disabled>
+                <div id = "extra" style="display: none">
+                    <label>提交时间
+                        <input disabled type="text" id="submit_time" name="submit_time">
+                    </label>
+                    <label>审核状态：
+                        <input disabled type="text" id="report_status">
+                    </label>
+                    <label>审核意见：
+                        <textarea disabled id="comment" name="comment"></textarea>
+                    </label>
+                    <label>审核时间：
+                        <input disabled type="text" id="comment_time"/>
+                    </label>
                 </div>
-                <div>
-                    <label style="padding-right: 25px;" for="project_supervisor">指导教师:</label>
-                    <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor" value="{{ project_supervisor }}" disabled>
-                </div>
-                <div>
-                    <label>周进度报告:</label>
-                    <textarea class="proposal" name="weekly_report" placeholder="请在此撰写您的周进度报告...">{{ weekly_report }}</textarea>
-                </div>
-                <input type="submit" value="提交" />
+                <label for="action"></label><input type="text" style="display: none" id="action" name="action"/>
+                <input id="submit_button" type="submit" onclick="hidePop()" value="提交" />
             </form>
         </div>
     </div>
+    <div id = "main-content" class="form" style="text-align: center">
+        <h1>周进度报告</h1><br/>
+        <table>
+            <tr>
+                <th>课题名称</th>
+                <td>{{ project.name }}</td>
+            </tr>
+            <tr>
+                <th>课题类型</th>
+                <td>{{ project.type }}</td>
+            </tr>
+            <tr>
+                <th>指导教师</th>
+                <td>{{ project.supervisor }}</td>
+            </tr>
+        </table>
+        <div class="child-form">
+            <input type="button" value="新建报告" onclick="showPop('','','','新建', '','')"/>
+            <table>
+                    <tr>
+                        <th>提交时间</th>
+                        <th>进展情况</th>
+                        <th>审核状态</th>
+                        <th>审核时间</th>
+                        <th>信息操作</th>
+                    </tr>
+                {% for weekly_report in weekly_report_list %}
+                        <tr>
+                            <td>{{ weekly_report.submit_time }}</td>
+                            <td>{{ weekly_report.content }}</td>
+                            <td>{{ weekly_report.status }}</td>
+                            <td>{{ weekly_report.check_time }}</td>
+                            <td>
+                                {% if weekly_report.status == "通过" %}
+                                    <input type="button" value="查看" onclick="showPop('{{ weekly_report.content}}','{{ weekly_report.file }}','{{ weekly_report.time }}',
+                                            '{{ weekly_report.status }}', '{{ weekly_report.comment }}','{{ weekly_report.comment_time }}')">
+                                {% else %}
+                                    <input type="button" value="修改" onclick="showPop('{{ weekly_report.content}}','{{ weekly_report.file }}','{{ weekly_report.time }}',
+                                            '{{ weekly_report.status }}', '{{ weekly_report.comment }}','{{ weekly_report.comment_time }}')">
+                                {% endif %}
+                            </td>
+                        </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
     <br/><br/><hr>
-
 {% endblock %}

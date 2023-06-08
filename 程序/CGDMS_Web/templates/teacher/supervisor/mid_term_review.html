@@ -4,20 +4,20 @@
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(project_name,project_type, student_name, open_report){
+        function showPop(project_name,project_type, student_name, mid_term_info){
             document.getElementsByClassName('pop')[0].style.display = 'block';
             $('main-content').style.display = 'none';
             $('project_name').value = project_name;
             $(project_type).setAttribute("selected", "selected")
             $('student_name').value = student_name;
-            $('content').innerHTML = open_report.content;
-            $('attachment').src = open_report.attachment;
-            $('submit_time').value = open_report.submit_time;
-            $('status').value = open_report.status;
+            $('content').innerHTML = mid_term_info.content;
+            $('attachment').src = mid_term_info.attachment;
+            $('submit_time').value = mid_term_info.submit_time;
+            $('status').value = mid_term_info.status;
             var comment = $('comment')
-            comment.value = open_report.comment;
-            $('comment_time').value = open_report.comment_time;
-            if(open_report.status === "通过")
+            comment.value = mid_term_info.comment;
+            $('comment_time').value = mid_term_info.comment_time;
+            if(mid_term_info.status === "通过")
                 $('通过').setAttribute("selected", "selected");
                 $('result').setAttribute("disabled", "disabled");
                 comment.setAttribute("disabled", "disabled");
@@ -51,7 +51,7 @@
                 </label>
                 <div>
                     <label>开题报告内容:
-                        <textarea disabled id = "content" name="content" placeholder="在此输入开题报告的主要内容...">{{ open_report }}</textarea>
+                        <textarea disabled id = "content" name="content" placeholder="在此输入开题报告的主要内容..."></textarea>
                     </label>
                     <label>开题报告附件:
                         <input disabled id="attachment" type="file">
