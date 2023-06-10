@@ -1,18 +1,23 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% load static %}
 {% block content %}
     <script>
+        var open_report_list=[];
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(project_name,project_type, student_name, open_report){
+        function showPop(open_report){
+            // 隐藏主体，显示弹窗
             document.getElementsByClassName('pop')[0].style.display = 'block';
             $('main-content').style.display = 'none';
-            $('project_name').value = project_name;
-            $(project_type).setAttribute("selected", "selected")
-            $('student_name').value = student_name;
+            // 设置弹窗信息
+            $('pname').value = open_report.project_name;
+            $('project_name').value = open_report.project_name;
+            $('type').value = open_report.project_type;
+            $('student_name').value = open_report.student_name;
             $('content').innerHTML = open_report.content;
-            $('attachment').src = open_report.attachment;
-            $('submit_time').value = open_report.submit_time;
+            $('attachment').src = open_report.file;
+            $('submit_time').value = open_report.time;
             $('status').value = open_report.status;
             var comment = $('comment')
             comment.value = open_report.comment;
@@ -30,25 +35,28 @@
             document.getElementsByClassName('pop')[0].style.display = 'none';
         }
     </script>
+    <style>
+        label{
+            display: block;
+        }
+    </style>
     <div class="pop" style="margin: auto; left: 0; top:0">
-        <h3>审阅开题报告</h3><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <div class="border">
+        <hr/><h3>审阅开题报告</h3><hr/><br/>
             <form method="post" action="/teacher/supervisor/report_review/pass_report/">
                 {% csrf_token %}
                 <label style="padding-right: 25px;" for="project_name">课题名称：
-                    <input id="project_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
-                    <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
+                    <input class="disabled" id="pname" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="pname">
+                    <input class="disabled" id="project_name" style="display:none; border-radius: 10px;width: 48%" required='' type='text' name="project_name">
                 </label>
                 <label>课题类型：
-                    <select disabled>
-                        <option id="设计" value="设计">设计</option>
-                        <option id="论文" value="论文">论文</option>
-                    </select>
+                    <input class="disabled" disabled style="border-radius: 10px;width: 48%" id="type" type="text" name="project_type">
                 </label>
                 <label style="padding-right: 25px;" for="student_name">选题学生：
-                    <input id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                    <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
+                    <input class="disabled" id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
                 </label>
+                <hr/>
                 <div>
                     <label>开题报告内容:
                         <textarea disabled id = "content" name="content" placeholder="在此输入开题报告的主要内容...">{{ open_report }}</textarea>
@@ -56,69 +64,88 @@
                     <label>开题报告附件:
                         <input disabled id="attachment" type="file">
                     </label>
-                </div>
-                <label>提交时间：
-                    <input id="submit_time" disabled type='text' name="submit_time">
+                </div><br/>
+                <label style="padding-right: 25px;" for="student_name">审核状态：
+                    <input class="disabled" id="status" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
                 </label>
+                <label>提交时间：
+                    <input id="submit_time" class="disabled" disabled type='text' name="submit_time">
+                </label>
+                <hr/>
                 <div>
+                    <label>审阅意见:
+                        <textarea id = "comment" name="comment" placeholder="请在此输入审阅意见..."></textarea>
+                    </label>
                     <label>审阅结果:
                         <select id = "result" name="result">
                             <option id="通过" value="通过">通过</option>
                             <option id="未通过" value="不通过">不通过</option>
                         </select>
-                    </label>
-                    <label>审阅意见:
-                        <textarea id = "comment" name="comment" placeholder="在此输入审阅意见..."></textarea>
-                    </label>
+                    </label><br/>
                     <label>审阅时间:
                         <input disabled id="comment_time" type='text' name="comment_time">
                     </label>
                 </div>
+                <hr/>
                 <div class="form-group">
-                    <input type="submit" value="提交" />
-                    <input type="button" onclick="hidePop()" value="关闭" />
+                    <input id="submit_button" type="submit" style="width: 42%" value="提交" />
+                    &nbsp
+                    <input type="button" style="width: 42%" onclick="hidePop()" value="关闭" />
                 </div>
             </form>
         </div>
     </div>
-    <div id = 'main-content'>
-    <h3>开题报告审阅</h3><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>选题学生</th>
-            <th>提交状态</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.project_name }}</td>
-                <td>{{ project.project_type }}</td>
-                <td>{{ project.student_name }}</td>
-                <td>{{ project.status }}</td>
-                <td>
-                   {% if project.status == "未提交" %}
-                        <input type="submit" disabled class="disable" style="margin: auto; width: 96%" value="审阅">
-                   {% else %}
-                        {% if project.status == "通过" %}
-                            <input type="submit" value="查看">
-                        {% else %}
-                            <input type="submit" value="审阅">
-                        {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div id="main-content" class="form" style="text-align: center">
+    <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <div class="child-form">
+            <h3>开题报告审阅</h3><br/>
+            <table>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>选题学生</th>
+                    <th>提交状态</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.student }}</td>
+                        <td>{{ project.status }}</td>
+                        <td>
+                           {% if project.status == "未提交" %}
+                                <input type="submit" disabled class="disable" style="margin: auto; width: 96%" value="审阅">
+                           {% else %}
+                                   <script>
+                                    var open_report = {
+                                        "project_name": "{{ project.name }}",
+                                        "project_type": "{{ project.type }}",
+                                        "student_name": "{{ project.student }}",
+                                        "status": "{{ project.status }}",
+                                        "content": '{{ project.open_report.content|safe }}',
+                                        "attachment": "{{ project.open_report.attachment }}",
+                                        "time": "{{ project.open_report.time }}",
+                                        "comment": "{{ project.open_report.comment|safe }}",
+                                        "comment_time": "{{ project.open_report.comment_time }}",
+                                    }
+                                    open_report_list.push(open_report);
+                                </script>
+                                {% if project.status == "通过" %}
+                                    <input style="margin: auto" type="submit" value="查看" onclick="showPop(open_report_list['{{ project.index }}'])">
+                                {% else %}
+                                    <input style="margin: auto" type="submit" value="审阅" onclick="showPop(open_report_list['{{ project.index }}'])">
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr>
+                        <td colspan="5">暂无开题报告需审核</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/><br/><hr>
+        </div>
     </div>
-    <br/><br/><hr>
 {% endblock %}

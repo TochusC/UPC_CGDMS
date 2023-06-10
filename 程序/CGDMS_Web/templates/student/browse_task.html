@@ -1,28 +1,56 @@
 {% extends "student/student_structure.html" %}
+{% load static %}
 {% block content %}
     <!-- 内容部分 -->
     <style>
-        td{;
-            width: 78%;
+        label{
+            display: block;
         }
     </style>
-    <h3>任务书信息</h3><br/>
-        <table>
-            <tr>
-                <th>研究的主要内容</th>
-                <td>{{ main_content }}</td>
-            </tr>
-            <tr>
-                <th>涉及的知识和基本要求</th>
-                <td>{{ knowledge_requirements }}</td>
-            </tr>
-            <tr>
-                <th>预期目标</th>
-                <td>{{ target_goal }}</td>
-            </tr>
-            <tr>
-                <th>进展安排</th>
-                <td>{{ procedure_management }}</td>
-            </tr>
-        </table>
+    <div class="info_border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <div class="border"><hr/>
+            <h3>任务书信息</h3><hr/><br/>
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input value = "{{ task_book.name }}" disabled class="disabled" id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>课题类型：
+                    <input disabled value="{{ task_book.type }}" class="disabled" style="border-radius: 10px;width: 48%" type="text" id="type" name="type">
+                </label>
+                <label>指导教师：
+                    <input disabled value="{{ task_book.supervisor }}" class="disabled" style="border-radius: 10px;width: 48%" type="text" id="supervisor" name="supervisor">
+                </label>
+                <hr/><br/>
+                <div>
+                    <label>研究的主要内容:
+                        <textarea disabled name="content" placeholder="在此输入研究的主要内容...">{{ task_book.content }}
+                        </textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>涉及的知识和基本要求:
+                        <textarea disabled name="requirements" placeholder="在此输入涉及的知识和基本要求...">{{ task_book.requirements }}
+                        </textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>预期目标:
+                        <textarea disabled name="goal" placeholder="在此输入预期目标...">{{ task_book.goal }}
+                        </textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>进展安排:
+                        <textarea  disabled name="management" placeholder="在此输入进展安排...">{{ task_book.management }}
+                        </textarea>
+                    </label>
+                </div>
+                <label>附加文件：
+                    <input disabled src="{{ task_book.file }}" type="file" name="attachment" style="width: 48%; border-radius: 10px">
+                </label><br/>
+                <label>提交时间：
+                    <input disabled value="{{ task_book.time }}" type="text" name="submit_time" style="width: 48%; border-radius: 10px">
+                </label><br/>
+        </div>
+    </div>
 {% endblock %}

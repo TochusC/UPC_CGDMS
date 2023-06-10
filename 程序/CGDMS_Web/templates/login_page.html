@@ -1,7 +1,105 @@
 ﻿{% extends 'preview.html' %}
 {% load static %}
 {% block content %}
-    <div style="
+    <script>
+        function $(id){
+            return document.getElementById(id);
+        }
+        function showPop(){
+            $('main-content').style.display = 'none';
+            document.getElementsByClassName('pop')[0].style.display = 'block';
+        }
+        function hidePop(){
+            $('main-content').style.display = 'block';
+            document.getElementsByClassName('pop')[0].style.display = 'none';
+        }
+        function submitForm(){
+            var pw = document.getElementById("pw").value;
+            var pw2 = document.getElementById("pwd2").value;
+            if(pw !== pw2){
+                alert("两次密码不一致");
+                return;
+            }
+            document.getElementById("account").submit();
+        }
+    </script>
+    <style>
+        label{
+            margin-bottom: 25px;
+        }
+    </style>
+    <div class="pop" style="margin: auto; left: 0; top:0">
+     <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+    <br/><br/>
+        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+                <form id="account" action="/register/" method="post">
+                    <h1>账号注册</h1>
+                    {% csrf_token %}
+                    <label>账号：
+                        <input required='' type='text' name="uno">
+                        <label alt='请输入您的账号' placeholder='用户账号'></label>
+                    </label>
+                    <label>密码：
+                        <input id="pw" required='' type='password' name="upwd">
+                        <label alt='请输入您的密码' placeholder='用户密码'></label>
+                    </label>
+                    <label>重复密码：
+                        <input id="pwd2" required='' type='password' name="upwd2">
+                        <label alt='请再次输入您的密码' placeholder='确认密码'></label>
+                    </label>
+                    <hr><br/>
+                    <label>请选择用户身份：
+                        <select name="role">
+                            <option value="教师" onselect="hideClass()">教师</option>
+                            <option value="学生" onselect="showClass()">学生</option>
+                            <option value="管理员" onselect="hideClass()">管理员</option>
+                        </select>
+                    </label><br/><br/>
+                    <label>学号（工号）：
+                        <input required="" type="text" name="no">
+                        <label alt='请输入个人学号（工号）' placeholder='学号（工号）'></label>
+                    </label>
+                    <label>姓名：
+                        <input style="" required="" type="text" name="name">
+                        <label alt='请输入个人姓名' placeholder='姓名'></label>
+                    </label>
+                    <label>学院：
+                        <input required="" type="text" name="faculty">
+                        <label alt='请输入所属学院' placeholder='学院'></label>
+                    </label>
+                    <label>专业：
+                        <input required="" type="text" name="major">
+                        <label alt='请输入个人专业' placeholder='专业'></label>
+                    </label>
+                    <label id="class">班级(职称)：
+                        <input required="" type="text" name="last" id="class">
+                        <label alt='请输入班级(职称)' placeholder='班级（职称）'></label>
+                    </label>
+                    <label style="display: none" id="title">职称：
+                        <select name="title">
+                            <option value="教授">教授</option>
+                            <option value="副教授">副教授</option>
+                            <option value="讲师">讲师</option>
+                        </select>
+                    </label>
+                    <label>性别：
+                        <select name="gender">
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </label><br/>
+                    <label>出生年月
+                        <input required="" type="date" name="birth">
+                    </label><br/><br/>
+                    <hr><br/>
+                    <div class="form-group" style="text-align: center">
+                        <input type="button" style="width:36%; margin: auto; horiz-align: center" onclick="submitForm()" value = '注册'>
+                        <input type="button" style="width:36%; margin: auto; horiz-align: center" onclick="hidePop()" value = '取消'>
+                    </div>
+                </form>
+        </div>
+    </div>
+    <div id="main-content" style="
     background-color: #FFFFFF88;
   width: 350px;
   height: 500px;
@@ -11,22 +109,20 @@
     position: relative;
     left: 2%;
   /* 定位到中心 */
-  text-align: center;">
-        <br/>
+  text-align: center;"><br/>
     <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-    <div class="text", style="margin-top: 1px">高校毕业设计管理系统</div>
+    <div class="text" style="margin-top: 1px">高校毕业设计管理系统</div>
           <p>-明悟-</p>
           <div style="width:300px;height:auto;margin: 48px auto">
-            <form action="/index/" method="post">
+            <form action="/login/" method="post">
                 {% csrf_token %}
-                <input required='' type='text' name="Uno">
+                <input required='' type='text' name="uno">
                 <label alt='请输入您的账号' placeholder='用户账号'></label>
-                <input required='' type='password' name="Upwd">
+                <input required='' type='password' name="upwd">
                 <label alt='请输入您的密码' placeholder='用户密码'></label>
                 <input type="submit" style="margin: 12px auto" value = '登录'>
             </form>
           </div>
     </div>
-
 {% endblock %}
 

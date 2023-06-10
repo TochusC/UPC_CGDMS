@@ -1,36 +1,170 @@
 {% extends 'teacher/manager/manager_structure.html' %}
+{% load static %}
 {% block content %}
-   <h1>任务书审核</h1><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>申报教师</th>
-            <th>选题方式</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.name }}</td>
-                <td>{{ project.type }}</td>
-                <td>{{ project.supervisor }}</td>
-                <td>盲选</td>
-                <td>
-                    <form method="post" action="/teacher/manager/task_review/pass_task/" onsubmit="return confirm('您确定审核通过此课题吗？')">
-                        {% csrf_token %}
-                        <input type="text" hidden="hidden" name="project_name" value={{ project.name }}>
-                        <input type="submit" style="margin: auto" value="通过">
-                    </form>
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <script>
+        var task_book_list = []
+        function $(id){
+            return document.getElementById(id);
+        }
+        function showPop(task_book, status){
+            // 隐藏主体内容
+            $('main-content').style.display = 'none';
+            // 设置弹窗基本信息
+            $('pname').value = task_book.name;
+            $('project_name').value = task_book.name;
+            $('student_name').value = task_book.student;
+            $('supervisor').value = task_book.supervisor;
+            // 设置任务内容
+            $('type').value = task_book.type;
+            $('content').value = task_book.content;
+            $('requirements').value = task_book.requirements;
+            $('goal').value = task_book.goal;
+            $('management').value = task_book.management;
+            $('attachment').src = task_book.file;
+            // 设置附加信息
+            $('submit_time').value = task_book.time;
+            $('project_status').value = status;
+            $('comment').value = task_book.comment;
+            $('comment_time').value = task_book.comment_time;
+            // 显示弹窗
+            document.getElementsByClassName('pop')[0].style.display = 'block';
+            // 显示额外信息
+            $('extra').style.display =  'block';
+            // 初始化提交按钮
+        }
+        function hidePop(){
+            $('main-content').style.display = 'block';
+            document.getElementsByClassName('pop')[0].style.display = 'none';
+            $('extra').style.display =  'none';
+        }
+    </script>
+    <style>
+        label{
+            display: block;
+            padding-right: 25px;
+        }
+    </style>
+    <div class="pop">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+            <hr/><h3>任务书审核</h3><hr/><br/>
+            <form method="post" action="/teacher/manager/task_review/pass_task/">
+                {% csrf_token %}
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input type="text" style="display: none" name="pname" id="pname"/>
+                    <input disabled class="disabled" id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>指导教师：
+                    <input disabled class="disabled" style="border-radius: 10px;width: 48%" type="text" id="supervisor" name="supervisor">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：
+                    <input disabled class="disabled" id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                </label>
+                <label>课题类型：
+                    <input disabled class="disabled" style="border-radius: 10px;width: 48%" type="text" id="type" name="type">
+                </label><br><hr/><br/>
+                <div>
+                    <label>研究的主要内容:
+                        <textarea disabled id="content" name="content" placeholder="在此输入研究的主要内容..."></textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>涉及的知识和基本要求:
+                        <textarea disabled id="requirements" name="requirements" placeholder="在此输入涉及的知识和基本要求..."></textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>预期目标:
+                        <textarea disabled id="goal" name="goal" placeholder="在此输入预期目标..."></textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>进展安排:
+                        <textarea  disabled id="management" name="management" placeholder="在此输入进展安排..."></textarea>
+                    </label>
+                </div>
+                <label>附加文件：
+                    <input disabled id="attachment" type="file" name="attachment" style="width: 48%; border-radius: 10px">
+                </label>
+                <div id="extra" style="display: none">
+                    <br/><hr/><br/>
+                    <label>下达时间：
+                        <input disabled class="disabled" id="submit_time" type="text" name="submit_time" style="width: 48%; border-radius: 10px">
+                    </label>
+                    <label>课题状态：
+                        <input disabled class="disabled" id="project_status" type="text" name="project_status" style="width: 48%; border-radius: 10px">
+                    </label>
+                    <label>审核意见：
+                        <textarea id="comment" name="comment" placeholder="在此输入审核意见..."></textarea>
+                    </label>
+                    <br/><label>审核结果：
+                        <select name="result">
+                            <option value="通过">通过</option>
+                            <option value="不通过">不通过</option>
+                        </select>
+                    </label><br/>
+                    <label>审核时间：
+                        <input disabled id="comment_time" type="text" name="comment_time" style="width: 48%; border-radius: 10px">
+                    </label>
+                </div>
+                <hr/>
+                <div class="form-group">
+                    <label for="action" style="display: none">
+                        <input id="action" name="action" type="text" value="审核" style="display: none"/>
+                    </label>
+                    <input id="submit_button" style="display: inline; width: 48%" type="submit" value="审核" />
+                    &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
+                    <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
+                </div>
+            </form>
+        </div>
+    </div>
+    <div id = "main-content" class="info_border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <div class="border"><hr/>
+           <h1>任务书审核</h1><hr/><br/>
+            <table>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>申报教师</th>
+                    <th>选题方式</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.supervisor }}</td>
+                        <td>盲选</td>
+                        <td>
+                            <script>
+                                var task_book_info= {
+                                    name:'{{ project.name }}',
+                                    type:'{{ project.type }}',
+                                    supervisor:'{{ project.supervisor }}',
+                                    student:'{{ project.student }}',
+                                    content:'{{ project.task_book.content }}',
+                                    requirements:'{{ project.task_book.requirements }}',
+                                    goal:'{{ project.task_book.goal }}',
+                                    management:'{{ project.task_book.management }}',
+                                    file:'{{ project.task_book.file }}',
+                                    time:'{{ project.task_book.time }}',
+                                    status:'{{ project.task_book.status }}',
+                                    comment:'{{ project.task_book.comment }}',
+                                    comment_time:'{{ project.task_book.comment_time }}'
+                                }
+                                task_book_list.push(task_book_info)
+                                </script>
+                            <input type="button" style="margin: auto" value="审核" onclick="showPop(task_book_list['{{ project.index }}'], '下达')">
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr>
+                        <td colspan="5">暂无任务书需审核</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

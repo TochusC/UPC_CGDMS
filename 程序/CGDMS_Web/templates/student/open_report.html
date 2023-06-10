@@ -1,14 +1,22 @@
 {% extends 'student/student_structure.html' %}
+{% load static %}
 {% block content %}
+    <style>
+        label{
+            display: block;
+        }
+    </style>
     <div class="form" style="text-align: center">
-        <h1>撰写开题报告</h1><br/>
+
         <div class="child-form">
+        <hr/><h1>撰写开题报告</h1><hr/><br/>
             <form method="post" action="/student/open_report/submit_report/" enctype="multipart/form-data">
                 {% csrf_token %}
                 <label style="display: none" type="text" name="status" value="{{ status }}"></label>
                 <div>
                      <label style="padding-right: 25px;" for="project_name">课题名称：
-                         <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project.name }}" disabled>
+                         <input style="border-radius: 10px;width: 48%" required='' type='text' name="pname" value="{{ project.name }}" disabled>
+                         <input style="display: none; border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project.name }}">
                      </label>
                 </div>
                 <div>
@@ -21,77 +29,54 @@
                         <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor" value="{{ project.supervisor }}" disabled>
                     </label>
                 </div>
-                {% if status == "未提交" %}
+                <hr/>
+                <div>
+                    <label>开题报告:
+                        <textarea class="proposal" name="report_content" placeholder="在此撰写您的开题报告...">{{ open_report.content }}</textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>附件:
+                        <input type="file" name="attachment"/>
+                    </label>
+                </div>
+                {% if status != "未提交" %}
+                    <br/><hr/><br/>
                     <div>
-                        <label>开题报告:
-                            <textarea class="proposal" name="open_report" placeholder="在此撰写您的开题报告..."></textarea>
+                        <label>提交时间:
+                            <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ open_report.time }}" disabled>
                         </label>
                     </div>
                     <div>
-                        <label>附件:
-                            <input type="file" name="attachment"/>
+                        <label>审核状态:
+                            <input style="border-radius: 10px;width: 48%" required='' type='text' name="status" value="{{ open_report.status }}" disabled>
+                        </label>
+                        <label>审核意见:
+                                <textarea required='' type='text' name="comment" value="{{ open_report.comment }}" disabled></textarea>
+                        </label>
+                        <label>审核时间:
+                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ open_report.comment_time }}" disabled>
                         </label>
                     </div>
-                    <input type="submit" value="提交" />
-                {% else %}
-                    {% if open_report.status == "通过" %}
-                        <div>
-                            <label>开题报告:
-                                <textarea disabled class="proposal" name="report_content" placeholder="在此撰写您的开题报告...">{{ open_report.content }}</textarea>
-                            </label>
-                        </div>
-                        <div>
-                            <label>附件:
-                                <input disabled type="file" name="attachment" src="{{ open_report.file }}"/>
-                            </label>
-                        </div>
-                        <div>
-                            <label>提交时间:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ open_report.time }}" disabled>
-                            </label>
-                        </div>
-                        <div>
-                            <label>审核状态:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="status" value="{{ open_report.status }}" disabled>
-                            </label>
-                            <label>审核意见:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="comment" value="{{ open_report.comment }}" disabled>
-                            </label>
-                            <label>审核时间:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ open_report.comment_time }}" disabled>
-                            </label>
-                        </div>
-                        <input disabled type="submit" value="已审核" />
-                    {% else %}
-                        <div>
-                            <label>开题报告:
-                                <textarea class="proposal" name="report_content" placeholder="在此撰写您的开题报告...">{{ open_report.content }}</textarea>
-                            </label>
-                        </div>
-                        <div>
-                            <label>附件:
-                                <input type="file" name="attachment" src="{{ open_report.file }}"/>
-                            </label>
-                        </div>
-                        <div>
-                            <label>提交时间:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ open_report.time }}" disabled>
-                            </label>
-                        </div>
-                        <div>
-                            <label>审核状态:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="status" value="{{ open_report.status }}" disabled>
-                            </label>
-                            <label>审核意见:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="comment" value="{{ open_report.comment }}" disabled>
-                            </label>
-                            <label>审核时间:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ open_report.comment_time }}" disabled>
-                            </label>
-                        </div>
-                        <input type="submit" value="提交" />
-                    {% endif %}
                 {% endif %}
+                <hr/>
+                <div style="text-align: center">
+                    {% if status == "未提交" %}
+                        <label style="display: none">
+                            <input style="display: none" type="text" value="未提交" name="status">
+                        </label>
+                        <input type="submit" value="提交" />
+                    {% else %}
+                        <label style="display: none">
+                            <input style="display: none" type="text" value="{{ open_report.status }}" name="status">
+                        </label>
+                        {% if status == "通过" %}
+                            <input disabled class="disabled" type="submit" value="已通过" />
+                        {% else %}
+                            <input type="submit" value="修改" />
+                        {% endif %}
+                    {% endif %}
+                </div>
             </form>
         </div>
     </div>

@@ -57,11 +57,9 @@
                 return false
             }
         </script>
-
         <!-- 背景动效 -->
         <script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
-        <canvas height="926" width="1920" style="position: fixed; top: 0px; left: 0px; z-index: -1; opacity: 0.5; " id="c_n1"></canvas>
-
+        <canvas height="926" width="1920" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; " id="c_n1"></canvas>
         <!-- 导航栏 -->
         <div>
             <nav>
@@ -70,10 +68,10 @@
                       <span><img src="{% static 'img/text-white.png' %}" alt=""/></span>
                   </div>
                       <ul id = 'student' class="nav-links">
-                        <li class="head_navi"><a href="/reindex">首页</a></li>
+                        <li class="head_navi"><a href="/index/">首页</a></li>
                         <li class="head_navi"><a href="/student" onmouseover="ShowSecondNav(1)">学生中心</a></li>
                         <li class="head_navi"><a href="/teacher" onmouseover="ShowSecondNav(2)">教师中心</a></li>
-                        <li class="head_navi"><a href="/login/">退出系统</a></li>
+                        <li class="head_navi"><a href="/logout/">退出系统</a></li>
                       </ul>
             </nav>
             <nav id = "second-nav" style="display: none;transition: all 0.5s ease;background-color: #27496d35; height:53px">
@@ -86,7 +84,7 @@
                       <li style="color: #27496d"><a href="/student/weekly_report/">周进度报告</a></li>
                       <li style="color: #27496d"><a href="/student/thesis_draft/">论文草稿</a></li>
                       <li style="color: #27496d"><a href="/student/thesis_final/">论文定稿</a></li>
-                      <li style="color: #27496d"><a href="/reindex">查看答辩信息</a></li>
+                      <li style="color: #27496d"><a href="/index/">查看答辩信息</a></li>
                   </ul>
                 </div>
                 <div class="second-navi" id="nav2" style="float: right">
@@ -108,7 +106,7 @@
             </nav>
 
             <!-- 左侧边栏 -->
-            <aside style = 'width: 14%; position: absolute; left: 0%; height: 100%'>
+            <aside class="side" style = 'width: 14%; position: absolute; left: 0;'>
             <hr/><br/>
                 <div class="img_center_div" style="">
                     <img style="height: auto;width: 74%" src="{% static 'img/word.png' %}" alt=""/>
@@ -116,13 +114,12 @@
                 <br/><hr/><br/>
                 {% block aside %}
                 {% endblock %}
-                 <hr/><br/>
+                 <br/><hr/><br/>
             </aside>
-
             <!-- 内容部分 -->
             <main style= "display:block; width: 69%; position: absolute; left: 14%; height: 90%">
                 <br/><hr>
-                <div style="margin-top: 96px; margin-bottom: 60px;">
+                <div style="margin-top: 32px; margin-bottom: 60px;">
                     {% block content %}
                     {% endblock %}
                     <div class="footer">
@@ -143,10 +140,9 @@
                 </div>
 
             </main>
-
             <!-- 右侧边栏 -->
             <aside style = 'position: absolute; left: 83%;width: 17%; z-index:-1; height: 100%'>
-                <hr/><br/>
+                    <hr/><br/>
                 <div class="img_center_div">
                     <img style="height: auto;width: 48%" src="{% static 'img/logo.png' %}" alt=""/>
                 </div>

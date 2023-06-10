@@ -1,4 +1,5 @@
 {% extends 'teacher/dean/dean_structure.html' %}
+{% load static %}
 {% block content %}
     <style>
         input[type="submit"]{
@@ -14,41 +15,41 @@
           color: #fff;
         }
     </style>
-   <h1>双选结果发布</h1><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>指导教师</th>
-            <th>选题学生</th>
-            <th>选题方式</th>
-            <th>信息操作</th>
-        </tr>
-        {% for selection_info in selection_info_list %}
-            <tr>
-                <td>{{ selection_info.project_name }}</td>
-                <td>{{ selection_info.project_type }}</td>
-                <td>{{ selection_info.project_supervisor }}</td>
-                <td>{{ selection_info.student_name }}</td>
-                <td>盲选</td>
-                <td>
-                    <form method="post" action="/teacher/dean/announce_result/" onsubmit="return confirm('您确定发布此双选结果吗？')">
-                        {% csrf_token %}
-                        <input type="text" hidden="hidden" name="project_name" value={{ selection_info.project_name }}>
-                        <input type="text" hidden="hidden" name="student_no" value={{ selection_info.student_no }}>
-                        <input type="submit" style="margin: auto" value="发布">
-                    </form>
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="info_border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+        <br/><br/>
+        <div class="border" style="margin-bottom: 64px"><hr/>
+            <h1>双选结果公布</h1><br/>
+            <table>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>指导教师</th>
+                    <th>选题学生</th>
+                    <th>选题方式</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.supervisor }}</td>
+                        <td>{{ project.student }}</td>
+                        <td>盲选</td>
+                        <td>
+                            <form method="post" action="/teacher/dean/result_announcement/announce/">
+                                {% csrf_token %}
+                                <input type="text" hidden="hidden" name="project_name" value={{ project.name }}>
+                                <input type="submit" style="margin: auto" value="公布">
+                            </form>
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr>
+                        <td colspan="6">暂无需公布双选结果</td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
 {% endblock %}

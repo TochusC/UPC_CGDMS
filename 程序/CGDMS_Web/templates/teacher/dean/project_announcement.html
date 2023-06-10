@@ -1,4 +1,5 @@
 {% extends 'teacher/dean/dean_structure.html' %}
+{% load static %}
 {% block content %}
     <style>
         input[type="submit"]{
@@ -14,37 +15,41 @@
           color: #fff;
         }
     </style>
-   <h1>课题发布</h1><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>申报教师</th>
-            <th>选题方式</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.name }}</td>
-                <td>{{ project.type }}</td>
-                <td>{{ project.supervisor }}</td>
-                <td>盲选</td>
-                <td>
-                    <form method="post" action="/teacher/dean/announce_project/" onsubmit="return confirm('您确定发布此课题吗？')">
-                        {% csrf_token %}
-                        <input type="text" hidden="hidden" name="project_name" value={{ project.name }}>
-                        <input type="submit" style="margin: auto" value="发布">
-                    </form>
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+      <div id="main-content" class = "form" style="text-align: center">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+        <br/><br/>
+        <div class = 'child-form'>
+                <hr>
+               <h1>课题发布</h1><br/>
+                <table>
+                    <tr>
+                        <th>课题名称</th>
+                        <th>课题类型</th>
+                        <th>申报教师</th>
+                        <th>选题方式</th>
+                        <th>信息操作</th>
+                    </tr>
+                    {% for project in project_list %}
+                        <tr>
+                            <td>{{ project.name }}</td>
+                            <td>{{ project.type }}</td>
+                            <td>{{ project.supervisor }}</td>
+                            <td>盲选</td>
+                            <td>
+                                <form method="post" action="/teacher/dean/project_announcement/announce/" onsubmit="return confirm('您确定发布此课题吗？')">
+                                    {% csrf_token %}
+                                    <input type="text" hidden="hidden" name="project_name" value={{ project.name }}>
+                                    <input type="submit" style="margin: auto" value="发布">
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                         <tr>
+                            <td colspan="5">无待发布课题</td>
+                        </tr>
+                    {% endfor %}
+                </table><br/>
+        <hr/>
+    </div>
+  </div>
 {% endblock %}

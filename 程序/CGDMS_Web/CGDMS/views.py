@@ -1,6 +1,5 @@
 import datetime
 import os
-
 import pymysql
 from django.shortcuts import render, redirect
 
@@ -31,13 +30,14 @@ def login(request):
     # 从数据库中验证用户名和密码
     cursor = db.cursor()
     cursor.execute(
-        "SELECT * FROM user WHERE Uno = '" + request.POST['Uno'] + "' AND Upassword = '" + request.POST['Upwd'] + "';")
+        "SELECT * FROM user WHERE Uno = '" + request.POST['uno'] + "' AND Upassword = '" + request.POST['upwd'] + "';")
     # 如果查询到结果
     if cursor.rowcount == 1:
         # 获取账号信息
         account_info = cursor.fetchone()
         uno = account_info[0]
         user_role = account_info[2]
+        cursor = db.cursor()
         # 依据账户身份的不同，分别从不同的表中查询信息
         if user_role == '学生':
             cursor.execute("SELECT * FROM STUDENT WHERE UNO = '" + uno + "';")
@@ -46,12 +46,13 @@ def login(request):
         # 获取个人信息
         self_info = cursor.fetchone()
         # 将个人信息存入session
-        request.session['uno'] = uno
-        request.session['role'] = role
-        request.session['no'] = self_info[0]
-        request.session['name'] = self_info[1]
+        request.session['uno'] = uno.__str__()
+        request.session['role'] = user_role
+        request.session['no'] = self_info[0].__str__()
+        request.session['name'] = self_info[1].__str__()
+        request.session.set_expiry(0)
         # 重定向到主页
-        redirect('/index/')
+        return redirect('/index/')
     # 如果查询不到结果,则说明用户名或密码错误
     else:
         # 返回页面，并提示错误信息
@@ -59,14 +60,50 @@ def login(request):
                       {'message': '登录失败！请检查您的用户名和密码。'})
 
 
-# 注册页面（未实装）//TODO
-def register_page(request):
-    pass
-
-
-# 注册功能（未实装）//TODO
+# 注册功能
 def register(request):
-    pass
+    """
+    注册功能，将注册信息存入数据库
+    :param request: HTTP请求
+    :return redirect: 重定向至登录页面
+    """
+    # 从POST表单中获取注册信息
+    uno = request.POST['uno']
+    upwd = request.POST['upwd']
+    user_role = request.POST['role']
+    # 获取个人信息
+    no = request.POST['no']
+    name = request.POST['name']
+    gender = request.POST['gender']
+    birth = request.POST['birth']
+    fname = request.POST['faculty']
+    mname = request.POST['major']
+    # 获得当前时间
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 将注册信息存入数据库
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO USER VALUES ('" + uno + "','" + upwd + "','" + user_role + "','" + now + "');")
+    # 检查用户身份，依身份不同，将个人信息存入不同的表中
+    if user_role == '学生':
+        # 获取班级信息
+        cno = request.POST['last']
+        # 将学生信息存入数据库
+        cursor.execute("INSERT INTO STUDENT VALUES ('" + no + "','" + name
+                       + "','" + gender + "','" + birth + "','" + fname + "','" +
+                       mname + "','" + cno + "','" + uno + "');")
+    else:
+        # 获取职称信息
+        title = request.POST['last']
+        # 将教师信息存入数据库
+        cursor.execute("INSERT INTO TEACHER VALUES ('" + no + "','" + name +
+                       "','" + gender + "','" + birth + "','" + fname + "','" +
+                       mname + "','" + title + "','" + uno + "');")
+        # 将教师权限信息存入数据库
+        cursor.execute("INSERT INTO ROLE VALUES ('" + no + "','是','是','是','是','是');")
+    # 提交数据库操作
+    db.commit()
+    # 重定向至登录页面
+    return redirect('/')
 
 
 # 退出登录功能，清除session
@@ -77,7 +114,7 @@ def logout(request):
     :return redirect: 重定向至登录界面
     """
     request.session.flush()
-    return redirect('/login_page/')
+    return redirect('/')
 
 
 # 主页
@@ -89,14 +126,15 @@ def index(request):
     """
     # 如果没有登录，则重定向到登录页面
     if 'uno' not in request.session:
-        return redirect('')
-    # 获取session中的用户信息
+        return redirect('/')
+    # 获取session中的用户信息, 构造信息字典
     info_dict = {
         'uno': request.session['uno'],
         'role': request.session['role'],
-        'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'name': request.session['name']
     }
+    # 渲染主页
     return render(request, "index.html", info_dict)
 
 
@@ -110,11 +148,30 @@ def showinfo(request):
     # 如果没有登录，则重定向到登录页面
     if 'uno' not in request.session:
         return redirect('')
+    # 获取session中的用户信息, 构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'no': request.session['no'],
+        'name': request.session['name']
+    }
     # 获取表中的个人信息
     cursor = db.cursor()
     if request.session['role'] == '教师':
         # 从教师表中获取个人信息
-        cursor.execute("SELECT * FROM TEACHER WHERE UNO = '" + request.session['uno'] + "';")
+        cursor.execute("SELECT * FROM TEACHER WHERE Uno = '" + info_dict['uno'] + "';")
+        no, name, gender, birth, fname, mname, title, username = cursor.fetchone()
+        # 构造个人信息字典
+        self_info = {
+            "gender": gender,
+            "birth": birth,
+            "fname": fname,
+            "mname": mname,
+            "title": title,
+        }
+    else:
+        # 从学生表中获取个人信息
+        cursor.execute("SELECT * FROM STUDENT WHERE UNO = '" + request.session['uno'] + "';")
         no, name, gender, birth, fname, mname, cname, username = cursor.fetchone()
         # 构造个人信息字典
         self_info = {
@@ -124,25 +181,6 @@ def showinfo(request):
             "mname": mname,
             "cname": cname
         }
-    else:
-        # 从学生表中获取个人信息
-        cursor.execute("SELECT * FROM STUDENT WHERE UNO = '" + request.session['uno'] + "';")
-        no, name, gender, birth, fname, mname, tittle, username = cursor.fetchone()
-        # 构造个人信息字典
-        self_info = {
-            "gender": gender,
-            "birth": birth,
-            "fname": fname,
-            "mname": mname,
-            "tittle": tittle,
-        }
-    # 获取session中的用户信息
-    info_dict = {
-        'uno': request.session['uno'],
-        'role': request.session['role'],
-        'name': request.session['name'],
-        'no': request.session['no']
-    }
     # 将个人信息添加到信息字典中
     info_dict.update(self_info)
     # 渲染个人信息页面
@@ -236,7 +274,7 @@ def student(request):
         return render(request, "student/student_index.html", info_dict)
     else:
         # 如果不是学生，则返回错误信息
-        return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict})
+        return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
 
 
 # 选题页面
@@ -308,15 +346,19 @@ def project_selection(request):
         info_dict.update({"selected": False})
     # 获取所有已发布的项目
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM PUBLISHED_PROJECT WHERE Pstatus = '已发布'")
+    cursor.execute("SELECT * FROM PUBLISHED_PROJECT")
     for num in range(cursor.rowcount):
         project_info = cursor.fetchone()
+        # 从预选表中该课题的预选次数
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Pre_Select WHERE Pname = '" + project_info[0] + "';")
+        selected_times = cursor1.rowcount
         # 构造课题字典
         project = {
             "name": project_info[0],
             "type": project_info[1],
             "supervisor": project_info[2],
-            "selected_times": project_info[3],
+            "selected_times": selected_times
         }
         # 如果该课题已被自己选择，则将selected属性设置为True
         if project_info[0] in pre_select_names:
@@ -348,17 +390,19 @@ def select_project(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 获取POST表单中的课题名称
-    project_name = request.POST["project_name"]
     # 查询学生的预选课题数量
     cursor = db.cursor()
     cursor.execute("SELECT * FROM Pre_Select WHERE SNO = '" + info_dict["no"] + "'")
     # 如果预选课题数量已达到3个，则返回错误信息
     if cursor.rowcount == 3:
         return render(request, "announce.html", {'message': '您已选满三个预选项目！', 'name': info_dict["name"]})
+    # 获取课题名称
+    project_name = request.POST["project_name"]
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 否则，将该课题加入预选表
     cursor.execute("INSERT INTO Pre_Select VALUES ('" + info_dict["no"] + "','"
-                   + project_name + "','" + str(cursor.rowcount + 1) + "');")
+                   + project_name + "'," + "NULL" + ",'" + now + "');")
     # 提交事务
     db.commit()
     # 重定向到选题页面
@@ -386,7 +430,8 @@ def cancel_select(request):
     pname = request.POST["project_name"]
     # 从预选表中删除该课题
     cursor = db.cursor()
-    cursor.execute("DELETE FROM Pre_Select WHERE SNO = '" + self_info["no"] + "' AND PNAME = '" + pname + "';")
+    cursor.execute("DELETE FROM Pre_Select WHERE SNO = '" + self_info["no"] +
+                   "' AND PNAME = '" + pname + "';")
     # 提交事务
     db.commit()
     # 重定向至选题界面
@@ -394,7 +439,7 @@ def cancel_select(request):
 
 
 # 功能函数，实现课题所处阶段的检查功能，用于判断相关操作是否可进行
-def status_check(status, stage):
+def check_status(status, stage):
     """
     实现课题所处阶段的检查功能，用于判断相关操作是否可进行
     :param status: 字符串，表示课题所处状态
@@ -403,24 +448,30 @@ def status_check(status, stage):
     """
     status_dict = {
         "选题已被确认": 0,
-        "双选结果已被公布": 1,
+        "双选结果已公布": 1,
         "已下达任务书": 2,
         "任务书已审核": 3,
         "已提交开题报告": 4,
-        "开题报告已被审核": 5,
+        "开题报告已审核": 5,
         "已提交中期检查": 6,
-        "中期检查已被审核": 7,
+        "中期检查已审核": 7,
         "已提交论文草稿": 8,
-        "论文草稿已被审核": 9,
+        "论文草稿已审核": 9,
         "已提交论文定稿": 10,
-        "论文定稿已被审核": 11,
+        "论文定稿已审核": 11,
         "已进行答辩": 12,
         "已完成": 13
     }
     stage_dict = {
-        "任务书": 1,
-        "开题报告": 2,
-        "中期检查": 3,
+        "下达任务书": 1,
+        '审核任务书': 2,
+        '查看任务书': 3,
+        "提交开题报告": 3,
+        "审核开题报告": 4,
+        "填写周进度报告": 5,
+        "审核周进度报告": 5,
+        "提交中期检查": 5,
+        "审核中期检查": 6,
         "论文草稿": 4,
         "论文定稿": 5,
         "答辩": 6
@@ -428,30 +479,28 @@ def status_check(status, stage):
     status_index = status_dict[status]
     if status_index < stage_dict[stage]:
         if status_index == 0:
-            return '''访问拒绝，课题正处于'指导教师确认'阶段。'''
-        elif status_index == 1:
             return '''访问拒绝，课题正处于'双选结果公布'阶段。'''
-        elif status_index == 2:
+        elif status_index == 1:
             return '''访问拒绝，课题正处于'任务书下达'阶段。'''
-        elif status_index == 3:
+        elif status_index == 2:
             return '''访问拒绝，课题正处于'任务书审核'阶段。'''
-        elif status_index == 4:
+        elif status_index == 3:
             return '''访问拒绝，课题正处于'开题报告提交'阶段。'''
-        elif status_index == 5:
+        elif status_index == 4:
             return '''访问拒绝，课题正处于'开题报告审核'阶段。'''
-        elif status_index == 6:
+        elif status_index == 5:
             return '''访问拒绝，课题正处于'中期检查提交'阶段。'''
-        elif status_index == 7:
+        elif status_index == 6:
             return '''访问拒绝，课题正处于'中期检查审核'阶段。'''
-        elif status_index == 8:
+        elif status_index == 7:
             return '''访问拒绝，课题正处于'论文草稿提交'阶段。'''
-        elif status_index == 9:
+        elif status_index == 8:
             return '''访问拒绝，课题正处于'论文草稿审核'阶段。'''
-        elif status_index == 10:
+        elif status_index == 9:
             return '''访问拒绝，课题正处于'论文定稿提交'阶段。'''
-        elif status_index == 11:
+        elif status_index == 10:
             return '''访问拒绝，课题正处于'论文定稿审核'阶段。'''
-        elif status_index == 12:
+        elif status_index == 11:
             return '''访问拒绝，课题正处于'答辩'阶段。'''
     else:
         return "操作允许"
@@ -495,43 +544,38 @@ def browse_task(request):
         # 获取选题信息
         select_info = cursor.fetchone()
         # 检查选题的所处阶段，是否已经到达任务书阶段
-        status = select_info[3]
-        message = status_check(status, "任务书")
+        status = select_info[2]
+        message = check_status(status, "查看任务书")
         # 如果不允许操作，则返回错误信息
         if not message == "操作允许":
             return render(request, 'student/announce.html', {'message': message, 'name': info_dict['name']})
         # 获取项目名称
         pname = select_info[1]
+        # 从项目-学生-教师视图上获得课题的进一步信息
+        cursor = db.cursor()
+        cursor.execute("SELECT * FROM PROJECT_STUDENT_TEACHER WHERE PNAME = '" + pname + "'")
+        project_info = cursor.fetchone()
         # 从任务书表中，获取项目的任务书信息
         cursor1 = db.cursor()
         cursor1.execute("SELECT * FROM Task_Book WHERE PNAME = '" + pname + "'")
-        # 如果任务书存在,则程序继续进行，获取任务书信息，否则返回错误信息
-        if cursor1.rowcount == 1:
-            # 获取任务书信息
-            task_book_info = cursor1.fetchone()
-            # 如果任务书已审核
-            if task_book_info[7] == "通过":
-                # 构造任务书字典
-                task_book = {
-                    'name': task_book_info[0],
-                    "content": task_book_info[1],
-                    "requirement": task_book_info[2],
-                    "goal": task_book_info[3],
-                    "management": task_book_info[4],
-                    "file": task_book_info[5],
-                    "time": task_book_info[6],
-                }
-                # 更新信息字典,将任务书信息加入字典
-                info_dict["task_book"] = task_book
-                # 渲染任务书页面
-                return render(request, "student/browse_task.html", info_dict)
-            else:
-                # 如果任务书未审核，则返回错误信息
-                return render(request, "announce.html",
-                              {'message': '指导教师下达的任务书正在审核中...', 'name': info_dict["name"]})
-        else:
-            # 如果任务书不存在，则返回错误信息
-            return render(request, "announce.html", {'message': '指导教师尚未下达任务书...', 'name': info_dict["name"]})
+        # 获取任务书信息
+        task_book_info = cursor1.fetchone()
+        # 构造任务书字典
+        task_book = {
+            'name': task_book_info[0],
+            "type": project_info[1],
+            "supervisor": project_info[3],
+            "content": task_book_info[1],
+            "requirements": task_book_info[2],
+            "goal": task_book_info[3],
+            "management": task_book_info[4],
+            "file": task_book_info[5],
+            "time": task_book_info[6],
+        }
+        # 更新信息字典,将任务书信息加入字典
+        info_dict["task_book"] = task_book
+        # 渲染任务书页面
+        return render(request, "student/browse_task.html", info_dict)
     else:
         # 如果学生未选题，则返回错误信息
         return render(request, "announce.html", {'message': '同学，你还尚未选题呢...', 'name': info_dict["name"]})
@@ -563,8 +607,8 @@ def open_report(request):
         # 获取选题信息
         selected_project_info = cursor.fetchone()
         # 检查选题状态，是否允许操作
-        status = selected_project_info[3]
-        message = status_check(selected_project_info[3], "开题报告")
+        status = selected_project_info[2]
+        message = check_status(status, "开题报告")
         # 如果不允许操作，则返回错误信息
         if not message == "操作允许":
             return render(request, 'student/announce.html', {'message': message, 'name': info_dict['name']})
@@ -628,7 +672,7 @@ def submit_report(request):
     project_name = request.POST["project_name"]
     # 获取开题报告内容
     report_content = request.POST["report_content"]
-    attachment = request.FILES["attachment"]
+    attachment = request.FILES.get("attachment", None)
     # 获取当前时间
     now = datetime.datetime.now()
     now = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -637,20 +681,20 @@ def submit_report(request):
     # 检查用户是提交开题报告还是修改开题报告
     if request.POST["status"] == "未提交":
         cursor.execute("INSERT INTO OPEN_REPORT VALUES ('" + project_name + "', '" + report_content +
-                       "', '" + path + "', '" + now + "', '待审核', '', '')")
+                       "', '" + path + "', '" + now + "', '审核中', '', NULL)")
     else:
         # 删除原有附件
         cursor.execute("SELECT * FROM OPEN_REPORT WHERE PNAME = '" + project_name + "'")
         open_report_info = cursor.fetchone()
-        if open_report_info[2] is not "":
+        if open_report_info[2] != "":
             path = os.path.join("static", "upload", "student" + info_dict['no'] + "open_report",
                                 open_report_info[2])
             os.remove(path)
         # 更新开题报告信息
         cursor.execute("UPDATE OPEN_REPORT SET ORcontent = '" + report_content + "', ORfile = '" + path
-                       + "', ORtime = '" + now + "', ORstatus = '待审核' WHERE PNAME = '" + project_name + "'")
+                       + "', ORtime = '" + now + "', ORstatus = '审核中' WHERE PNAME = '" + project_name + "'")
     # 如果含有附件，则写入附件
-    if attachment is not "":
+    if attachment is not None:
         path = os.path.join("static", "upload", "student" + info_dict['no'] + "open_report")
         write_attachment(attachment, path)
     # 提交修改
@@ -684,8 +728,8 @@ def mid_term_check(request):
         # 获取选题信息
         selected_project_info = cursor.fetchone()
         # 检查选题状态，是否允许操作
-        status = selected_project_info[3]
-        message = status_check(selected_project_info[3], "开题报告")
+        status = selected_project_info[2]
+        message = check_status(status, "提交开题报告")
         # 如果不允许操作，则返回错误信息
         if not message == "操作允许":
             return render(request, 'student/announce.html', {'message': message, 'name': info_dict['name']})
@@ -717,7 +761,7 @@ def mid_term_check(request):
             }
             # 更新信息字典
             info_dict['status'] = "已提交"
-            info_dict['open_report'] = middle_check_dict
+            info_dict['middle_check'] = middle_check_dict
         else:
             # 如果开题报告不存在，则更新信息字典
             info_dict['status'] = "未提交"
@@ -752,7 +796,7 @@ def submit_progress(request):
     project_name = request.POST["project_name"]
     # 获取中期检查内容
     progress_info = request.POST["middle_check"]
-    attachment = request.FILES["attachment"]
+    attachment = request.FILES.get("attachment")
     # 获取当前时间,并格式化为时间戳
     now = datetime.datetime.now()
     now = now.strftime("%Y-%m-%d %H:%M:%S")
@@ -762,26 +806,26 @@ def submit_progress(request):
     if request.POST["status"] == "未提交":
         # 插入开题报告信息
         cursor.execute("INSERT INTO Middle_CHECK VALUES ('" + project_name + "', '" + progress_info + "', '"
-                       + path + "', '" + now + "', '待审核', NULL, NULL)")
+                       + path + "', '" + now + "', '审核中', NULL, NULL)")
     else:
         # 删除原有附件
-        cursor.execute("SELECT * FROM OPEN_REPORT WHERE PNAME = '" + project_name + "'")
+        cursor.execute("SELECT * FROM Middle_CHECK WHERE PNAME = '" + project_name + "'")
         middle_check_info = cursor.fetchone()
-        if middle_check_info[2] is not "":
+        if middle_check_info[2] != "":
             path = os.path.join("static", "upload", "student" + info_dict['no'] + "open_report",
                                 middle_check_info[2])
             os.remove(path)
         # 更新开题报告信息
-        cursor.execute("UPDATE OPEN_REPORT SET MCcontent = '" + progress_info + "', MCfile = '" + path
-                       + "', MCtime = '" + now + "', MCstatus = '待审核' WHERE PNAME = '" + project_name + "'")
+        cursor.execute("UPDATE Middle_Check SET MCcontent = '" + progress_info + "', MCfile = '" + path
+                       + "', MCtime = '" + now + "', MCstatus = '审核中' WHERE PNAME = '" + project_name + "'")
     # 如果含有附件，则写入附件
-    if attachment is not "":
+    if attachment != "":
         path = os.path.join("static", "upload", "student" + info_dict['no'] + "middle_check")
         write_attachment(attachment, path)
     # 提交修改
     db.commit()
     # 重定向至开题报告页面
-    return redirect('/student/open_report/')
+    return redirect('/student/mid_term_check/')
 
 
 # 周进度报告页面
@@ -810,8 +854,8 @@ def weekly_report(request):
         # 获取选题信息
         selected_project_info = cursor.fetchone()
         # 检查选题状态，是否允许操作
-        status = selected_project_info[3]
-        message = status_check(selected_project_info[3], "开题报告")
+        status = selected_project_info[2]
+        message = check_status(status, "填写周进度报告")
         # 如果不允许操作，则返回错误信息
         if not message == "操作允许":
             return render(request, 'student/announce.html', {'message': message, 'name': info_dict['name']})
@@ -1006,7 +1050,7 @@ def submit_draft(request):
         cursor = db.cursor()
         cursor.execute("SELECT ATTACHMENT FROM THESIS_DRAFT WHERE PNAME = '" + project_name + "'")
         path = cursor.fetchone()[0]
-        if path is not "":
+        if path != "":
             os.remove(path)
         # 初始化游标，准备修改论文草稿表中相关数据
         cursor = db.cursor()
@@ -1257,20 +1301,23 @@ def project_proposal(request):
         # 获取教师所有已申报课题
         cursor = db.cursor()
         cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "';")
+        index = 0
         for project in cursor.fetchall():
             # 构造课题信息字典
             project_info = {
+                'index': index,
                 'name': project[0],
                 'type': project[1],
                 'info': project[2],
                 'file': project[3],
-                'status': project[4],
-                'comment': project[5],
-                'comment_time': project[6],
-                'time': project[8]
+                'time': project[4],
+                'status': project[5],
+                'comment': project[6],
+                'comment_time': project[7],
             }
             # 将课题信息字典添加至课题列表
             project_list.append(project_info)
+            index += 1
         # 将课题列表添加至信息字典
         info_dict["project_list"] = project_list
         # 渲染申报课题页面
@@ -1303,6 +1350,12 @@ def propose_project(request):
     project_name = request.POST["project_name"]
     project_type = request.POST["project_type"]
     project_info = request.POST["project_info"]
+    project_file = request.FILES.get("attachment")
+    # 初始化附件路径
+    if project_file is not None:
+        path = os.path.join("static", "upload", "project" + project_name)
+    else:
+        path = ""
     # 获取当前时间
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     # 获取用户操作类型
@@ -1313,14 +1366,22 @@ def propose_project(request):
     if action == "修改":
         # 获取课题原名称
         old_project_name = request.POST["old_project_name"]
+        # 获取原课题附加路径
+        cursor = db.cursor()
+        cursor.execute("SELECT Pfile From Project WHERE Pname='" + project_name + "';")
+        old_file = cursor.fetchone()[0]
+        if old_file != "":
+            os.remove(old_file)
         # 更新课题信息
         cursor.execute("UPDATE PROJECT SET Pname = '" + project_name + "', Ptype = '" + project_type + "', Pinfo = '" +
-                       project_info + "', Ptime = '" + now + "', Pstatus = '待审核'"
-                                                             " WHERE Pname = '" + old_project_name + "';")
+                       project_info + "', Pfile = '" + path + "', Ptime = '" + now + "', Pstatus = '待审核'"
+                                                                                     " WHERE Pname = '" + old_project_name + "';")
         return redirect('/teacher/supervisor/project_proposal/')
     else:
         cursor.execute("INSERT INTO PROJECT VALUES ('" + project_name + "','" +
-                       project_type + "','" + project_info + "','" + "','待审核" + "','" + info_dict["no"] + "');")
+                       project_type + "','" + project_info + "','" + path + "','" + now +
+                       "','待审核','',NULL,'" + info_dict['no'] + "');")
+    write_attachment(project_file, path)
     # 提交数据库更新
     db.commit()
     # 重定向至课题申报页面
@@ -1391,7 +1452,7 @@ def project_confirmation(request):
     # 将已选课题列表添加至信息字典
     info_dict["selected_project_list"] = selected_project_list
     # 渲染确认选题页面
-    return render(request, "teacher/supervisor/project_confirmation.html", pre_selection_info)
+    return render(request, "teacher/supervisor/project_confirmation.html", info_dict)
 
 
 # 确认选题操作
@@ -1406,7 +1467,7 @@ def confirm_project(request):
     sno = request.POST["student_no"]
     # 初始化游标，准备操作数据库
     cursor = db.cursor()
-    cursor.execute("CALL CONFIRM_SELECT('" + sno + "','" + pname + "');")
+    cursor.execute("CALL CONFIRM_SELECT('" + pname + "','" + sno + "');")
     # 提交事务
     db.commit()
     # 重定向至确认选题页面
@@ -1448,7 +1509,7 @@ def cancel_confirm(request):
     sno = request.POST["student_no"]
     # 初始化游标，准备操作数据库
     cursor = db.cursor()
-    cursor.execute("CALL CANCEL_CONFIRM('" + sno + "','" + pname + "');")
+    cursor.execute("CALL CANCEL_CONFIRM('" + pname + "','" + sno + "');")
     # 提交事务
     db.commit()
     # 重定向至确认选题页面
@@ -1474,18 +1535,20 @@ def task_issue(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 从课题-学生视图中查找该老师的所有已选课题
+    # 从课题-学生-老师视图中查找该老师的所有已选课题
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM Project_Student WHERE TNO = '" +
-                   info_dict["no"] + "'AND Pstatus = '已选';")
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" + info_dict["name"] + "';")
     # 初始化课题列表
     project_list = []
+    index = 0
     # 遍历已选课题信息，构造课题列表
     for project_index in range(cursor.rowcount):
         project_info = cursor.fetchone()
         project_info_dict = {
+            "index": index,
             "project_name": project_info[0],
             "project_type": project_info[1],
+            "supervisor": project_info[3],
             "student_name": project_info[2],
         }
         # 获取课题任务书信息
@@ -1514,7 +1577,7 @@ def task_issue(request):
             project_info_dict["status"] = "未下达"
         # 将课题信息字典添加至课题列表
         project_list.append(project_info_dict)
-
+        index += 1
     # 更新信息字典
     info_dict["project_list"] = project_list
     # 渲染课题任务书页面
@@ -1540,13 +1603,15 @@ def issue_task(request):
         'no': request.session['no']
     }
     # 从POST表单中获取课题名称
-    pname = request.POST["project_name"]
+    pname = request.POST["pname"]
     # 从POST表单中获取课题任务书信息
     content = request.POST["content"]
     requirements = request.POST["requirements"]
     goal = request.POST["goal"]
     management = request.POST["management"]
     attachment = request.FILES.get("attachment")
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 初始化附件路径
     path = ""
     # 如果附件不为空，则将附件保存至服务器，并将附件路径保存至数据库中
@@ -1563,13 +1628,13 @@ def issue_task(request):
     if action == "下达":
         # 将课题任务书信息插入数据库中
         cursor.execute("INSERT INTO Task_Book VALUES ('" + pname + "', '" + content + "', '" + requirements +
-                       "', '" + goal + "', '" + management + "', '" + path + "', '', '审核中', '', '');")
+                       "', '" + goal + "', '" + management + "', '" + path + "','" + now + "', '审核中', '', NULL);")
     # 如果用户操作类型为修改，则将课题任务书信息更新至数据库中
     else:
         # 将课题任务书信息更新至数据库中
-        cursor.execute("UPDATE Task_Book SET Content = '" + content + "', Requirements = '" + requirements +
-                       "', Goal = '" + goal + "', Management = '" + management + "', File = '" + path +
-                       "', Status = '审核中' WHERE PNAME = '" + pname + "';")
+        cursor.execute("UPDATE Task_Book SET TBcontent = '" + content + "', TBrequirements = '" + requirements +
+                       "', TBgoal = '" + goal + "', TBmanagement = '" + management + "', TBfile = '" + path +
+                       "', TBtime = '" + now + "', TBstatus = '审核中' WHERE PNAME = '" + pname + "';")
     # 提交事务
     db.commit()
     # 重定向至课题任务书页面
@@ -1593,19 +1658,21 @@ def report_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 从课题-学生视图中查找该老师的所有已选课题
+    # 从课题-学生-老师视图中查找该老师的所有已选课题
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM Project_Student WHERE TNO = '" +
-                   info_dict["no"] + "'AND Pstatus = '已选';")
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" +
+                   info_dict["name"] + "';")
     # 初始化课题列表
     project_list = []
     # 遍历已选课题信息，构造课题列表
+    index = 0
     for project_index in range(cursor.rowcount):
         project_info = cursor.fetchone()
         project_info_dict = {
-            "project_name": project_info[0],
-            "project_type": project_info[1],
-            "student_name": project_info[2],
+            'index': index,
+            "name": project_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
         }
         # 从开题报告表中查找该课题的开题报告信息
         cursor.execute("SELECT * FROM Open_Report WHERE PNAME = '" + project_info[0] + "';")
@@ -1629,7 +1696,8 @@ def report_review(request):
             # 如果未查找到结果，则开题报告未提交
             project_info_dict["status"] = "未提交"
         # 将课题信息字典添加至课题列表中
-        project_list[project_index] = project_info_dict
+        project_list.append(project_info_dict)
+        index += 1
     # 更新信息字典
     info_dict["project_list"] = project_list
     # 渲染开题报告审阅页面
@@ -1656,8 +1724,8 @@ def pass_report(request):
     # 初始化游标，准备操作数据库
     cursor = db.cursor()
     # 更新开题报告信息
-    cursor.execute("UPDATE Open_Report SET Status = '" + result + "', Comment = '"
-                   + comment + "', Comment_Time = '" + comment_time + "' WHERE PNAME = '" + pname + "';")
+    cursor.execute("UPDATE Open_Report SET ORstatus = '" + result + "', ORcomment = '"
+                   + comment + "', ORcomment_time = '" + comment_time + "' WHERE PNAME = '" + pname + "';")
     # 提交事务
     db.commit()
     # 重定向至开题报告审阅页面
@@ -2030,16 +2098,17 @@ def project_review(request):
         teacher_info = cursor2.fetchone()
         # 构造课题信息字典
         project_info_dict = {
-            "project_name": project_info[0],
-            "project_type": project_info[1],
-            "project_intro": project_info[2],
-            "project_file": project_info[3],
-            "project_time": project_info[4],
-            "project_status": project_info[5],
-            "project_comment": project_info[6],
-            "project_comment_time": project_info[7],
-            "teacher_name": teacher_info[1],
-            "teacher_no": teacher_info[0]
+            "index": num,
+            "name": project_info[0],
+            "type": project_info[1],
+            "info": project_info[2],
+            "file": project_info[3],
+            "time": project_info[4],
+            "status": project_info[5],
+            "comment": project_info[6],
+            "comment_time": project_info[7],
+            "supervisor": teacher_info[1],
+            "tno": teacher_info[0]
         }
         # 将课题信息字典添加至课题列表中
         project_list.append(project_info_dict)
@@ -2057,20 +2126,24 @@ def pass_project(request):
     :return project_review: 重定向至申报课题审核页面
     """
     # 获取课题名称
-    project_name = request.POST.get("project_name")
+    project_name = request.POST.get("pname")
     # 获取课题状态
     result = request.POST.get("result")
     # 获取课题评语
-    project_comment = request.POST.get("project_comment")
+    project_comment = request.POST.get("comment")
     # 获取课题评语时间
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 更新课题表中的课题状态
     cursor = db.cursor()
-    cursor.execute("UPDATE PROJECT SET Pstatus = '" + result + "', Pcomment = '" + project_comment +
-                   "', Pcomment_time = '" + now + "' WHERE Pname = '" + project_name + "';")
+    if result == "通过":
+        cursor.execute("UPDATE PROJECT SET Pstatus = '" + "待发布" + "', Pcomment = '" + project_comment +
+                       "', Pcomment_time = '" + now + "' WHERE Pname = '" + project_name + "';")
+    else:
+        cursor.execute("UPDATE PROJECT SET Pstatus = '" + "审核未通过" + "', Pcomment = '" + project_comment +
+                       "', Pcomment_time = '" + now + "' WHERE Pname = '" + project_name + "';")
     db.commit()
     # 重定向至申报课题审核页面
-    return redirect('/teacher/project_review/')
+    return redirect('/teacher/manager/project_review/')
 
 
 # 审核任务书页面
@@ -2095,11 +2168,13 @@ def task_review(request):
     cursor.execute("SELECT * FROM TASK_BOOK WHERE TBstatus = '审核中';")
     project_list = []
     # 遍历任务书
+    index = 0
     for num in range(cursor.rowcount):
         # 获取任务书信息
         task_info = cursor.fetchone()
         # 构造任务书信息字典
         task_info_dict = {
+            "name": task_info[0],
             "content": task_info[1],
             "requirements": task_info[2],
             "goal": task_info[3],
@@ -2114,20 +2189,18 @@ def task_review(request):
         project_name = task_info[0]
         # 获取课题信息
         cursor2 = db.cursor()
-        cursor2.execute("SELECT * FROM PROJECT WHERE Pname = '" + project_name + "';")
+        cursor2.execute("SELECT * FROM PROJECT_Student_Teacher WHERE Pname = '" + project_name + "';")
         project_info = cursor2.fetchone()
-        # 获取指导教师信息
-        no = project_info[8]
-        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + no + "';")
-        teacher_info = cursor2.fetchone()
         # 构造课题信息字典
         project_info_dict = {
-            "project_name": project_info[0],
-            "project_type": project_info[1],
-            "teacher_name": teacher_info[1],
-            "teacher_no": teacher_info[0],
+            "index": index,
+            "name": project_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
+            "supervisor": project_info[3],
             "task_book": task_info_dict
         }
+        index += 1
         # 将课题信息字典添加至课题列表中
         project_list.append(project_info_dict)
     # 将课题列表添加至信息字典中
@@ -2144,20 +2217,20 @@ def pass_task(request):
     :return task_review: 重定向至审核任务书页面
     """
     # 获取课题名称
-    project_name = request.POST.get("project_name")
+    project_name = request.POST.get("pname")
     # 获取任务书状态
     result = request.POST.get("result")
     # 获取任务书评语
-    task_comment = request.POST.get("task_comment")
+    task_comment = request.POST.get("comment")
     # 获取任务书评语时间
     now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     # 更新任务书表中的任务书状态
     cursor = db.cursor()
     cursor.execute("UPDATE TASK_BOOK SET TBstatus = '" + result + "', TBcomment = '" + task_comment +
-                   "', TBcomment_time = '" + now + "' WHERE name = '" + project_name + "';")
+                   "', TBcomment_time = '" + now + "' WHERE Pname = '" + project_name + "';")
     db.commit()
     # 重定向至审核任务书页面
-    return redirect('/teacher/task_review/')
+    return redirect('/teacher/manager/task_review/')
 
 
 # TODO 答辩组创建页面
@@ -2204,10 +2277,56 @@ def dean(request):
 
 # TODO 发布双选结果页面
 def project_announcement(request):
-    pass
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 检查用户身份是否为老师
+    if info_dict['role'] != '教师':
+        # 如果不是，则渲染通知页面
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 从课题表中获取所有待发布的课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE Pstatus = '待发布'")
+    project_list = []
+    for num in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        # 获取课题名称
+        project_name = project_info[0]
+        # 获取指导教师信息
+        no = project_info[8]
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + no + "';")
+        teacher_info = cursor2.fetchone()
+        # 构造课题信息字典
+        project_info_dict = {
+            "name": project_info[0],
+            "type": project_info[1],
+            "supervisor": teacher_info[1],
+            "no": teacher_info[0]
+        }
+        # 将课题信息字典添加至课题列表中
+        project_list.append(project_info_dict)
+    # 将课题列表添加至信息字典中
+    info_dict["project_list"] = project_list
+    # 渲染发布双选结果页面
+    return render(request, "teacher/dean/project_announcement.html", info_dict)
 
-# TODO 发布课题功能
+
+# 发布课题功能
 def announce_project(request):
+    """
+    发布课题功能，从POST表单中获取课题名称，更新课题表中的课题状态
+    :param request: HTTP请求
+    :return: 重定向至发布双选结果页面
+    """
     project_name = request.POST["project_name"]
     cursor = db.cursor()
     cursor.execute("UPDATE PROJECT SET Pstatus = '已发布' WHERE Pname = '" + project_name + "';")
@@ -2215,52 +2334,71 @@ def announce_project(request):
     return project_announcement(request)
 
 
-# TODO 公布双选结果页面
+# 公布双选结果页面
 def result_announcement(request):
-    pass
-    # 获取选题表信息
-    # cursor = db.cursor()
-    # cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SPrecommend = '0'")
-    # select_list = []
-    # for num in range(cursor.rowcount):
-    #     select_info = cursor.fetchone()
-    #     # 获取学生信息
-    #     no = select_info[0]
-    #     cursor2 = db.cursor()
-    #     cursor2.execute("SELECT * FROM STUDENT WHERE Sno = '" + no + "'")
-    #     student_info = cursor2.fetchone()
-    #     # 获取教师信息
-    #     no = select_info[2]
-    #     cursor3 = db.cursor()
-    #     cursor3.execute("SELECT * FROM TEACHER WHERE Tno = '" + no + "'")
-    #     teacher_info = cursor3.fetchone()
-    #     # 获取课题信息
-    #     project_name = select_info[1]
-    #     cursor4 = db.cursor()
-    #     cursor4.execute("SELECT * FROM PROJECT WHERE Pname = '" + project_name + "'")
-    #     project_info = cursor4.fetchone()
-    #     project = {
-    #         "project_name": project_info[0],
-    #         "project_type": project_info[1],
-    #         "project_supervisor": teacher_info[1],
-    #         "student_name": student_info[1],
-    #         "student_no": student_info[0],
-    #     }
-    #     select_list.append(project)
-    # return render(request, "teacher/dean/result_announcement.html", tmp)
-    #
+    """
+    公布双选结果页面，教学院长可在从公布双选结果
+    :param request: HTTP请求
+    :return: 渲染公布双选结果页面
+    """
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 检查用户身份是否是老师
+    if info_dict['role'] != '教师':
+        # 如果不是，则渲染通知页面
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 获取课选题表中所有处于选题已被确认阶段的课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SPstatus = '选题已被确认'")
+    # 初始化课题列表
+    project_list = []
+    # 遍历课选题表中所有处于选题已被确认阶段的课题
+    for num in range(cursor.rowcount):
+        # 获取课题信息
+        select_project_info = cursor.fetchone()
+        # 从课题-老师-学生视图中获取课题信息
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM PROJECT_STUDENT_TEACHER WHERE Pname = '" +
+                        select_project_info[1] + "';")
+        project_info = cursor2.fetchone()
+        # 构成课题信息字典
+        project_info_dict = {
+            "name": project_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
+            "supervisor": project_info[3]
+        }
+        # 将课题信息字典添加至课题列表中
+        project_list.append(project_info_dict)
+    # 将课题列表添加至信息字典中
+    info_dict["project_list"] = project_list
+    # 渲染公布双选结果页面
+    return render(request, "teacher/dean/result_announcement.html", info_dict)
 
-# TODO 公布双选结果功能
+
+# 公布双选结果功能
 def announce_result(request):
-    pass
+    """
+    公布双选结果功能，从POST表单中获取课题名称，更新课题表中的课题状态
+    :param request: HTTP请求
+    :return: 重定向至公布双选结果页面
+    """
     # 获取双选信息
-    # project_name = request.POST["project_name"]
-    # student_no = request.POST["student_no"]
+    project_name = request.POST["project_name"]
     # 更新选题表
-    # cursor = db.cursor()
-    # cursor.execute(
-    #     "UPDATE SELECT_PROJECT SET SPrecommend = '1' WHERE Pname = '" +
-    #     project_name + "' AND Sno = '" + student_no + "';")
-    # db.commit()
-    # # 重定向至发布双选结果页面
-    # return redirect("/teacher/dean/result_announcement/")
+    cursor = db.cursor()
+    cursor.execute(
+        "UPDATE SELECT_PROJECT SET SPstatus = '双选结果已公布' WHERE Pname = '" +
+        project_name + "';")
+    db.commit()
+    # 重定向至发布双选结果页面
+    return redirect("/teacher/dean/result_announcement/")

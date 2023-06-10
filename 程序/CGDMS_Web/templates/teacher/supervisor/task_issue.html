@@ -1,37 +1,39 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% load static %}
 {% block content %}
     <script>
+        var task_book_list = []
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(name, type, content, requirements,
-                         goal, management, attachment, time,
-                        status, comment,comment_time){
-            // 设置弹窗的基本属性值
-            $('project_name').value = '{{ name }}'
-            $(type).setAttribute('selected', 'selected')
-            // 隐藏页面主体
+        function showPop(task_book, status){
+            // 隐藏主体内容
             $('main-content').style.display = 'none';
+            // 设置弹窗基本信息
+            $('pname').value = task_book.name;
+            $('project_name').value = task_book.name;
+            $('student_name').value = task_book.student;
+            $('type').value = task_book.type;
+            // 显示弹窗
+            document.getElementsByClassName('pop')[0].style.display = 'block';
             // 初始化提交按钮
             var submit_button;
             submit_button = $('submit_button');
             // 依据课题审核状态，修改弹窗内容
-            if( status === "下达"){
-                $('action').value = "下达";
-            }
-            else{
+            if( status !== "下达"){
                 // 显示额外信息
                 $('extra').style.display = 'block';
                 // 设置额外信息的值
-                $('content').value = content;
-                $('requirements').value = requirements;
-                $('goal').value = goal;
-                $('management').value = management;
-                $('attachment').src = attachment
-                $('submit_time').value = time;
-                $('project_status').value = status;
-                $('comment').value = comment;
-                $('comment_time').value = comment_time;
+                $('action').value = '更新';
+                $('content').value = task_book.content;
+                $('requirements').value = task_book.requirements;
+                $('goal').value = task_book.goal;
+                $('management').value = task_book.management;
+                $('attachment').src = task_book.file;
+                $('submit_time').value = task_book.time;
+                $('project_status').value = task_book.status;
+                $('comment').value = task_book.comment;
+                $('comment_time').value = task_book.comment_time;
                 // 依据课题审核状态，修改弹窗内容
                 if (status === "审核中" || status === "未通过"){
                     $('action').value = "修改";
@@ -49,24 +51,27 @@
             $('extra').style.display =  'none';
         }
     </script>
+    <style>
+        label{
+            display: block;
+        }
+    </style>
     <div class="pop">
-        <h3>下达任务书</h3><br/>
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
         <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+            <hr/><h3>任务书下达</h3><hr/><br/>
             <form method="post" action="/teacher/supervisor/task_issue/issue_task/">
                 {% csrf_token %}
                 <label style="padding-right: 25px;" for="project_name">课题名称：
-                    <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
-                    <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
+                    <input type="text" style="display: none" name="pname" id="pname"/>
+                    <input disabled class="disabled" id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：
+                    <input disabled class="disabled" id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
                 </label>
                 <label>课题类型：
-                    <select name="type" style="width: 48%; border-radius: 10px">
-                        <option id="设计" value="设计">设计</option>
-                        <option id="论文" value="论文">论文</option>
-                    </select>
-                </label>
-                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
-                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
+                    <input disabled class="disabled" style="border-radius: 10px;width: 48%" type="text" id="type" name="type">
+                </label><br><hr/><br/>
                 <div>
                     <label>研究的主要内容:
                         <textarea id="content" name="content" placeholder="在此输入研究的主要内容..."></textarea>
@@ -90,21 +95,26 @@
                 <label>附加文件：
                     <input id="attachment" type="file" name="attachment" style="width: 48%; border-radius: 10px">
                 </label>
-                <div id="extra">
+                <div id="extra" style="display: none">
+                    <br/><hr/><br/>
                     <label>提交时间：
-                        <input id="submit_time" type="text" name="submit_time" style="width: 48%; border-radius: 10px">
+                        <input disabled class="disabled" id="submit_time" type="text" name="submit_time" style="width: 48%; border-radius: 10px">
                     </label>
                     <label>课题状态：
-                        <input id="project_status" type="text" name="project_status" style="width: 48%; border-radius: 10px">
+                        <input disabled class="disabled" id="project_status" type="text" name="project_status" style="width: 48%; border-radius: 10px">
                     </label>
                     <label>审核意见：
-                        <textarea id="comment" name="comment" placeholder="在此输入审核意见..."></textarea>
+                        <textarea disabled class="disabled" id="comment" name="comment" placeholder="在此输入审核意见..."></textarea>
                     </label>
                     <label>审核时间：
-                        <input id="comment_time" type="text" name="comment_time" style="width: 48%; border-radius: 10px">
+                        <input disabled class="disabled" id="comment_time" type="text" name="comment_time" style="width: 48%; border-radius: 10px">
                     </label>
                 </div>
+                <hr/>
                 <div class="form-group">
+                    <label for="action" style="display: none">
+                        <input id="action" name="action" type="text" value="下达" style="display: none"/>
+                    </label>
                     <input id="submit_button" style="display: inline; width: 48%" type="submit" value="下达" />
                     &nbsp&nbsp&nbsp&nbsp&nbsp&nbsp
                     <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
@@ -112,58 +122,63 @@
             </form>
         </div>
     </div>
-    <div id = 'main-content'>
-    <h3>任务书管理</h3><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>选题学生</th>
-            <th>任务书状态</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.project_name }}</td>
-                <td>{{ project.project_type }}</td>
-                <td>{{ project.student_name }}</td>
-                <td>{{ project.status }}</td>
-                <td>
-                   {% if project.status == "未下达" %}
-                       <input type="button" onclick="showPop('{{ project.task_book.content}}',
-                                            '{{ project.task_book.file }}','{{ project.task_book.requirements }}',
-                                            '{{ project.task_book.goal }}','{{ project.task_book.management }}',
-                                            '{{ project.task_book.time }}','{{ project.task_book.status }}',
-                                            '{{ project.task_book.comment }}','{{ project.task_book.comment_time }}')">
-                    {% else %}
-                       {% if project.status == "通过" %}
-                            <input type="button" style="margin: auto; width: 96%" value="查看" onclick="showPop('{{ project.task_book.content}}',
-                                            '{{ project.task_book.file }}','{{ project.task_book.requirements }}',
-                                            '{{ project.task_book.goal }}','{{ project.task_book.management }}',
-                                            '{{ project.task_book.time }}','{{ project.task_book.status }}',
-                                            '{{ project.task_book.comment }}','{{ project.task_book.comment_time }}')">
-                       {% else %}
-                            <input type="button" style="margin: auto; width: 96%" value="修改" onclick="showPop('{{ project.task_book.content}}',
-                                            '{{ project.task_book.file }}','{{ project.task_book.requirements }}',
-                                            '{{ project.task_book.goal }}','{{ project.task_book.management }}',
-                                            '{{ project.task_book.time }}','{{ project.task_book.status }}',
-                                            '{{ project.task_book.comment }}','{{ project.task_book.comment_time }}')">
-                       {% endif %}
-                    {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div id="main-content" class = "form" style="text-align: center">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+        <br/><br/>
+        <div class = 'child-form'>
+            <hr><h1>任务书管理</h1><hr/><br/>
+                <table>
+                    <tr>
+                        <th>课题名称</th>
+                        <th>课题类型</th>
+                        <th>选题学生</th>
+                        <th>任务书状态</th>
+                        <th>信息操作</th>
+                    </tr>
+                    {% for project in project_list %}
+                        <tr>
+                            <td>{{ project.project_name }}</td>
+                            <td>{{ project.project_type }}</td>
+                            <td>{{ project.student_name }}</td>
+                            <td>{{ project.status }}</td>
+                            <td>
+                            <script>
+                                var task_book_info= {
+                                    name:'{{ project.project_name }}',
+                                    type:'{{ project.project_type }}',
+                                    student:'{{ project.student_name }}',
+                                    content:'{{ project.task_book.content }}',
+                                    requirements:'{{ project.task_book.requirements }}',
+                                    goal:'{{ project.task_book.goal }}',
+                                    management:'{{ project.task_book.management }}',
+                                    file:'{{ project.task_book.file }}',
+                                    time:'{{ project.task_book.time }}',
+                                    status:'{{ project.task_book.status }}',
+                                    comment:'{{ project.task_book.comment }}',
+                                    comment_time:'{{ project.task_book.comment_time }}'
+                                }
+                                task_book_list.push(task_book_info)
+                            </script>
+                               {% if project.status == "未下达" %}
+                                   <input type="button" style="margin: auto" value="下达"
+                                          onclick="showPop(task_book_list['{{ project.index }}'], '下达')">
+                                {% else %}
+                                   {% if project.status == "通过" %}
+                                        <input type="button"  style="margin: auto; width: 96%" value="查看"
+                                               onclick="showPop(task_book_list['{{ project.index }}'], '{{ project.task_book.status }}')">
+                                   {% else %}
+                                        <input type="button" style="margin: auto; width: 96%" value="修改"
+                                               onclick="showPop(task_book_list['{{ project.index }}'], '{{ project.task_book.status }}')">
+                                   {% endif %}
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% empty %}
+                         <tr>
+                            <td colspan="5">暂无任务书信息</td>
+                        </tr>
+                    {% endfor %}
+                </table><br/><hr/>
+        </div>
     </div>
-
-    <br/><br/><hr>
-
 {% endblock %}

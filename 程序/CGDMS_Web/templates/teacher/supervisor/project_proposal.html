@@ -1,4 +1,5 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% load static %}
 {% block content %}
     <style>
         label{padding-right: 25px}
@@ -25,17 +26,20 @@
         }
     </style>
     <script>
+        var project_list = []
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(name, type, info, file, time, status, comment, comment_time){
+        function showPop(project, status){
             // 隐藏页面主体
             $('main-content').style.display = 'none';
+            // 显示弹窗
+            document.getElementsByClassName('pop')[0].style.display = 'block';
             // 初始化提交按钮
             var submit_button;
             submit_button = $('submit_button');
             // 依据课题审核状态，修改弹窗内容
-            if( status === "申报"){
+            if( status === "申报") {
                 $('action').value = "申报";
                 submit_button.type = "submit";
                 submit_button.value = "申报";
@@ -44,23 +48,23 @@
                 // 显示额外信息
                 $('extra').style.display = 'block';
                 // 设置弹窗的基本属性值
-                $('project_name').value = '{{ name }}'
-                $('old_project_name').value = '{{ name }}'
-                $(type).setAttribute('selected', 'selected')
+                $('project_name').value = project.name
+                $('old_project_name').value = project.name
+                $(project.type).setAttribute('selected', 'selected')
                 // 设置额外信息的值
-                $('project_info').value = info;
-                $('attachment').src = file
-                $('submit_time').value = time;
-                $('project_status').value = status;
-                $('comment').value = comment;
-                $('comment_time').value = comment_time;
+                $('project_info').value = project.info;
+                $('attachment').src = project.file
+                $('submit_time').value = project.time;
+                $('project_status').value = project.status;
+                $('comment').value = project.comment;
+                $('comment_time').value = project.comment_time;
                 // 依据课题审核状态，修改弹窗内容
                 if (status === "待审核" || status === "未通过审核"){
                     $('action').value = "修改";
                     submit_button.type = "submit";
                     submit_button.value = "提交";
                 }
-                else{
+                else {
                     submit_button.setAttribute('disabled', 'disabled');
                 }
             }
@@ -71,10 +75,14 @@
             $('extra').style.display =  'none';
         }
     </script>
-    <div class="pop" style="margin: auto; left: 0; top:0">
-        <h3>课题信息</h3><br/>
-        <div id style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
-            <form method="post" action="/student/weekly_report/submit_report">
+    <div class="pop" style="width:82%; margin: auto; left: 0; top:0">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+        <br/><br/>
+        <div class="border">
+            <hr/>
+            <h1 style="font-size: 24px">课题信息</h1>
+            <hr/><br/>
+            <form method="post" action="/teacher/supervisor/project_proposal/proposal/">
                 {% csrf_token %}
                 <label>课题名称：
                     <input style="display: none" disabled id="old_project_name" name="old_project_name">
@@ -115,18 +123,19 @@
                 </div>
                 <div>
                     <label>主要研究内容及要求:
-                        <textarea class="proposal" name="project_info" placeholder="在此输入主要研究内容及要求..."></textarea>
+                        <textarea id="project_info" class="proposal" style="margin-bottom: 0" name="project_info" placeholder="在此输入主要研究内容及要求..."></textarea>
                     </label>
                 </div>
                 <label>附加文件：
                     <input id="attachment" type="file" name="attachment"/>
                 </label>
                 <div id = "extra" style="display: none">
+                    <hr/>
                     <label>提交时间
                         <input disabled type="text" id="submit_time" name="submit_time">
                     </label>
                     <label>审核状态：
-                        <input disabled type="text" id="project_status">
+                        <input disabled class="disabled" type="text" id="project_status">
                     </label>
                     <label>审核意见：
                         <textarea disabled id="comment" name="comment"></textarea>
@@ -135,19 +144,24 @@
                         <input disabled type="text" id="comment_time"/>
                     </label>
                 </div>
-                <label for="action"></label><input type="text" style="display: none" id="action" name="action"/>
-                <div class="form-group">
+                <hr/>
+                <label style="display: none" for="action"></label>
+                <input type="text" style="display: none" id="action" name="action"/>
+                <div class="form-group" style="padding: 0; margin: 0;">
                     <input style="display: inline; width: 48%" id="submit_button" type="submit" onclick="hidePop()" value="提交" />
                     <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
                 </div>
             </form>
         </div>
     </div>
-    <div class = "form" style="text-align: center">
-        <h1>课题申报</h1>
+    <div id="main-content" class = "form" style="text-align: center">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+        <br/><br/>
         <div class = 'child-form'>
-            <input type="button" value="申报新课题" onclick="showPop('','','','','','申报', '','')"/>
+        <hr/><h1 style="font-size: 24px">课题申报</h1><hr/>
             <h2>已申报课题：</h2>
+            <input type="button" class="add" value="申报课题"
+                   onclick="showPop('','申报')"/>
             <table>
                     <tr>
                         <th>课题名称</th>
@@ -162,20 +176,35 @@
                             <td>{{ project.type }}</td>
                             <td>{{ project.time }}</td>
                             <td>{{ project.status }}</td>
+                            <script>
+                                var project_info= {
+                                    name:'{{ project.name }}',
+                                    type:'{{ project.type }}',
+                                    info:'{{ project.info }}',
+                                    file:'{{ project.file }}',
+                                    time:'{{ project.time }}',
+                                    status:'{{ project.status }}',
+                                    comment:'{{ project.comment }}',
+                                    comment_time:'{{ project.comment_time }}'
+                                }
+                                project_list.push(project_info)
+                            </script>
                             <td>
                                 {% if project.status == "待审核" or project.status == "未通过审核" %}
-                                    <input type="button" value="修改" onclick="showPop('{{ project.name }}',
-                                            '{{ project.type}}','{{ project.info }}','{{ project.file }}',
-                                            '{{ project.time }}', '{{ project.status }}', '{{ project.comment }}','{{ project.comment_time }}')">
+                                    <input style="margin: auto" type="button" value="修改" onclick="showPop(project_list['{{ project.index }}'], '{{ project.status }}')">
                                 {% else %}
-                                    <input type="button" value="查看" onclick="showPop('{{ project.name }}',
+                                    <input style="margin: auto" type="button" value="查看" onclick="showPop('{{ project.name }}',
                                             '{{ project.type}}','{{ project.info }}','{{ project.file }}',
                                             '{{ project.time }}', '{{ project.status }}', '{{ project.comment }}','{{ project.comment_time }}')">
                                 {% endif %}
                             </td>
                         </tr>
+                {% empty %}
+                    <tr>
+                        <td colspan="5">暂无课题</td>
+                    </tr>
                 {% endfor %}
-            </table>
+            </table><br/><hr/>
         </div>
     </div>
     <br/><br/><hr>

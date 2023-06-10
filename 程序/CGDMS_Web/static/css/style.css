@@ -222,8 +222,6 @@ a {
 /* 全局样式 */
 * {
   box-sizing: border-box;
-  margin: 0;
-  padding: 0;
 }
 
 /* 导航栏样式 */
@@ -247,6 +245,8 @@ nav {
 }
 
 .nav-links {
+    padding: 0;
+    margin: 0;
   display: flex;
   list-style: none;
     horiz-align: center;
@@ -265,6 +265,8 @@ nav {
 }
 
 .second-links {
+    padding: 0;
+    margin: 0;
       transition: all 0.3s ease;
   display: flex;
   list-style: none;
@@ -487,16 +489,21 @@ h2 {
 }
 
 /* 查看信息页面 */
-h1,h3,h4{
+h1{
+    font-size: 24px;
+    text-align: center;
+    color: #27496d;
+}
+h3,h4{
     text-align: center;
     color: #27496d;
 }
 
 table {
     margin: auto;
+    width: 100%;
     border-collapse: collapse;
     background-color: #ffffff88;
-    box-shadow: 0px 0px 10px #aaa;
 }
 
 th,
@@ -531,7 +538,26 @@ input[type="button"]{
   text-decoration: none;
     transition: all 0.3s ease;
 }
-
+input[type="button"].add{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+    box-shadow: 0 0 2px #27496d;
+    margin-bottom: 4px;
+    width: 32%;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="submit"].add{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+    box-shadow: 0 0 2px #27496d;
+    margin-bottom: 4px;
+    width: 32%;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
 input[type="button"]:hover {
   background-color: #27496d;
   color: #fff;
@@ -548,9 +574,9 @@ input.disable[type="submit"]:hover {
   color: #fff;
 }
 label {
-          font-weight: bold;
-          font-size: 16px;
-        }
+    font-weight: bold;
+    font-size: 16px;
+}
         select {
           font-size: 14px;
           padding: 8px;
@@ -650,7 +676,7 @@ div.pop{
     position: relative;
     margin: auto;
     width: 64%;
-    height: 50%;
+    height: 64%;
     background-color: #fff;
     border-radius: 10px;
     box-shadow: 0 0 10px #aaa;
@@ -660,10 +686,22 @@ div.pop{
     display: none;
 }
 
+div.info_border{
+    margin: auto;
+    width: 84%;
+    height: 100%;
+    background-color: #fff;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #aaa;
+    padding: 20px;
+    text-align: center;
+    z-index: 100;
+}
+
 div.form{
     margin: auto;
     width: 76%;
-    background-color: #ffffff88;
+    background-color: #ffffffDD;
     border-radius: 10px;
     box-shadow: 0 0 10px #aaa;
     padding: 20px;
@@ -688,4 +726,18 @@ li.website_id{
     margin-top: 12px;
     text-align: center;
     list-style: none;
+}
+
+div.border{
+    border: 2px solid #27496d;
+    border-radius: 8px;
+    padding: 32px;
+    width: 80%;
+    height:auto;
+    margin: auto;
+    margin-bottom: 48px;
+    text-align: left;
+}
+input[disabled]{
+    background-color: #f8f8f8;
 }

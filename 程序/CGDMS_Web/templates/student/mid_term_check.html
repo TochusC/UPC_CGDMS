@@ -1,14 +1,22 @@
 {% extends 'student/student_structure.html' %}
+{% load static %}
 {% block content %}
-    <div class="form" style="text-align: center">
-        <h1>中期检查</h1><br/>
-        <div class="child-form">
+    <style>
+        label{
+            display: block;
+        }
+    </style>
+    <div class="info_border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <div class="border">
+        <hr/><h1>中期检查</h1><hr/><br/>
             <form method="post" action="/student/mid_term_check/submit_progress/">
                 {% csrf_token %}
                 <label style="display: none" type="text" name="status" value="{{ status }}"></label>
                 <div>
                      <label style="padding-right: 25px;" for="project_name">课题名称：
-                        <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project.name }}" disabled>
+                        <input style="border-radius: 10px;width: 48%" required='' type='text' name="pname" value="{{ project.name }}" disabled>
+                         <input style="display:none; border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project.name }}">
                      </label>
                 </div>
                 <div>
@@ -21,77 +29,47 @@
                         <input style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor" value="{{ project.supervisor }}" disabled>
                     </label>
                 </div>
-               {% if status == "未提交" %}
-                    <div>
-                        <label>进展情况:
-                            <textarea class="proposal" name="middle_check" placeholder="在此撰写您所选课题的进展情况..."></textarea>
-                        </label>
-                    </div>
-                    <div>
-                        <label>附件:
-                            <input type="file" name="attachment"/>
-                        </label>
-                    </div>
-                    <input type="submit" value="提交" />
-                {% else %}
-                   {% if middle_check.status == "通过" %}
-                        <div>
-                            <label>进展情况:
-                                <textarea disabled class="proposal" name="middle_check" placeholder="在此撰写您的开题报告...">{{ middle_check.content }}</textarea>
-                            </label>
-                        </div>
-                        <div>
-                            <label>附件:
-                                <input disabled type="file" name="attachment" src="{{ middle_check.file }}"/>
-                            </label>
-                        </div>
+                <hr/>
+                <div>
+                    <label>进展情况:
+                        <textarea class="proposal" name="middle_check" placeholder="在此撰写您所选课题的进展情况...">{{ middle_check.content }}</textarea>
+                    </label>
+                </div>
+                <div>
+                    <label>附件:
+                        <input type="file" name="attachment"/>
+                    </label>
+                </div>
+                <label style="display: none">
+                    <input style="display: none" type="text" name="status" value="{{ status }}">
+                </label>
+                {% if status != "未提交" %}
+                    <br/><hr/><br/>
                         <div>
                             <label>提交时间:
                                 <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ middle_check.time }}" disabled>
                             </label>
                         </div>
                         <div>
-                            <label>审核状态:
+                            <label>审t核状态:
                                 <input style="border-radius: 10px;width: 48%" required='' type='text' name="status" value="{{ middle_check.status }}" disabled>
                             </label>
                             <label>审核意见:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="comment" value="{{ middle_check.comment }}" disabled>
+                                <textarea required='' type='text' name="comment" disabled>{{ middle_check.comment }}</textarea>
                             </label>
                             <label>审核时间:
                                 <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ middle_check.comment_time }}" disabled>
                             </label>
                         </div>
-                        <input disabled type="submit" value="已审核" />
-                   {% else %}
-                        <div>
-                            <label>进展情况:
-                                <textarea class="proposal" name="middle_check" placeholder="在此撰写您的开题报告...">{{ middle_check.content }}</textarea>
-                            </label>
-                        </div>
-                        <div>
-                            <label>附件:
-                                <input type="file" name="attachment" src="{{ middle_check.file }}"/>
-                            </label>
-                        </div>
-                        <div>
-                            <label>提交时间:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ middle_check.time }}" disabled>
-                            </label>
-                        </div>
-                        <div>
-                            <label>审核状态:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="status" value="{{ middle_check.status }}" disabled>
-                            </label>
-                            <label>审核意见:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="comment" value="{{ middle_check.comment }}" disabled>
-                            </label>
-                            <label>审核时间:
-                                <input style="border-radius: 10px;width: 48%" required='' type='text' name="time" value="{{ middle_check.comment_time }}" disabled>
-                            </label>
-                        </div>
-                        <input type="submit" value="提交" />
-                   {% endif %}
                 {% endif %}
+                <br/><hr/>
+                <div style="text-align: center">
+                        {% if status == "通过" %}
+                            <input disabled type="submit" value="已审核" />
+                        {% else %}
+                            <input type="submit" value="提交" />
+                        {% endif %}
+                </div>
             </form>
         </div>
     </div>
