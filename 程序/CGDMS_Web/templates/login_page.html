@@ -29,9 +29,8 @@
         }
     </style>
     <div class="pop" style="margin: auto; left: 0; top:0">
-     <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-    <br/><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
                 <form id="account" action="/register/" method="post">
                     <h1>账号注册</h1>
                     {% csrf_token %}

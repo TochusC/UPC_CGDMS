@@ -15,12 +15,10 @@
           color: #fff;
         }
     </style>
-      <div id="main-content" class = "form" style="text-align: center">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
-        <div class = 'child-form'>
-                <hr>
-               <h1>课题发布</h1><br/>
+      <div id="main-content" class="info_border">
+        <div class = 'border'>
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+                <hr><h1>课题发布</h1><hr/><br/>
                 <table>
                     <tr>
                         <th>课题名称</th>
@@ -44,8 +42,8 @@
                             </td>
                         </tr>
                     {% empty %}
-                         <tr>
-                            <td colspan="5">无待发布课题</td>
+                         <tr style="height: 128px">
+                            <td colspan="5">暂无待发布课题</td>
                         </tr>
                     {% endfor %}
                 </table><br/>

@@ -638,10 +638,11 @@ div.img_center_div{
   justify-content: space-between;
 }
 .form-group form {
-  width: 64%; /* 或者你想要的宽度 */
+  width: 64%;
 }
 .form-group button {
-  width: 64%;
+  width: 36%;
+    margin: auto;
 }
 
 
@@ -672,28 +673,26 @@ textarea{
 }
 
 div.pop{
-    margin-bottom: 40px;
-    position: relative;
+    display: none;
     margin: auto;
-    width: 64%;
-    height: 64%;
-    background-color: #fff;
+    width: 84%;
+    height: 100%;
+    background-color: #ffffffFD;
     border-radius: 10px;
     box-shadow: 0 0 10px #aaa;
-    padding: 20px;
+    padding: 10px;
     text-align: center;
     z-index: 100;
-    display: none;
 }
 
 div.info_border{
     margin: auto;
     width: 84%;
     height: 100%;
-    background-color: #fff;
+    background-color: #ffffffFD;
     border-radius: 10px;
     box-shadow: 0 0 10px #aaa;
-    padding: 20px;
+    padding: 10px;
     text-align: center;
     z-index: 100;
 }
@@ -732,12 +731,21 @@ div.border{
     border: 2px solid #27496d;
     border-radius: 8px;
     padding: 32px;
-    width: 80%;
+    width: 100%;
     height:auto;
     margin: auto;
-    margin-bottom: 48px;
+    margin-bottom: 5px;
+    margin-top: 5px;
     text-align: left;
 }
+
+div.label-border{
+    border-left: 1px dotted #27496dAA;
+    border-right: 1px dotted #27496dAA;
+    padding-left: 32px;
+    padding-right: 32px;
+}
+
 input[disabled]{
     background-color: #f8f8f8;
 }

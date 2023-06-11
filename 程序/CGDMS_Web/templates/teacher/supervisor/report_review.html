@@ -40,9 +40,9 @@
             display: block;
         }
     </style>
-    <div class="pop" style="margin: auto; left: 0; top:0">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+    <div class="pop">
         <div class="border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
         <hr/><h3>审阅开题报告</h3><hr/><br/>
             <form method="post" action="/teacher/supervisor/report_review/pass_report/">
                 {% csrf_token %}
@@ -95,16 +95,18 @@
             </form>
         </div>
     </div>
-    <div id="main-content" class="form" style="text-align: center">
-    <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-        <div class="child-form">
-            <h3>开题报告审阅</h3><br/>
+    <div id="main-content" class="info_border">
+        <div class="border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>开题报告审阅</h3><hr/><br/>
             <table>
                 <tr>
                     <th>课题名称</th>
                     <th>课题类型</th>
                     <th>选题学生</th>
-                    <th>提交状态</th>
+                    <th>提交时间</th>
+                    <th>审核状态</th>
+                    <th>审核时间</th>
                     <th>信息操作</th>
                 </tr>
                 {% for project in project_list %}
@@ -112,7 +114,9 @@
                         <td>{{ project.name }}</td>
                         <td>{{ project.type }}</td>
                         <td>{{ project.student }}</td>
+                        <td>{{ project.open_report.time }}</td>
                         <td>{{ project.status }}</td>
+                        <td>{{ project.open_report.comment_time }}</td>
                         <td>
                            {% if project.status == "未提交" %}
                                 <input type="submit" disabled class="disable" style="margin: auto; width: 96%" value="审阅">
@@ -140,12 +144,11 @@
                         </td>
                     </tr>
                 {% empty %}
-                     <tr>
+                     <tr style="height: 128px">
                         <td colspan="5">暂无开题报告需审核</td>
                     </tr>
                 {% endfor %}
-            </table>
-            <br/><br/><hr>
+            </table><br/><hr/>
         </div>
     </div>
 {% endblock %}

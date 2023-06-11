@@ -1,0 +1,131 @@
+{% extends 'teacher/dean/dean_structure.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        label{
+            display: block;
+        }
+    </style>
+    <script>
+        var project_list=[];
+        function $(id){
+            return document.getElementById(id);
+        }
+        function showPop(project){
+            // 隐藏主体，显示弹窗
+            $('pop').style.display = 'block';
+            $('main-content').style.display = 'none';
+            // 设置弹窗信息
+            $('pname').value = project.name;
+            $('project_name').value = project.name;
+            $('project_type').value = project.type;
+            $('student_name').value = project.student;
+            $('supervisor').value = project.supervisor;
+            $('status').value = project.status;
+        }
+        function hidePop(){
+            $('main-content').style.display = 'block';
+            $('pop').style.display = 'none';
+        }
+    </script>
+    <div id="pop" class="info_border" style="display: none">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>课题信息</h3><hr/><br/>
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input id="project_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>课题类型：
+                    <input id="project_type" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">指导教师：
+                    <input id="supervisor" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：
+                    <input id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                </label>
+                <hr/>
+                <h3>评阅教师</h3><hr/><br/>
+                <table>
+                    <tr>
+                        <th>工号</th>
+                        <th>姓名</th>
+                        <th>学院</th>
+                        <th>专业</th>
+                        <th>职称</th>
+                        <th>操作</th>
+                    </tr>
+                    {% for teacher in teacher_list %}
+                        <tr>
+                            <td>{{ teacher.no }}</td>
+                            <td>{{ teacher.name }}</td>
+                            <td>{{ teacher.faculty }}</td>
+                            <td>{{ teacher.major }}</td>
+                            <td>{{ teacher.title }}</td>
+                            <td>
+                                <form method="post" action="/teacher/manager/reviewer_assignment/assign/">
+                                    {% csrf_token %}
+                                    <input type="hidden" id="pname" name="project_name">
+                                    <input type="hidden" id="pname" name="tno" value="{{ teacher.no }}">
+                                    <input type="submit" style="margin: auto" value="选择">
+                                </form>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <br/><hr/><br/>
+                <div style="text-align: center">
+                    <input style="width: 36%; margin: auto" type="button" onclick="hidePop()" value="关闭" />
+                </div>
+        </div>
+    </div>
+    <div id = 'main-content' class="info_border">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+             <hr/><h3>分配评阅教师</h3><hr/><br/>
+            <table>
+                <script>
+                    var project_list = []
+                </script>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>指导教师</th>
+                    <th>选题学生</th>
+                    <th>分配状态</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.supervisor }}</td>
+                        <td>{{ project.student }}</td>
+                        <td>{{ project.status }}</td>
+                        <td>
+                            <script>
+                                var project = {
+                                    name: "{{ project.name }}",
+                                    type: "{{ project.type }}",
+                                    student: "{{ project.student }}",
+                                    supervisor: "{{ project.supervisor }}",
+                                }
+                                project_list.push(project)
+                            </script>
+                           {% if project.status == '未分配' %}
+                                <input type="submit" onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto;width: 96%" value="分配">
+                            {% else %}
+                                <input type="submit" class="disable" onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto; width: 96%" value="已分配">
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr style="height: 128px">
+                        <td colspan="6" >暂无课题需分配评阅教师</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/><hr/>
+        </div>
+    </div>
+{% endblock %}

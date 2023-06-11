@@ -9,17 +9,15 @@
           transition: all 0.3s ease;
             background-color: #FDFDFD;
         }
-
         input[type="submit"]:hover {
           background-color: #27496d;
           color: #fff;
         }
     </style>
     <div class="info_border">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
-        <div class="border" style="margin-bottom: 64px"><hr/>
-            <h1>双选结果公布</h1><br/>
+        <div class="border" style="margin-bottom: 64px">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h1>双选结果公布</h1><hr/><br/>
             <table>
                 <tr>
                     <th>课题名称</th>
@@ -45,11 +43,12 @@
                         </td>
                     </tr>
                 {% empty %}
-                     <tr>
+                     <tr style="height: 128px">
                         <td colspan="6">暂无需公布双选结果</td>
                     </tr>
                 {% endfor %}
             </table>
+        <br/><hr/>
         </div>
     </div>
 {% endblock %}

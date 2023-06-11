@@ -16,10 +16,9 @@
         }
     </style>
     <div class="info_border">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
-        <div class="border" style="margin-bottom: 64px"><hr/>
-            <h1>已确认选题</h1><hr/><br/>
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+            <hr/><h1>已确认选题</h1><hr/><br/>
                 <table>
                     <tr>
                         <th>课题名称</th>
@@ -54,8 +53,7 @@
                          <td colspan="8">暂无已确认选题</td>
                     </tr>
                 {% endfor %}
-            </table><br/><br/>
-            <hr/>
+            </table><br/><hr/>
            <h1>确认选题</h1><hr/><br/>
             <table style="width: 100%">
                 <tr>
@@ -94,11 +92,11 @@
                         </td>
                     </tr>
                 {% empty %}
-                     <tr>
+                     <tr style="height: 128px">
                          <td colspan="7">暂无需确认选题</td>
                     </tr>
                 {% endfor %}
-            </table>
+            </table><br/><hr/>
         </div>
     </div>
 {% endblock %}

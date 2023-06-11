@@ -1,82 +1,125 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% load static %}
 {% block content %}
+    <style>
+        label{
+            padding-right: 25px;
+            display: block;
+            margin: auto;
+        }
+    </style>
     <script>
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(project_name, student_name, weekly_report){
-            document.getElementsByClassName('pop')[0].style.display = 'block';
+        function showNewGroup(){
+            $('newGroup').style.display = 'block';
             $('main-content').style.display = 'none';
-            $('project_name').value = project_name;
-            $('student_name').value = student_name;
-            $('weekly_report').innerHTML = weekly_report;
         }
-        function hidePop(){
+        function hideNewGroup(){
+            $('newGroup').style.display = 'none';
             $('main-content').style.display = 'block';
-            document.getElementsByClassName('pop')[0].style.display = 'none';
+        }
+        function addNewMember(){
+            var index = 0;
+            $newRow = document.createElement('tr');
+            $newRow.innerHTML = '<td><label for="group_member_id"></label><input style="border-radius: 5px; padding: 0;margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/></td><td><label for="group_member_name"></label><input type="text" style="border-radius: 5px;padding: 0;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/></td>';
+            $('member').appendChild($newRow);
         }
     </script>
-
-    <div class="pop" style="margin: auto; left: 0; top:0">
-        <h3>周进度审阅</h3><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
-            <form>
-                {% csrf_token %}
-                <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
-                <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
-                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
-                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
-                <div>
-                    <label>周进度报告:</label>
-                    <textarea disabled id = "weekly_report" name="weekly_report" placeholder="在此输入周进度报告...">{{ weekly_report }}</textarea>
-                </div>
-                <input type="button" onclick="hidePop()" value="关闭" />
-            </form>
+    <div class="info_border" id='main-content'>
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>答辩组管理</h3><hr/><br/>
+            <input type="button" class="add" value="新建答辩组" onclick="showNewGroup()"/>
+                <table>
+                    <script>
+                        var weekly_report_list = []
+                    </script>
+                        <tr>
+                            <th>答辩组名称</th>
+                            <th>答辩组地点</th>
+                            <th>答辩组日期</th>
+                            <th>答辩组组长</th>
+                            <th>答辩小组秘书</th>
+                            <th>答辩学生分配</th>
+                            <th>已分配学生</th>
+                            <th>信息操作</th>
+                        </tr>
+                    <script>
+                        var group_list = []
+                    </script>
+                    {% for group in group_list %}
+                            <tr>
+                                <td>{{ group.time }}</td>
+                                <td>{{ group.location }}</td>
+                                <td>{{ group.date }}</td>
+                                <td>{{ group.leader }}</td>
+                                <td>{{ group.secretary }}</td>
+                                <td><input type="button" style="margin: auto" value="分配"></td>
+                                <td>
+                                    <p>{{ group.count }}</p>
+                                </td>
+                                <td>
+                                    <script></script>
+                                    <div class="form-group">
+                                        <input type="button" style="width:36%; margin: auto" value="修改">
+                                        <input type="button" style="width:36%; margin: auto" value="删除">
+                                    </div>
+                                </td>
+                            </tr>
+                    {% empty %}
+                        <tr style="height: 128px">
+                            <td colspan="8">暂无周进度报告</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <br/><hr/>
         </div>
     </div>
-    <div id = 'main-content'>
-    <h3>周进度报告审阅</h3><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>选题学生</th>
-            <th>课题状态</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.project_name }}</td>
-                <td>{{ project.project_type }}</td>
-                <td>{{ project.student_name }}</td>
-                <td>
-                    {% if project.status == "已分配" %}
-                        <p style=" color: #27496d">已分配</p>
-                    {% else %}
-                        <p style=" color: #888">未分配</p>
-                    {% endif %}
-                </td>
-                <td>
-                   {% if project.status == "已分配" %}
-                        <input type="submit" onclick="showPop('{{ project.project_name }}', '{{ project.student_name }}','{{ project.weekly_report|linebreaksbr|safe }}')" style="margin: auto;width: 96%" value="分配">
-                    {% else %}
-                        <input type="submit" class="disable" style="margin: auto; width: 96%" value="已分配">
-                    {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div id="newGroup" class="pop">
+            <div class="border">
+                <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+                <hr/><h3>新建答辩组</h3><hr/><br/>
+                <form action="/teacher/manager/group_assignment/assign/" method="post">
+                    {% csrf_token %}
+                    <label>答辩组名称：
+                        <input type="text" name="group_name" id="group_name" placeholder="请输入答辩组名称"/>
+                    </label>
+                    <label>答辩组地点：
+                        <input type="text" name="group_location" id="group_location" placeholder="请输入答辩组地点"/>
+                    </label>
+                    <label>答辩组日期：
+                        <input type="date" name="group_date" id="group_date" placeholder="请输入答辩组日期"/>
+                    </label><br/>
+                    <label>答辩组学院：
+                        <input type="text" name="group_faculty" id="group_faculty" placeholder="请输入答辩组学院"/>
+                    </label>
+                    <label>答辩组组长：
+                        <input type="text" name="group_leader" id="group_leader" placeholder="请输入答辩组组长"/>
+                    </label>
+                    <label>答辩小组秘书：
+                        <input type="text" name="group_secretary" id="group_secretary" placeholder="请输入答辩小组秘书"/>
+                    </label><hr/>
+                    <input type="button" value="新建成员" onclick="addNewMember()" class="add">
+                    <table id="member">
+                        <tr>
+                            <th>工号</th>
+                            <th>姓名</th>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="group_member_id"></label><input style="border-radius: 5px; padding: 0;margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/>
+                            </td>
+                            <td>
+                                <label for="group_member_name"></label><input type="text" style="border-radius: 5px;padding: 0;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/>
+                        </tr>
+                    </table><br/><hr><br/>
+                    <div class="form-group">
+                        <input style="width: 36%;margin:auto" type="submit" value="提交">
+                        <input style="width: 36%;margin:auto" type="button" value="取消" class="cancel" onclick="hideNewGroup()">
+                    </div>
+                </form>
+            </div>
     </div>
-    <br/><br/><hr>
-
 {% endblock %}

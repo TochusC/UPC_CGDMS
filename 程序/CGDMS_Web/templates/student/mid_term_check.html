@@ -7,8 +7,8 @@
         }
     </style>
     <div class="info_border">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
         <div class="border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
         <hr/><h1>中期检查</h1><hr/><br/>
             <form method="post" action="/student/mid_term_check/submit_progress/">
                 {% csrf_token %}
@@ -32,7 +32,11 @@
                 <hr/>
                 <div>
                     <label>进展情况:
-                        <textarea class="proposal" name="middle_check" placeholder="在此撰写您所选课题的进展情况...">{{ middle_check.content }}</textarea>
+                        {% if middle_check.status == "通过" %}
+                            <textarea class="proposal" disabled name="middle_check" placeholder="在此撰写您所选课题的进展情况...">{{ middle_check.content }}</textarea>
+                        {% else %}
+                            <textarea class="proposal" name="middle_check" placeholder="在此撰写您所选课题的进展情况...">{{ middle_check.content }}</textarea>
+                        {% endif %}
                     </label>
                 </div>
                 <div>
@@ -51,7 +55,7 @@
                             </label>
                         </div>
                         <div>
-                            <label>审t核状态:
+                            <label>审核状态:
                                 <input style="border-radius: 10px;width: 48%" required='' type='text' name="status" value="{{ middle_check.status }}" disabled>
                             </label>
                             <label>审核意见:
@@ -64,7 +68,7 @@
                 {% endif %}
                 <br/><hr/>
                 <div style="text-align: center">
-                        {% if status == "通过" %}
+                        {% if middle_check.status == "通过" %}
                             <input disabled type="submit" value="已审核" />
                         {% else %}
                             <input type="submit" value="提交" />
@@ -73,6 +77,4 @@
             </form>
         </div>
     </div>
-    <br/><br/><hr>
-
 {% endblock %}

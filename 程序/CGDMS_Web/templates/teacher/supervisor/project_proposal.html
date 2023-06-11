@@ -65,6 +65,7 @@
                     submit_button.value = "提交";
                 }
                 else {
+                    submit_button.value = "已审核"
                     submit_button.setAttribute('disabled', 'disabled');
                 }
             }
@@ -154,59 +155,59 @@
             </form>
         </div>
     </div>
-    <div id="main-content" class = "form" style="text-align: center">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
-        <div class = 'child-form'>
+    <div id="main-content" class = "info_border">
+        <div class = 'border'>
+                 <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
         <hr/><h1 style="font-size: 24px">课题申报</h1><hr/>
-            <h2>已申报课题：</h2>
-            <input type="button" class="add" value="申报课题"
-                   onclick="showPop('','申报')"/>
-            <table>
-                    <tr>
-                        <th>课题名称</th>
-                        <th>课题类型</th>
-                        <th>申报时间</th>
-                        <th>课题状态</th>
-                        <th>相关操作</th>
-                    </tr>
-                {% for project in project_list %}
+            <div class="label-border">
+                <h2 style="color:#27496d;" >已申报课题：</h2>
+                <input type="button" class="add" value="申报课题"
+                       onclick="showPop('','申报')"/>
+                <table>
                         <tr>
-                            <td>{{ project.name }}</td>
-                            <td>{{ project.type }}</td>
-                            <td>{{ project.time }}</td>
-                            <td>{{ project.status }}</td>
-                            <script>
-                                var project_info= {
-                                    name:'{{ project.name }}',
-                                    type:'{{ project.type }}',
-                                    info:'{{ project.info }}',
-                                    file:'{{ project.file }}',
-                                    time:'{{ project.time }}',
-                                    status:'{{ project.status }}',
-                                    comment:'{{ project.comment }}',
-                                    comment_time:'{{ project.comment_time }}'
-                                }
-                                project_list.push(project_info)
-                            </script>
-                            <td>
-                                {% if project.status == "待审核" or project.status == "未通过审核" %}
-                                    <input style="margin: auto" type="button" value="修改" onclick="showPop(project_list['{{ project.index }}'], '{{ project.status }}')">
-                                {% else %}
-                                    <input style="margin: auto" type="button" value="查看" onclick="showPop('{{ project.name }}',
-                                            '{{ project.type}}','{{ project.info }}','{{ project.file }}',
-                                            '{{ project.time }}', '{{ project.status }}', '{{ project.comment }}','{{ project.comment_time }}')">
-                                {% endif %}
-                            </td>
+                            <th>课题名称</th>
+                            <th>课题类型</th>
+                            <th>申报时间</th>
+                            <th>课题状态</th>
+                            <th>相关操作</th>
                         </tr>
-                {% empty %}
-                    <tr>
-                        <td colspan="5">暂无课题</td>
-                    </tr>
-                {% endfor %}
-            </table><br/><hr/>
+                    {% for project in project_list %}
+                            <tr>
+                                <td>{{ project.name }}</td>
+                                <td>{{ project.type }}</td>
+                                <td>{{ project.time }}</td>
+                                <td>{{ project.status }}</td>
+                                <script>
+                                    var project_info= {
+                                        name:'{{ project.name }}',
+                                        type:'{{ project.type }}',
+                                        info:'{{ project.info }}',
+                                        file:'{{ project.file }}',
+                                        time:'{{ project.time }}',
+                                        status:'{{ project.status }}',
+                                        comment:'{{ project.comment }}',
+                                        comment_time:'{{ project.comment_time }}'
+                                    }
+                                    project_list.push(project_info)
+                                </script>
+                                <td>
+                                    {% if project.status == "待审核" or project.status == "未通过审核" %}
+                                        <input style="margin: auto" type="button" value="修改"
+                                               onclick="showPop(project_list['{{ project.index }}'], '{{ project.status }}')">
+                                    {% else %}
+                                        <input style="margin: auto" type="button" value="查看"
+                                               onclick="showPop(project_list['{{ project.index }}'], '{{ project.status }}')">
+                                    {% endif %}
+                                </td>
+                            </tr>
+                    {% empty %}
+                        <tr>
+                            <td colspan="5">暂无课题</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+            <br/><hr/>
         </div>
     </div>
-    <br/><br/><hr>
-
 {% endblock %}

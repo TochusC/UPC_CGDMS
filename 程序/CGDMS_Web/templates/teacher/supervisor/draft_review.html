@@ -1,81 +1,163 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% load static %}
 {% block content %}
+    <style>
+        label{
+            display: block;
+        }
+    </style>
     <script>
+        var project_list=[];
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(project_name, student_name, thesis_info){
-            document.getElementsByClassName('pop')[0].style.display = 'block';
+        function showPop(project){
+            // 隐藏主体，显示弹窗
+            $('pop').style.display = 'block';
             $('main-content').style.display = 'none';
-            $('project_name').value = project_name;
-            $('student_name').value = student_name;
-            $('thesis_info').value = thesis_info;
+            // 设置弹窗信息
+            $('pname').value = project.project_name;
+            $('project_name').value = project.project_name;
+            $('project_type').value = project.project_type;
+            $('student_name').value = project.student_name;
+            $('content').innerHTML = project.content;
+            $('attachment').src = project.file;
+            $('submit_time').value = project.time;
+            $('status').value = project.status;
+            var comment = $('comment')
+            comment.innerHTML = project.comment;
+            $('comment_time').value = project.comment_time;
+            if(project.status === "通过") {
+                $('通过').setAttribute("selected", "selected");
+                $('result').setAttribute("disabled", "disabled");
+                comment.setAttribute("disabled", "disabled");
+                var submit_button = $('submit_button')
+                submit_button.setAttribute("disabled", "disabled");
+                submit_button.value = "已审阅";
+            }
         }
         function hidePop(){
             $('main-content').style.display = 'block';
-            document.getElementsByClassName('pop')[0].style.display = 'none';
+            $('pop').style.display = 'none';
         }
     </script>
-    <div class="pop" style="margin: auto; left: 0; top:0">
-        <h3>审阅论文草稿</h3><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
-            <form>
+    <div id="pop" class="info_border" style="display: none">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>审阅论文草稿</h3><hr/><br/>
+            <form method="post" action="/teacher/supervisor/draft_review/pass/">
                 {% csrf_token %}
-                <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
-                <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
-                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
-                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input id="pname" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="pname">
+                    <input id="project_name" style="display: none; border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>课题类型：
+                    <input id="project_type" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：
+                    <input id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                </label>
+                <hr/>
                 <div>
-                    <label>论文草稿:</label>
-                    <textarea disabled id="thesis_info" name="thesis_info" placeholder="在此输入论文草稿...">{{ thesis_info }}</textarea>
+                    <label>论文内容:
+                        <textarea disabled id = "content" name="content" placeholder="在此输入开题报告的主要内容..."></textarea>
+                    </label>
+                    <label>论文附件:
+                        <input disabled id="attachment" type="file">
+                    </label>
                 </div>
-                <input type="button" onclick="hidePop()" value="关闭" />
+                <br/>
+                <label>提交时间：
+                    <input id="submit_time" disabled type='text' name="submit_time">
+                </label>
+                <hr/>
+                <div>
+                    <label>审阅状态:
+                        <input disabled id="status" type='text' name="status">
+                    </label>
+                    <label>审阅意见:
+                        <textarea id = "comment" name="comment" placeholder="在此输入审阅意见..."></textarea>
+                    </label>
+                    <label>审阅时间:
+                        <input disabled id="comment_time" type='text' name="comment_time">
+                    </label>
+                    <br/>
+                     <label>审阅结果:
+                        <select id = "result" name="result">
+                            <option id="通过" value="通过">通过</option>
+                            <option id="未通过" value="不通过">不通过</option>
+                        </select>
+                    </label>
+                    <br/>
+                </div>
+                <hr/><br/>
+                <div class="form-group">
+                    <input style="width: 36%; margin: auto" class="disabled" id="submit_button" type="submit" value="提交" />&nbsp;&nbsp;
+                    <input style="width: 36%; margin: auto" type="button" onclick="hidePop()" value="关闭" />
+                </div>
             </form>
         </div>
     </div>
-    <div id = 'main-content'>
-    <h3>课题论文草稿</h3><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>选题学生</th>
-            <th>课题状态</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.project_name }}</td>
-                <td>{{ project.project_type }}</td>
-                <td>{{ project.student_name }}</td>
-                <td>
-                    {% if project.status == "已填写" %}
-                        <p style=" color: #27496d">已填写</p>
-                    {% else %}
-                        <p style=" color: #888">未填写</p>
-                    {% endif %}
-                </td>
-                <td>
-                   {% if project.status == "已填写" %}
-                        <input type="submit" onclick="showPop('{{ project.project_name }}', '{{ project.student_name }}','{{ project.thesis_info}}')" style="margin: auto;width: 96%" value="审阅">
-                    {% else %}
-                        <input type="submit" class="disable" style="margin: auto; width: 96%" value="审阅">
-                    {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div id = 'main-content' class="info_border">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+             <hr/><h3>课题论文草稿</h3><hr/><br/>
+            <table>
+                <script>
+                    var project_list = []
+                </script>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>选题学生</th>
+                    <th>论文状态</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.project_name }}</td>
+                        <td>{{ project.project_type }}</td>
+                        <td>{{ project.student_name }}</td>
+                        <td>
+                            {{ project.status }}
+                        </td>
+                        <td>
+                            <script>
+                                var project = {
+                                    project_name: "{{ project.project_name }}",
+                                    project_type: "{{ project.project_type }}",
+                                    student_name: "{{ project.student_name }}",
+                                    content: "{{ project.content }}",
+                                    time: "{{ project.time }}",
+                                    status: "{{ project.status }}",
+                                    comment: "{{ project.comment|safe }}",
+                                    comment_time: "{{ project.comment_time|safe }}",
+                                    file: "{{ project.file }}"
+                                }
+                                project_list.push(project)
+                            </script>
+                           {% if project.status == "审核中" %}
+                                <input type="submit" onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto;width: 96%" value="审阅">
+                            {% else %}
+                               {% if project.status == "通过" %}
+                                    <input type="submit" class="disable" onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto; width: 96%" value="查看">
+                                {% else %}
+                                   {% if project.status == "未提交" %}
+                                       <input type="submit" class="disable" style="margin: auto; width: 96%" value="未提交">
+                                   {% else %}
+                                        <input type="submit" class="disable" onclick="showPop(project_list['{{ project.index }}'])"  style="margin: auto; width: 96%" value="审阅">
+                                   {% endif %}
+                                {% endif %}
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr style="height: 128px">
+                        <td colspan="5" >暂无需审核论文草稿</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/><hr/>
+        </div>
     </div>
-    <br/><br/><hr>
-
 {% endblock %}

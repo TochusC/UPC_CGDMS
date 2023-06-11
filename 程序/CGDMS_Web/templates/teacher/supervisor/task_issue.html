@@ -57,8 +57,8 @@
         }
     </style>
     <div class="pop">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h3>任务书下达</h3><hr/><br/>
             <form method="post" action="/teacher/supervisor/task_issue/issue_task/">
                 {% csrf_token %}
@@ -122,10 +122,9 @@
             </form>
         </div>
     </div>
-    <div id="main-content" class = "form" style="text-align: center">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
-        <div class = 'child-form'>
+    <div id="main-content" class = "info_border">
+        <div class = 'border'>
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr><h1>任务书管理</h1><hr/><br/>
                 <table>
                     <tr>

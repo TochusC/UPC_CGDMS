@@ -45,8 +45,8 @@
         }
     </style>
     <div class="pop">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h3>任务书审核</h3><hr/><br/>
             <form method="post" action="/teacher/manager/task_review/pass_task/">
                 {% csrf_token %}
@@ -120,9 +120,9 @@
         </div>
     </div>
     <div id = "main-content" class="info_border">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-        <div class="border"><hr/>
-           <h1>任务书审核</h1><hr/><br/>
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h1>任务书审核</h1><hr/><br/>
             <table>
                 <tr>
                     <th>课题名称</th>
@@ -160,7 +160,7 @@
                         </td>
                     </tr>
                 {% empty %}
-                     <tr>
+                     <tr style="height: 128px">
                         <td colspan="5">暂无任务书需审核</td>
                     </tr>
                 {% endfor %}

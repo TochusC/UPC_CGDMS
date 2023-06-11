@@ -138,7 +138,35 @@
                     </ul>
                 </address>
                 </div>
-
+                <br/><br/>
+                <div class="info_border" style="height: auto">
+                        <div class="border" style="width: 100%; margin-bottom:5px;margin-right: 0; margin-left: 0;">
+                        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+                            <hr/><h1>留言板</h1><hr/>
+                            <input type="button" class="add" value="新建留言"
+                                   onclick="showPop()"/>
+                            <table>
+                                    <tr>
+                                        <th style="width:15%">用户名</th>
+                                        <th style="width:15%" >身份</th>
+                                        <th style="width:15% " >时间</th>
+                                        <th style="width:55%">留言内容</th>
+                                    </tr>
+                                {% for comment in comment_list %}
+                                        <tr>
+                                            <td>{{ comment.user }}</td>
+                                            <td>{{ comment.role }}</td>
+                                            <td>{{ comment.time }}</td>
+                                            <td colspan="3">{{ comment.content }}</td>
+                                        </tr>
+                                {% empty %}
+                                    <tr style="height: 128px">
+                                        <td colspan="6">暂无留言</td>
+                                    </tr>
+                                {% endfor %}
+                            </table><br/><hr/>
+                        </div>
+                    </div>
             </main>
             <!-- 右侧边栏 -->
             <aside style = 'position: absolute; left: 83%;width: 17%; z-index:-1; height: 100%'>

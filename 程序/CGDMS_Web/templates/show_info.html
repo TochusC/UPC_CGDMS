@@ -2,9 +2,9 @@
 {% load static %}
 {% block content %}
     <div class="info_border">
-     <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-    <br/><br/>
-        <div class="border" style="padding: 32px; margin: auto">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+            <hr/>
             {% if role == '管理员' %}
                 <h3>{{ name }}管理员，您好！</h3>
                 <h4>人生的价值，即以其人对于当代所做的工作为尺度。</h4>
@@ -63,5 +63,5 @@
                     {% endif %}
                 </table>
             </div>
-</div>
+    </div>
 {% endblock %}

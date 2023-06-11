@@ -1,4 +1,10 @@
 {% extends 'teacher/manager/manager_structure.html' %}
+{% load static %}
 {% block content %}
-<h1 style="text-align: center; color: #27496d;">{{ message }}</h1><br/>
+    <div class="info_border">
+        <div class = 'border'>
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr><br/><h1 style="text-align: center; color: #27496d;">{{ message }}</h1><br/><hr>
+        </div>
+    </div>
 {% endblock %}

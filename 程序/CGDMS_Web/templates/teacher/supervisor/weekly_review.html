@@ -1,82 +1,244 @@
 {% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% load static %}
 {% block content %}
+    <style>
+        label{
+            display: block;
+        }
+    </style>
     <script>
         function $(id){
             return document.getElementById(id);
         }
-        function showPop(project_name, student_name, weekly_report){
-            document.getElementsByClassName('pop')[0].style.display = 'block';
+        function showWeeklyReport(weekly_report){
+            // 显示弹窗，隐藏主体内容
+            $('pop2').style.display = 'block'
             $('main-content').style.display = 'none';
-            $('project_name').value = project_name;
-            $('student_name').value = student_name;
-            $('weekly_report').innerHTML = weekly_report;
+            $('pop').style.display = 'none';
+            // 设置弹窗基本属性
+            $('pname').value = weekly_report.name;
+            $('pop2_project_name').value = weekly_report.name;
+            $('pop2_project_type').value = weekly_report.type
+            $('pop2_student_name').value = weekly_report.student;
+            $('pop2_content').value = weekly_report.content;
+            $('pop2_file').src = weekly_report.file
+            $('pop2_status').value = weekly_report.status;
+            $('pop2_time').value = weekly_report.time;
+            $('pop2_ftime').value = weekly_report.time;
+            $('pop2_comment_time').value = weekly_report.comment_time;
+            $('pop2_comment').value = weekly_report.comment;
+            if(weekly_report.status === "已审核"){
+                $('pop2_comment').disabled = true;
+                $('result').disabled = true;
+                $('submit-button').disabled = true;
+                $('submit-button').value = "已审核";
+            }
+            else{
+                $('result').disabled = false;
+                $('submit-button').disabled = false;
+                $('submit-button').value = "审核";
+                $('pop2_comment').disabled = false;
+            }
+        }
+        function showPop(project){
+            // 显示弹窗，隐藏主体内容
+            $('pop').style.display = 'block'
+            $('main-content').style.display = 'none';
+            // 设置弹窗基本属性
+            $('pname').value = project.name;
+            $('project_name').value = project.name;
+            $('project_type').value = project.type
+            $('student_name').value = project.student;
+            // 修改弹窗表格
+            for(var i = 0; i < project.weekly_report_list.length; i++){
+                var weekly_report = project.weekly_report_list[i];
+                var newRow = document.createElement('tr');
+                newRow.className = "extra_rows"
+                var newCell = document.createElement('td');
+                newCell.innerHTML = weekly_report.time;
+                newRow.appendChild(newCell);
+                var newCell = document.createElement('td');
+                newCell.innerHTML = weekly_report.content;
+                newRow.appendChild(newCell);
+                var newCell = document.createElement('td');
+                newCell.innerHTML = weekly_report.status;
+                newRow.appendChild(newCell);
+                var newCell = document.createElement('td');
+                newCell.innerHTML = weekly_report.comment_time;
+                newRow.appendChild(newCell);
+                var newCell = document.createElement('td');
+                if (weekly_report.status === "审核中"){
+                     newCell.innerHTML = "<input type='button'  style='margin: auto' value='审阅' onclick='showWeeklyReport(weekly_report)'>";
+                }else{
+                    newCell.innerHTML = "<input type='button'  style='margin: auto' value='查看' onclick='showWeeklyReport(weekly_report)'>";
+                }
+                newRow.appendChild(newCell);
+                $('weekly_report_list').appendChild(newRow);
+            }
+
         }
         function hidePop(){
             $('main-content').style.display = 'block';
-            document.getElementsByClassName('pop')[0].style.display = 'none';
+            $('pop').style.display = 'none'
+            while(document.getElementsByClassName('extra_rows').length !== 0){
+                document.getElementsByClassName('extra_rows')[0].remove();
+            }
+        }
+        function hidePop2(){
+            $('main-content').style.display = 'none';
+            $('pop2').style.display = 'none'
+            $('pop').style.display = 'block'
         }
     </script>
-
-    <div class="pop" style="margin: auto; left: 0; top:0">
-        <h3>周进度审阅</h3><br/>
-        <div style="border: 2px solid #27496d;position:relative;border-radius: 8px;padding: 32px; width: 80%; height:auto; left: 10%; text-align: left; margin-bottom: 64px">
-            <form>
+    <div class="info_border" style="display: none" id="pop2">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>周进度审阅</h3><hr/><br/>
+            <form action="/teacher/supervisor/weekly_review/pass/" method="post">
                 {% csrf_token %}
-                <label style="padding-right: 25px;" for="project_name">课题名称：</label>
-                <input id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
-                <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
-                <label style="padding-right: 25px;" for="student_name">选题学生：</label>
-                <input id="student_name" style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                <label alt='请输入选题学生姓名' placeholder='选题学生姓名' style="position:relative; left: 28%"></label>
-                <div>
-                    <label>周进度报告:</label>
-                    <textarea disabled id = "weekly_report" name="weekly_report" placeholder="在此输入周进度报告...">{{ weekly_report }}</textarea>
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input id="pop2_project_name" disabled style="border-radius: 10px;width: 48%" required='' type='text'>
+                    <input type="text" id="pname" style="display: none" name="project_name">
+                </label>
+                <label>课题类型：
+                    <input id="pop2_project_type" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：
+                 <input id="pop2_student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                </label>
+                <hr/><br/>
+                <label>进展情况:
+                    <textarea disabled id = "pop2_content" name="weekly_report" placeholder="在此输入周进度报告的主要内容..."></textarea>
+                </label>
+                <label>附加文件：
+                    <input disabled id="pop2_file" type="file" name="attachment"/>
+                </label>
+                <br/><hr/><br/>
+                <label>提交时间：
+                    <input style="display: none" type="text" id="pop2_time" name="submit_time">
+                    <input disabled type="text" id="pop2_ftime" name="ftime">
+                </label>
+                <label>审核状态：
+                    <input disabled type="text" id="pop2_status">
+                </label>
+                <label>审核时间：
+                    <input disabled type="text" id="pop2_comment_time"/>
+                </label>
+                <label>审核意见：
+                    <textarea  id="pop2_comment" name="comment"></textarea>
+                </label>
+                <br/>
+                <label>审核结果：
+                    <select id="result" name="result">
+                        <option value="通过">通过</option>
+                        <option value="不通过">不通过</option>
+                    </select>
+                </label><br/>
+                <hr/><br/>
+                <div class="form-group">
+                    <input id="submit-button" type="submit" value="审阅" style="margin: auto; width: 36%">
+                    &nbsp&nbsp
+                    <input type="button" value="取消" style="margin: auto; width: 36%" onclick="hidePop2()">
                 </div>
-                <input type="button" onclick="hidePop()" value="关闭" />
             </form>
         </div>
     </div>
-    <div id = 'main-content'>
-    <h3>周进度报告审阅</h3><br/>
-    <table>
-        <tr>
-            <th>课题名称</th>
-            <th>课题类型</th>
-            <th>选题学生</th>
-            <th>课题状态</th>
-            <th>信息操作</th>
-        </tr>
-        {% for project in project_list %}
-            <tr>
-                <td>{{ project.project_name }}</td>
-                <td>{{ project.project_type }}</td>
-                <td>{{ project.student_name }}</td>
-                <td>
-                    {% if project.status == "已填写" %}
-                        <p style=" color: #27496d">已填写</p>
-                    {% else %}
-                        <p style=" color: #888">未填写</p>
-                    {% endif %}
-                </td>
-                <td>
-                   {% if project.status == "已填写" %}
-                        <input type="submit" onclick="showPop('{{ project.project_name }}', '{{ project.student_name }}','{{ project.weekly_report|linebreaksbr|safe }}')" style="margin: auto;width: 96%" value="审阅">
-                    {% else %}
-                        <input type="submit" class="disable" style="margin: auto; width: 96%" value="审阅">
-                    {% endif %}
-                </td>
-            </tr>
-        {% empty %}
-             <tr>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-                <td>&nbsp</td>
-            </tr>
-        {% endfor %}
-    </table>
+    <div class="info_border" style="display: none" id="pop">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>周进度审阅</h3><hr/><br/>
+            <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input id="project_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>课题类型：
+                    <input id="project_type" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                </label>
+                <label style="padding-right: 25px;" for="student_name">选题学生：
+                    <input id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                </label>
+                <hr/><br/>
+             <table id ="weekly_report_list">
+                <tr>
+                    <th>提交时间</th>
+                    <th>报告内容</th>
+                    <th>审核状态</th>
+                    <th>审核时间</th>
+                    <th>信息操作</th>
+                </tr>
+             </table>
+            <div style="text-align: center">
+                <input type="button" value="返回" onclick="hidePop()">
+            </div>
+        </div>
     </div>
-    <br/><br/><hr>
-
+    <div id="main-content" class="info_border">
+        <div class="border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+        <hr/><h3>周进度报告审阅</h3><hr/><br/>
+            <table>
+                <script>
+                    var project_list = []
+                </script>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>选题学生</th>
+                    <th>报告状态</th>
+                    <th>提交时间</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.student }}</td>
+                        <td>{{ project.status }}</td>
+                        <td>{{ project.time }}</td>
+                        <td>
+                           {% if project.status == "未填写" %}
+                                <input type="button" disabled style="margin: auto; width: 96%" value="暂无">
+                           {% else %}
+                               <script>
+                                    var weekly_report_list = []
+                                </script>
+                               {% for weekly_report in project.weekly_report_list %}
+                                   <script>
+                                        var weekly_report = {
+                                            "name": "{{ project.name }}",
+                                            "type": "{{ project.type }}",
+                                            "student":"{{ project.student }}",
+                                            "index": "{{ weekly_report.index }}",
+                                            "content": "{{ weekly_report.content|truncatechars:10 }}",
+                                            "file": "{{ weekly_report.file }}",
+                                            "time": "{{ weekly_report.time }}",
+                                            "status": "{{ weekly_report.status }}",
+                                            "comment": "{{ weekly_report.comment|safe}}",
+                                            "comment_time": "{{ weekly_report.comment_time|safe}}"
+                                        }
+                                        weekly_report_list.push(weekly_report)
+                                   </script>
+                               {% endfor %}
+                               <script>
+                                    var project = {
+                                        "name": "{{ project.name }}",
+                                        "type": "{{ project.type }}",
+                                        "student": "{{ project.student }}",
+                                        "supervisor": "{{ project.supervisor }}",
+                                        "weekly_report_list": weekly_report_list
+                                    }
+                                    project_list.push(project)
+                               </script>
+                               <input type="button" style="margin: auto" value="查看" onclick="showPop(project_list['{{ project.index }}'])">
+                           {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr style="height: 128px">
+                        <td colspan="5">暂无已选课题</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/><hr/>
+        </div>
+    </div>
 {% endblock %}

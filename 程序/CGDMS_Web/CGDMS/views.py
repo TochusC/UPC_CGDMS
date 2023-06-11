@@ -295,6 +295,8 @@ def project_selection(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 初始化已发布课题列表、学生已预选课题列表、学生已选课题名称列表
     project_list = []
     pre_select_list = []
@@ -459,8 +461,9 @@ def check_status(status, stage):
         "论文草稿已审核": 9,
         "已提交论文定稿": 10,
         "论文定稿已审核": 11,
-        "已进行答辩": 12,
-        "已完成": 13
+        "论文定稿已评阅": 12,
+        "已进行答辩": 13,
+        "已完成": 14
     }
     stage_dict = {
         "下达任务书": 1,
@@ -472,9 +475,11 @@ def check_status(status, stage):
         "审核周进度报告": 5,
         "提交中期检查": 5,
         "审核中期检查": 6,
-        "论文草稿": 4,
-        "论文定稿": 5,
-        "答辩": 6
+        "提交论文草稿": 7,
+        "审核论文草稿": 8,
+        "提交论文定稿": 9,
+        "审核论文定稿": 10,
+        "评阅论文定稿": 11,
     }
     status_index = status_dict[status]
     if status_index < stage_dict[stage]:
@@ -536,6 +541,8 @@ def browse_task(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 获取该学生的选题信息,检查该学生是否选题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + info_dict["no"] + "'")
@@ -599,6 +606,8 @@ def open_report(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 获取该学生的选题信息
     cursor = db.cursor()
     cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + info_dict["no"] + "'")
@@ -608,7 +617,7 @@ def open_report(request):
         selected_project_info = cursor.fetchone()
         # 检查选题状态，是否允许操作
         status = selected_project_info[2]
-        message = check_status(status, "开题报告")
+        message = check_status(status, "提交开题报告")
         # 如果不允许操作，则返回错误信息
         if not message == "操作允许":
             return render(request, 'student/announce.html', {'message': message, 'name': info_dict['name']})
@@ -627,14 +636,20 @@ def open_report(request):
         cursor.execute("SELECT * FROM OPEN_REPORT WHERE PNAME = '" + selected_project_info[1] + "'")
         # 如果开题报告存在，则进行构造开题报告信息，以供修改
         if cursor.rowcount == 1:
+            # 获取开题报告信息
             open_report_info = cursor.fetchone()
+            if open_report_info[6] is None:
+                comment_time = ""
+            else:
+                comment_time = open_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
+            # 构造开题报告字典
             open_report_dict = {
                 'content': open_report_info[1],
                 'file': open_report_info[2],
-                'time': open_report_info[3],
+                'time': open_report_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 'status': open_report_info[4],
                 'comment': open_report_info[5],
-                'comment_time': open_report_info[6],
+                'comment_time': comment_time,
             }
             # 更新信息字典
             info_dict['status'] = "已提交"
@@ -720,6 +735,9 @@ def mid_term_check(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html",
+                      {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 获取该学生的选题信息
     cursor = db.cursor()
     cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + info_dict["no"] + "'")
@@ -754,7 +772,7 @@ def mid_term_check(request):
             middle_check_dict = {
                 'content': middle_check_info[1],
                 'file': middle_check_info[2],
-                'time': middle_check_info[3],
+                'time': middle_check_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 'status': middle_check_info[4],
                 'comment': middle_check_info[5],
                 'comment_time': middle_check_info[6],
@@ -846,6 +864,9 @@ def weekly_report(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html",
+                      {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 获取该学生的选题信息，检查学生是否已选题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + info_dict["no"] + "'")
@@ -880,14 +901,18 @@ def weekly_report(request):
         for i in range(cursor.rowcount):
             # 获取周进度报告信息
             weekly_report_info = cursor.fetchone()
+            if weekly_report_info[6] is None:
+                comment_time = ""
+            else:
+                comment_time = weekly_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
             # 构造周进度报告信息字典
             weekly_report_dict = {
                 'content': weekly_report_info[1],
                 'file': weekly_report_info[2],
-                'time': weekly_report_info[3],
+                'time': weekly_report_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 'status': weekly_report_info[4],
                 'comment': weekly_report_info[5],
-                'comment_time': weekly_report_info[6],
+                'comment_time': comment_time,
             }
             # 将周进度报告字典添加至周进度报告列表
             weekly_report_list.append(weekly_report_dict)
@@ -929,7 +954,7 @@ def submit_weekly_report(request):
         # 向数据库中插入周进度报告信息
         cursor = db.cursor()
         cursor.execute("INSERT INTO Weekly_Report VALUES ('" + project_name + "','" + report_content
-                       + "','" + path + "','" + now + "','审核中','','')")
+                       + "','" + path + "','" + now + "','审核中','',NULL)")
     elif action == "修改":
         # 获取当前时间
         now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -937,9 +962,9 @@ def submit_weekly_report(request):
         submit_time = request.POST.get('submit_time')
         # 获取原有附件路径，并删除原有附件
         cursor = db.cursor()
-        cursor.execute("SELECT ATTACHMENT FROM Weekly_Report WHERE PNAME = '" + project_name +
+        cursor.execute("SELECT WRfile FROM Weekly_Report WHERE PNAME = '" + project_name +
                        "' AND WRtime = '" + submit_time + "'")
-        attachment_path = cursor.fetchone()[2]
+        attachment_path = cursor.fetchone()[0]
         # 如果原有附件不为空，则删除原有附件
         if not attachment_path == "":
             os.remove(attachment_path)
@@ -949,8 +974,9 @@ def submit_weekly_report(request):
             write_attachment(report_attachment, path)
         # 更新周进度报告信息
         cursor = db.cursor()
-        cursor.execute("UPDATE Weekly_Report SET CONTENT = '" + report_content + "', ATTACHMENT = '" + path
-                       + "', TIME = '" + now + "', WRstatus = '审核中' WHERE PNAME = '" + project_name + "'")
+        cursor.execute("UPDATE Weekly_Report SET WRCONTENT = '" + report_content + "', WRfile = '" + path
+                       + "', WRtime = '" + now + "', WRstatus = '审核中' WHERE PNAME = '" + project_name +
+                       "' AND WRtime = '" + submit_time + "'")
     # 提交事务
     db.commit()
     # 重定向至周进度报告页面
@@ -974,16 +1000,33 @@ def thesis_draft(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html",
+                      {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 获取该学生的选题信息
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" + info_dict["no"] + "'")
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_Teacher WHERE SName = '" + info_dict["name"] + "'")
     # 如果学生已选题
     if cursor.rowcount == 1:
         # 获取选题信息
         selected_project_info = cursor.fetchone()
+        # 检查选题的所处阶段，是否已经到达任务书阶段
+        status = selected_project_info[4]
+        message = check_status(status, "提交论文草稿")
+        # 如果不允许操作，则返回错误信息
+        if not message == "操作允许":
+            return render(request, 'student/announce.html',
+                          {'message': message, 'name': info_dict['name']})
+        # 构造课题字典
+        project_dict = {
+            'name': selected_project_info[0],
+            'type': selected_project_info[1],
+            'supervisor': selected_project_info[3],
+        }
+        info_dict["project"] = project_dict
         # 获取毕业论文草稿信息
         cursor = db.cursor()
-        cursor.execute("SELECT * FROM THESIS_DRAFT WHERE PNAME = '" + selected_project_info[1] + "'")
+        cursor.execute("SELECT * FROM THESIS_DRAFT WHERE PNAME = '" + selected_project_info[0] + "'")
         # 检查学生是否已提交毕业论文（草稿）
         if cursor.rowcount == 1:
             # 如果查询到结果，则说明学生已提交毕业论文（草稿）,此时获取论文草稿信息
@@ -991,10 +1034,11 @@ def thesis_draft(request):
             # 构造毕业论文字典，以供修改
             thesis_draft_dict = {
                 'content': thesis_draft_info[1],
-                'time': thesis_draft_info[2],
-                'status': thesis_draft_info[3],
-                'comment': thesis_draft_info[4],
-                'comment_time': thesis_draft_info[5],
+                'file': thesis_draft_info[2],
+                'time': thesis_draft_info[3],
+                'status': thesis_draft_info[4],
+                'comment': thesis_draft_info[5],
+                'comment_time': thesis_draft_info[6],
             }
             # 更新信息字典，将状态改为已提交并添加毕业论文草稿信息
             info_dict['status'] = "已提交"
@@ -1027,7 +1071,7 @@ def submit_draft(request):
         'no': request.session['no']
     }
     # 获取论文草稿相关信息
-    project_name = request.POST('project_name')
+    project_name = request.POST.get('project_name')
     content = request.POST.get('content')
     attachment = request.FILES.get('attachment')
     # 获取当前时间
@@ -1044,7 +1088,7 @@ def submit_draft(request):
         # 初始化游标，向论文草稿表插入数据
         cursor = db.cursor()
         cursor.execute("INSERT INTO THESIS_DRAFT VALUES ('" + project_name + "','" + content + "','" +
-                       path + "','" + now + "','审核中','','')")
+                       path + "','" + now + "','审核中','',NULL)")
     else:
         # 获取原有附件路径，如果路径不为空，删除原有附件
         cursor = db.cursor()
@@ -1083,15 +1127,32 @@ def thesis_final(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html",
+                      {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
     # 获取该学生的选题信息
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SNO = '" +
-                   info_dict["no"] + "'")
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_Teacher WHERE SName = '" +
+                   info_dict["name"] + "'")
     # 如果学生已选题
     if cursor.rowcount == 1:
         # 获取选题信息，并从中获取学生所选课题名称
         selected_project_info = cursor.fetchone()
-        pname = selected_project_info[1]
+        # 检查选题的所处阶段，是否已经到达任务书阶段
+        status = selected_project_info[4]
+        message = check_status(status, "提交论文定稿")
+        # 如果不允许操作，则返回错误信息
+        if not message == "操作允许":
+            return render(request, 'student/announce.html',
+                          {'message': message, 'name': info_dict['name']})
+        pname = selected_project_info[0]
+        # 构造课题字典
+        project_dict = {
+            'name': selected_project_info[0],
+            'type': selected_project_info[1],
+            'supervisor': selected_project_info[3],
+        }
+        info_dict["project"] = project_dict
         # 尝试获取该学生的毕业论文定稿信息，检查该学生是否提交论文定稿
         cursor.execute("SELECT * FROM THESIS_FINAL WHERE PNAME = '" + pname + "'")
         # 如果查询到结果，则学生已提交论文定稿
@@ -1101,8 +1162,13 @@ def thesis_final(request):
             # 获取毕业论文定稿信息
             thesis_final_info = cursor.fetchone()
             # 获取评阅教师信息
-            cursor.execute("SELECT * FROM TEACHER WHERE TNO = '" + thesis_final_info[7] + "'")
-            teacher_info = cursor.fetchone()
+            if thesis_final_info[7] is None:
+                reviewer = "暂无"
+                reviewer_no = "暂无"
+            else:
+                reviewer_no = thesis_final_info[7]
+                cursor.execute("SELECT * FROM TEACHER WHERE TNO = '" + reviewer_no + "'")
+                reviewer = cursor.fetchone()[1]
             # 构造毕业论文定稿字典，以便在页面中显示，供学生修改
             thesis_final_dict = {
                 "content": thesis_final_info[1],
@@ -1111,7 +1177,8 @@ def thesis_final(request):
                 "status": thesis_final_info[4],
                 "comment": thesis_final_info[5],
                 "comment_time": thesis_final_info[6],
-                "reviewer": teacher_info[1],
+                "reviewer": reviewer,
+                "reviewer_no": reviewer_no,
                 "score": thesis_final_info[8],
                 "score_comment": thesis_final_info[9],
                 "score_time": thesis_final_info[10],
@@ -1168,14 +1235,14 @@ def submit_final(request):
     else:
         # 获取原有附件路径，如果路径不为空，则删除原有附件
         cursor = db.cursor()
-        cursor.execute("SELECT FILE FROM THESIS_FINAL WHERE PNAME = '" + project_name + "'")
+        cursor.execute("SELECT TFfile FROM THESIS_FINAL WHERE PNAME = '" + project_name + "'")
         thesis_final_info = cursor.fetchone()
-        if thesis_final_info[2] != "":
-            os.remove(thesis_final_info[2])
-        # 初始化游标，向数据库中插入毕业论文定稿数据
+        if thesis_final_info[0] != "":
+            os.remove(thesis_final_info[0])
+        # 初始化游标，向数据库中修改毕业论文定稿数据
         cursor = db.cursor()
-        cursor.execute("UPDATE THESIS_FINAL SET CONTENT = '" + content + "', FILE = '" +
-                       path + "','" + now + "' WHERE PNAME = '" + project_name + "'")
+        cursor.execute("UPDATE THESIS_FINAL SET TFcontent = '" + content + "', TFfile = '"
+                       + path + "', TFtime = '" + now + "', TFstatus = '审核中';")
     # 如果附件不为空，则将附件保存至指定路径
     if attachment is not None:
         write_attachment(path, attachment)
@@ -1203,12 +1270,10 @@ def teacher(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 检查用户身份是否是教师
-    if info_dict["role"] == "教师":
-        return render(request, "teacher/teacher_index.html", info_dict)
-    else:
+    if info_dict["role"] == "学生":
         return render(request, "announce.html",
                       {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    return render(request, "teacher/teacher_index.html", info_dict)
 
 
 # 切换功能角色功能
@@ -1261,19 +1326,16 @@ def supervisor(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 检查用户身份是否是教师
-    if info_dict["role"] == "教师":
-        # 检查用户是否有指导教师权限
-        curse = db.cursor()
-        curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
-        if curse.rowcount == 1:
-            return render(request, "teacher/supervisor/supervisor.html", info_dict)
-        else:
-            return render(request, "announce.html",
-                          {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
-    else:
+    if info_dict["role"] == "学生":
         return render(request, "announce.html",
                       {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    return render(request, "teacher/supervisor/supervisor.html", info_dict)
 
 
 # 申报课题页面
@@ -1294,38 +1356,45 @@ def project_proposal(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 检查用户身份是否是教师
-    if info_dict["role"] == "教师":
-        # 初始化课题列表
-        project_list = []
-        # 获取教师所有已申报课题
-        cursor = db.cursor()
-        cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "';")
-        index = 0
-        for project in cursor.fetchall():
-            # 构造课题信息字典
-            project_info = {
-                'index': index,
-                'name': project[0],
-                'type': project[1],
-                'info': project[2],
-                'file': project[3],
-                'time': project[4],
-                'status': project[5],
-                'comment': project[6],
-                'comment_time': project[7],
-            }
-            # 将课题信息字典添加至课题列表
-            project_list.append(project_info)
-            index += 1
-        # 将课题列表添加至信息字典
-        info_dict["project_list"] = project_list
-        # 渲染申报课题页面
-        return render(request, "teacher/supervisor/project_proposal.html", info_dict)
-    else:
-        # 如果用户角色不是老师，则渲染通知页面
+    if info_dict["role"] == "学生":
         return render(request, "announce.html",
                       {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    # 初始化课题列表
+    project_list = []
+    # 获取教师所有已申报课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "';")
+    index = 0
+    for project in cursor.fetchall():
+        if project[7] is None:
+            comment_time = ""
+        else:
+            comment_time = project[7].strftime("%Y-%m-%d %H:%M:%S")
+        # 构造课题信息字典
+        project_info = {
+            'index': index,
+            'name': project[0],
+            'type': project[1],
+            'info': project[2],
+            'file': project[3],
+            'time': project[4].strftime("%Y-%m-%d %H:%M:%S"),
+            'status': project[5],
+            'comment': project[6],
+            'comment_time': comment_time
+        }
+        # 将课题信息字典添加至课题列表
+        project_list.append(project_info)
+        index += 1
+    # 将课题列表添加至信息字典
+    info_dict["project_list"] = project_list
+    # 渲染申报课题页面
+    return render(request, "teacher/supervisor/project_proposal.html", info_dict)
 
 
 # 申报课题功能
@@ -1405,6 +1474,16 @@ def project_confirmation(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
     # 检查用户身份是否是教师
     if not info_dict["role"] == "教师":
         #  渲染通知页面，提示用户身份错误
@@ -1535,6 +1614,16 @@ def task_issue(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
     # 从课题-学生-老师视图中查找该老师的所有已选课题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" + info_dict["name"] + "';")
@@ -1658,6 +1747,16 @@ def report_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
     # 从课题-学生-老师视图中查找该老师的所有已选课题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" +
@@ -1681,13 +1780,17 @@ def report_review(request):
             # 获取开题报告信息
             open_report_info = cursor.fetchone()
             # 构造开题报告信息字典
+            if open_report_info[6] is not None:
+                comment_time = open_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                comment_time = "暂未审阅"
             open_report_dict = {
                 "content": open_report_info[1],
                 "file": open_report_info[2],
-                "time": open_report_info[3],
+                "time": open_report_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 "status": open_report_info[4],
                 "comment": open_report_info[5],
-                "comment_time": open_report_info[6]
+                "comment_time": open_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
             }
             project_info_dict["status"] = open_report_info[4]
             # 将开题报告信息字典添加至已选课题信息字典中
@@ -1755,21 +1858,28 @@ def mid_term_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 从课题-学生视图中查找该老师的所有已选课题
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    # 从课题-学生-老师视图中查找该老师的所有已选课题
     cursor = db.cursor()
-
-    cursor.execute("SELECT * FROM Project_Student WHERE TNO = '" +
-                   info_dict["no"] + "'AND Pstatus = '已选';")
-
-    # 获取该老师的所有已选课题
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "' AND Pstatus = '已选';")
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" +
+                   info_dict["name"] + "';")
     # 初始化课题列表
     project_list = []
+    index = 0
     # 遍历已选课题信息，构造课题列表
     for project_index in range(cursor.rowcount):
         project_info = cursor.fetchone()
         project_info_dict = {
+            "index": index,
             "project_name": project_info[0],
             "project_type": project_info[1],
             "student_name": project_info[2],
@@ -1781,13 +1891,17 @@ def mid_term_review(request):
             # 获取中期检查信息
             mid_term_info = cursor.fetchone()
             # 构造中期检查信息字典
+            if mid_term_info[6] is not None:
+                comment_time = mid_term_info[6].strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                comment_time = "暂未审阅"
             mid_term_dict = {
                 "content": mid_term_info[1],
                 "file": mid_term_info[2],
-                "time": mid_term_info[3],
+                "time": mid_term_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 "status": mid_term_info[4],
                 "comment": mid_term_info[5],
-                "comment_time": mid_term_info[6]
+                "comment_time": comment_time
             }
             project_info_dict["status"] = mid_term_info[4]
             # 将开题报告信息字典添加至已选课题信息字典中
@@ -1796,7 +1910,8 @@ def mid_term_review(request):
             # 如果未查找到结果，则开题报告未提交
             project_info_dict["status"] = "未提交"
         # 将课题信息字典添加至课题列表中
-        project_list[project_index] = project_info_dict
+        index += 1
+        project_list.append(project_info_dict)
     # 更新信息字典
     info_dict["project_list"] = project_list
     # 渲染中期检查审阅页面
@@ -1829,8 +1944,8 @@ def pass_mid_term(request):
     # 初始化游标，准备操作数据库
     cursor = db.cursor()
     # 更新中期检查信息
-    cursor.execute("UPDATE Middle_Check SET Status = '" + result + "', Comment = '"
-                   + comment + "', Comment_Time = '" + comment_time + "' WHERE PNAME = '" + pname + "';")
+    cursor.execute("UPDATE Middle_Check SET MCstatus = '" + result + "', MCcomment = '"
+                   + comment + "', MCcomment_Time = '" + comment_time + "' WHERE PNAME = '" + pname + "';")
     # 提交事务
     db.commit()
     # 重定向至中期检查审阅页面
@@ -1854,57 +1969,106 @@ def weekly_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 从课题-学生视图中查找该老师的所有已选课题
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    # 从课题-学生-教师视图中查找该老师的所有已选课题
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM Project_Student WHERE TNO = '" +
-                   info_dict["no"] + "'AND Pstatus = '已选';")
-    # 获取该老师的所有已选课题
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "' AND Pstatus = '已选';")
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" +
+                   info_dict["name"] + "';")
     # 初始化课题列表
     project_list = []
+    index = 0
     # 遍历已选课题信息，构造课题列表
     for project_index in range(cursor.rowcount):
         project_info = cursor.fetchone()
         project_info_dict = {
-            "project_name": project_info[0],
-            "project_type": project_info[1],
-            "student_name": project_info[2],
+            "index": index,
+            "name": project_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
         }
         # 初始化周进度列表
-        weekly_list = []
+        weekly_report_list = []
         # 从周进度表中查找该课题的周进度信息
-        cursor.execute("SELECT * FROM Weekly_Progress WHERE PNAME = '" + project_info[0] + "';")
+        cursor.execute("SELECT * FROM Weekly_Report WHERE PNAME = '"
+                       + project_info[0] + "' ORDER BY WRtime DESC;")
         # 如果查找到结果，则周进度已存在，构造周进度信息字典，以供教师查看审阅
-        project_info_dict["status"] = "已审核"
         if cursor.rowcount >= 1:
-            # 获取周进度信息
-            weekly_info = cursor.fetchone()
-            if weekly_info[4] == "审核中":
-                project_info_dict["status"] = "待审核"
-            # 构造周进度信息字典
-            weekly_dict = {
-                "content": weekly_info[1],
-                "file": weekly_info[2],
-                "time": weekly_info[3],
-                "status": weekly_info[4],
-                "comment": weekly_info[5],
-                "comment_time": weekly_info[6]
-            }
-            project_info_dict["status"] = weekly_info[4]
-            # 将周进度信息字典添加至周进度列表中
-            weekly_list.append(weekly_dict)
+            for num in range(cursor.rowcount):
+                weekly_report_info = cursor.fetchone()
+                if num == 0:
+                    project_info_dict["time"] = weekly_report_info[3].strftime("%Y-%m-%d %H:%M:%S")
+                    if weekly_report_info[4] == "审核中":
+                        project_info_dict["status"] = "待审核"
+                    elif weekly_report_info[4] == "未通过":
+                        project_info_dict["status"] = "未通过"
+                    else:
+                        project_info_dict["status"] = "已审核"
+                if weekly_report_info[6] is None:
+                    comment_time = ""
+                else:
+                    comment_time = weekly_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
+                # 构造周进度信息字典
+                weekly_report_dict = {
+                    "index": num,
+                    "content": weekly_report_info[1],
+                    "file": weekly_report_info[2],
+                    "time": weekly_report_info[3].strftime("%Y-%m-%d %H:%M:%S"),
+                    "status": weekly_report_info[4],
+                    "comment": weekly_report_info[5],
+                    "comment_time": comment_time
+                }
+                print(weekly_report_info[5], weekly_report_info[6])
+                # 将周进度信息字典添加至周进度列表中
+                weekly_report_list.append(weekly_report_dict)
         else:
             # 如果未查找到结果，则周进度未提交
             project_info_dict["status"] = "未提交"
         # 将周进度列表添加至课题信息字典中
-        project_info_dict["weekly_list"] = weekly_list
+        project_info_dict["weekly_report_list"] = weekly_report_list
         # 将课题信息字典添加至课题列表中
+        index += 1
         project_list.append(project_info_dict)
     # 将课题列表添加至信息字典中
     info_dict["project_list"] = project_list
     # 渲染周进度审阅页面
     return render(request, "teacher/supervisor/weekly_review.html", info_dict)
+
+# 周进度审阅功能
+def review_weekly(request):
+    """
+    周进度审阅功能，指导教师可在此审核学生提交的周进度
+    :param request:
+    :return redirect:
+    """
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从POST表单中获取课题名称
+    pname = request.POST["project_name"]
+    # 从POST表单中获取周进度报告审阅内容
+    result = request.POST["result"]
+    comment = request.POST["comment"]
+    submit_time = request.POST["submit_time"]
+    comment_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 初始化游标，准备操作数据库
+    cursor = db.cursor()
+    # 更新开题报告信息
+    cursor.execute("UPDATE Weekly_Report SET WRstatus = '" + result + "', WRcomment = '"
+                   + comment + "', WRcomment_time = '" + comment_time + "' WHERE PNAME = '" + pname
+                   + "' AND WRtime = '" + submit_time + "'")
+    # 提交事务
+    db.commit()
+    # 重定向至周进度审阅页面
+    return redirect("/teacher/supervisor/weekly_review")
 
 
 # 论文草稿审阅页面
@@ -1924,29 +2088,39 @@ def draft_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 从课题-学生视图中查找该老师的所有已选课题
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    # 从课题-学生-教师视图中查找该老师的所有已选课题
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM Project_Student WHERE TNO = '" +
-                   info_dict["no"] + "'AND Pstatus = '已选';")
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" +
+                   info_dict["name"] + "';")
     # 获取该老师的所有已选课题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "' AND Pstatus = '已选';")
     # 初始化课题列表
     project_list = []
+    index = 0
     # 遍历已选课题信息，构造课题列表
     for project_index in range(cursor.rowcount):
         project_info = cursor.fetchone()
         project_info_dict = {
+            "index": index,
             "project_name": project_info[0],
             "project_type": project_info[1],
             "student_name": project_info[2],
         }
-        # 初始化论文草稿列表
-        draft_list = []
         # 从论文草稿表中查找该课题的论文草稿信息
-        cursor.execute("SELECT * FROM Draft WHERE PNAME = '" + project_info[0] + "';")
+        cursor.execute("SELECT * FROM Thesis_Draft WHERE PNAME = '" + project_info[0] + "';")
         # 如果查找到结果，则论文草稿已存在，构造论文草稿信息字典，以供教师查看审阅
-        if cursor.rowcount >= 1:
+        if cursor.rowcount == 1:
             # 获取论文草稿信息
             draft_info = cursor.fetchone()
             # 构造论文草稿信息字典
@@ -1959,19 +2133,47 @@ def draft_review(request):
                 "comment_time": draft_info[6]
             }
             project_info_dict["status"] = draft_info[4]
-            # 将论文草稿信息字典添加至论文草稿列表中
-            draft_list.append(draft_dict)
+            # 将论文草稿列表添加至课题信息字典中
+            project_info_dict.update(draft_dict)
         else:
             # 如果未查找到结果，则论文草稿未提交
             project_info_dict["status"] = "未提交"
-        # 将论文草稿列表添加至课题信息字典中
-        project_info_dict["draft_list"] = draft_list
         # 将课题信息字典添加至课题列表中
         project_list.append(project_info_dict)
+        index += 1
     # 将课题列表添加至信息字典中
     info_dict["project_list"] = project_list
     # 渲染论文草稿审阅页面
     return render(request, "teacher/supervisor/draft_review.html", info_dict)
+
+
+# 论文草稿审核功能
+def review_draft(request):
+    """
+    论文草稿审核功能，指导教师可在此审核学生提交的论文草稿
+    :param request: HTTP请求
+    :return redirect:
+    """
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 从POST表单中获取审阅信息
+    project_name = request.POST.get("project_name")
+    comment = request.POST.get("comment")
+    result = request.POST.get("result")
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 更新论文草稿表中的审阅信息
+    cursor = db.cursor()
+    cursor.execute("UPDATE Thesis_Draft SET TDSTATUS = '" + result + "', TDCOMMENT = '" + comment +
+                   "', TDCOMMENT_TIME = '" + now + "' WHERE PNAME = '" + project_name + "';")
+    db.commit()
+    # 重定向至论文草稿审阅页面
+    return redirect("/teacher/supervisor/draft_review/")
 
 
 # 论文定稿审阅页面
@@ -1991,50 +2193,179 @@ def final_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 从课题-学生视图中查找该老师的所有已选课题
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    # 从课题-学生-教师视图中查找该老师的所有已选课题
     cursor = db.cursor()
-    cursor.execute("SELECT * FROM Project_Student WHERE TNO = '" +
-                   info_dict["no"] + "'AND Pstatus = '已选';")
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE Tname = '" +
+                   info_dict["name"] + "';")
     # 获取该老师的所有已选课题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM PROJECT WHERE TNO = '" + info_dict["no"] + "' AND Pstatus = '已选';")
     # 初始化课题列表
     project_list = []
+    index = 0
     # 遍历已选课题信息，构造课题列表
     for project_index in range(cursor.rowcount):
         project_info = cursor.fetchone()
         project_info_dict = {
+            "index": index,
             "project_name": project_info[0],
             "project_type": project_info[1],
             "student_name": project_info[2],
         }
-        # 从论文定稿表中查找该课题的论文定稿信息
-        cursor.execute("SELECT * FROM Final WHERE PNAME = '" + project_info[0] + "';")
-        # 如果查找到结果，则论文定稿已存在，构造论文定稿信息字典，以供教师查看审阅
-        if cursor.rowcount >= 1:
-            # 获取论文定稿信息
+        # 从论文草稿表中查找该课题的论文草稿信息
+        cursor.execute("SELECT * FROM Thesis_Final WHERE PNAME = '" + project_info[0] + "';")
+        # 如果查找到结果，则论文草稿已存在，构造论文草稿信息字典，以供教师查看审阅
+        if cursor.rowcount == 1:
+            # 获取论文草稿信息
             final_info = cursor.fetchone()
-            # 构造论文定稿信息字典
+            # 构造论文草稿信息字典
             final_dict = {
                 "content": final_info[1],
                 "file": final_info[2],
                 "time": final_info[3],
                 "status": final_info[4],
                 "comment": final_info[5],
-                "comment_time": final_info[6]
+                "comment_time": final_info[6],
+                "tno": final_info[7],
+                "score": final_info[8],
+                "score_comment": final_info[9],
+                "score_time": final_info[10]
             }
-            # 将论文定稿信息字典添加至课题信息字典中
-            project_info_dict["final_dict"] = final_dict
             project_info_dict["status"] = final_info[4]
+            # 将论文草稿列表添加至课题信息字典中
+            project_info_dict.update(final_dict)
         else:
-            # 如果未查找到结果，则论文定稿未提交
+            # 如果未查找到结果，则论文草稿未提交
             project_info_dict["status"] = "未提交"
         # 将课题信息字典添加至课题列表中
         project_list.append(project_info_dict)
+        index += 1
     # 将课题列表添加至信息字典中
     info_dict["project_list"] = project_list
-    # 渲染论文定稿审阅页面
+    # 渲染论文草稿审阅页面
     return render(request, "teacher/supervisor/final_review.html", info_dict)
+
+
+# 论文评阅页面
+def thesis_score(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
+    # 从毕业论文表中查询所有以该老师为评阅教师的论文
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Thesis_Final WHERE TNO = '" + info_dict["no"] + "';")
+    # 初始化论文列表
+    thesis_list = []
+    # 遍历论文信息，构造论文列表
+    for thesis_index in range(cursor.rowcount):
+        # 获取论文信息
+        thesis_info = cursor.fetchone()
+        # 从课题-学生-教师表中查询课题信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Project_Student_Teacher WHERE Pname = '" + thesis_info[0] + "';")
+        project_info = cursor1.fetchone()
+        if thesis_info[10] is None:
+            comment_time = ""
+        else:
+            comment_time = thesis_info[10].strftime("%Y-%m-%d %H:%M:%S")
+        # 构造论文信息字典
+        thesis_info_dict = {
+            "index": thesis_index,
+            "name": thesis_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
+            "supervisor": project_info[3],
+            "content": thesis_info[1],
+            "file": thesis_info[2],
+            "time": thesis_info[3].strftime("%Y-%m-%d %H:%M:%S"),
+            "status": thesis_info[4],
+            "score": thesis_info[8],
+            "comment": thesis_info[9],
+            "score_time": comment_time
+        }
+        # 将论文信息字典添加至论文列表中
+        thesis_list.append(thesis_info_dict)
+    # 将论文列表添加至信息字典中
+    info_dict["project_list"] = thesis_list
+    # 渲染论文评阅页面
+    return render(request, "teacher/supervisor/thesis_score.html", info_dict)
+
+
+# 论文评阅功能
+def score_thesis(request):
+    # 从POST表单中获取相关数据
+    project_name = request.POST.get("project_name")
+    score = request.POST.get("score")
+    comment = request.POST.get("comment")
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 更新毕业论文表中的评阅信息
+    cursor = db.cursor()
+    cursor.execute("UPDATE Thesis_Final SET TFscore = '" + score + "', TFstatus = '已评阅', TFscore_comment = '"
+                   + comment + "', TFscore_time = '" + now + "' WHERE Pname = '" + project_name + "';")
+    db.commit()
+    # 重定向至论文评阅页面
+    return redirect("/teacher/supervisor/thesis_score/")
+
+
+# 论文定稿审核功能
+def review_final(request):
+    """
+    论文草稿审核功能，指导教师可在此审核学生提交的论文草稿
+    :param request: HTTP请求
+    :return redirect:
+    """
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 从POST表单中获取审阅信息
+    project_name = request.POST.get("project_name")
+    comment = request.POST.get("comment")
+    result = request.POST.get("result")
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 更新论文草稿表中的审阅信息
+    cursor = db.cursor()
+    if result == "通过":
+        result = "已审核，待评阅"
+    else:
+        result = "未通过"
+    cursor.execute("UPDATE Thesis_Final SET TFSTATUS = '" + result + "', TFCOMMENT = '" + comment +
+                   "', TFCOMMENT_TIME = '" + now + "' WHERE PNAME = '" + project_name + "';")
+    db.commit()
+    # 重定向至论文草稿审阅页面
+    return redirect("/teacher/supervisor/final_review/")
 
 
 # TODO 毕设推荐页面
@@ -2059,6 +2390,16 @@ def manager(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_manager = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有毕设负责人权限，无法访问。', 'name': info_dict["name"]})
     # 渲染毕设负责人模块页面
     return render(request, "teacher/manager/manager.html", info_dict)
 
@@ -2080,6 +2421,16 @@ def project_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_manager = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有毕设负责人权限，无法访问。', 'name': info_dict["name"]})
     # 获取课题表中待审核的课题信息
     cursor = db.cursor()
     cursor.execute("SELECT * FROM PROJECT WHERE Pstatus = '待审核';")
@@ -2163,6 +2514,16 @@ def task_review(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有毕设负责人权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_manager = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有毕设负责人权限，无法访问。', 'name': info_dict["name"]})
     # 获取任务书表中待审核的任务书信息
     cursor = db.cursor()
     cursor.execute("SELECT * FROM TASK_BOOK WHERE TBstatus = '审核中';")
@@ -2233,14 +2594,232 @@ def pass_task(request):
     return redirect('/teacher/manager/task_review/')
 
 
+# 评阅教师分配页面
+def reviewer_assignment(request):
+    """
+    评阅教师分配页面，负责人可在此为课题分配评阅教师
+    :param request: HTTP请求
+    :return render: 渲染评阅教师分配页面
+    """
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有毕设负责人权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_manager = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有毕设负责人权限，无法访问。', 'name': info_dict["name"]})
+    # 从选题表中查询所有处于论文定稿已审核状态的课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_TEACHER WHERE SPstatus = '论文定稿已审核';")
+    project_list = []
+    # 遍历课题
+    for num in range(cursor.rowcount):
+        # 获取论文信息
+        project_info = cursor.fetchone()
+        #  从毕业论文表查询评阅教师
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM THESIS_Final WHERE Pname = '" + project_info[0] + "';")
+        thesis_info = cursor2.fetchone()
+        if thesis_info[7] is not None:
+            tno = thesis_info[7]
+            status = "已分配"
+        else:
+            tno = ""
+            status = "未分配"
+        project_info_dict = {
+            "index": num,
+            "name": project_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
+            "supervisor": project_info[3],
+            "tno": tno,
+            "status": status
+        }
+        # 将论文信息字典添加至论文列表中
+        project_list.append(project_info_dict)
+    # 将论文列表添加至信息字典中
+    info_dict["project_list"] = project_list
+    # 查询所有教师
+    cursor3 = db.cursor()
+    cursor3.execute("SELECT * FROM TEACHER;")
+    teacher_list = []
+    # 遍历教师
+    for num in range(cursor3.rowcount):
+        # 获取教师信息
+        teacher_info = cursor3.fetchone()
+        # 构造教师信息字典
+        teacher_info_dict = {
+            "no": teacher_info[0],
+            "name": teacher_info[1],
+            "faculty": teacher_info[4],
+            "major": teacher_info[5],
+            "title": teacher_info[6]
+        }
+        # 将教师信息字典添加至教师列表中
+        teacher_list.append(teacher_info_dict)
+    # 将教师列表添加至信息字典中
+    info_dict["teacher_list"] = teacher_list
+    # 渲染评阅教师分配页面
+    return render(request, "teacher/manager/reviewer_assignment.html", info_dict)
+
+
+# 评阅教师分配功能
+def assign_reviewer(request):
+    """
+    评阅教师分配功能，从POST表单中获取课题名称和评阅教师工号，更新毕业论文表中的评阅教师字段
+    :param request: HTTP请求
+    :return redirect: 重定向至评阅教师分配页面
+    """
+    # 从POST表单中获取相关信息
+    pname = request.POST.get("project_name")
+    tno = request.POST.get("tno")
+    # 更新毕业论文表中的评阅教师字段
+    cursor = db.cursor()
+    cursor.execute("UPDATE THESIS_Final SET Tno = '" + tno + "' WHERE Pname = '" + pname + "';")
+    db.commit()
+    # 重定向至评阅教师分配页面
+    return redirect('/teacher/manager/reviewer_assignment/')
+
+
 # TODO 答辩组创建页面
 def defense_assignment(request):
     pass
 
 
-# TODO 答辩组分配页面
+# 答辩组管理界面
 def group_assignment(request):
-    pass
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no']
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有毕设负责人权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_manager = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有毕设负责人权限，无法访问。', 'name': info_dict["name"]})
+    # 从答辩组表中查询所有答辩组
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Defense_Panel;")
+    group_list = []
+    # 遍历答辩组
+    for num in range(cursor.rowcount):
+        # 获取答辩组信息
+        group_info = cursor.fetchone()
+        # 构造答辩组信息字典
+        group_info_dict = {
+            "index": num,
+            "name": group_info[0],
+            "location": group_info[1],
+            "date": group_info[2],
+            "leader": group_info[3],
+            "secretary": group_info[4],
+            "faculty": group_info[5],
+            "time": group_info[6]
+        }
+        # 查询答辩组的答辩学生
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM Defense_Student WHERE DPname = '" + group_info[0] + "';")
+        student_list = []
+        # 遍历答辩学生
+        group_info_dict['count'] = cursor2.rowcount
+        for num2 in range(cursor2.rowcount):
+            # 获取答辩学生信息
+            student_info = cursor2.fetchone()
+            # 构造答辩学生信息字典
+            # 从学生表中查询学生详细信息
+            cursor3 = db.cursor()
+            cursor3.execute("SELECT * FROM STUDENT WHERE SNO = '" + student_info[1] + "';")
+            student_info2 = cursor3.fetchone()
+            student_info_dict = {
+                "no": student_info[1],
+                "name": student_info2[1],
+                "faculty": student_info2[4],
+                "major": student_info2[5],
+            }
+            # 将答辩学生信息字典添加至答辩学生列表中
+            student_list.append(student_info_dict)
+        # 查询答辩组成员
+        cursor2 = db.cursor()
+        cursor2.execute("SELECT * FROM Panel_Member WHERE DPname = '" + group_info[0] + "';")
+        member_list = []
+        # 遍历答辩组成员
+        for num2 in range(cursor2.rowcount):
+            # 获取答辩组成员信息
+            member_info = cursor2.fetchone()
+            # 构造答辩组成员信息字典
+            # 从教师表查询成员详细信息
+            cursor3 = db.cursor()
+            cursor3.execute("SELECT * FROM TEACHER WHERE TNO = '" + member_info[1] + "';")
+            member_info2 = cursor3.fetchone()
+            member_info_dict = {
+                "no": member_info[1],
+                "name": member_info2[1],
+                "title": member_info2[6],
+                "faculty": member_info2[4],
+                "major": member_info2[5],
+                "time": member_info[2]
+            }
+            # 将答辩组成员信息字典添加至答辩组成员列表中
+            member_list.append(member_info_dict)
+        group_info_dict["member_list"] = member_list
+        # 将答辩组信息字典添加至答辩组列表中
+        group_list.append(group_info_dict)
+    # 将答辩组列表添加至信息字典中
+    info_dict["group_list"] = group_list
+    # 渲染答辩组管理页面
+    return render(request, "teacher/manager/group_assignment.html", info_dict)
+
+
+# 建立答辩组功能
+def assign_group(request):
+    # 从POST请求中获取答辩组信息
+    group_name = request.POST.get("group_name")
+    group_location = request.POST.get("group_location")
+    group_date = request.POST.get("group_date")
+    group_leader = request.POST.get("group_leader")
+    group_secretary = request.POST.get("group_secretary")
+    group_faculty = request.POST.get("group_faculty")
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 将答辩组信息插入答辩组表中
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO Defense_Panel VALUES ('" + group_name + "', '" + group_location + "', '" +
+                   group_date + "', '" + group_leader + "', '" + group_secretary + "', '" + group_faculty + "', '" + now + "');")
+    # 从POST表单中获取答辩成员信息
+    id_list = request.POST.getlist("group_member_id")
+    name_list = request.POST.getlist("group_member_name")
+    # 遍历答辩成员列表
+    for num in range(len(id_list)):
+        # 将答辩成员信息插入答辩组成员表中
+        cursor.execute("INSERT INTO Panel_Member VALUES ('" + group_name + "', '" + id_list[num] + "', '" + now + "');")
+    # 提交数据库事务
+    db.commit()
+    # 重定向至答辩组管理页面
+    return redirect("/teacher/manager/group_assignment/")
+
 
 
 # TODO 过程信息总结页面
@@ -2265,17 +2844,21 @@ def dean(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 检查用户身份是否为老师
-    if info_dict['role'] != '教师':
-        # 如果不是，则渲染通知页面
+    # 身份检查
+    if info_dict["role"] == "学生":
         return render(request, "announce.html",
                       {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
-    # TODO 检查用户是否为教学院长
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_dean = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有教学院长权限，无法访问。', 'name': info_dict["name"]})
     # 渲染教学院长模块主页
     return render(request, "teacher/dean/dean.html", info_dict)
 
 
-# TODO 发布双选结果页面
+# 发布双选结果页面
 def project_announcement(request):
     # 如果未登录，则重定向至登录页面
     if 'uno' not in request.session:
@@ -2287,11 +2870,16 @@ def project_announcement(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 检查用户身份是否为老师
-    if info_dict['role'] != '教师':
-        # 如果不是，则渲染通知页面
+    # 身份检查
+    if info_dict["role"] == "学生":
         return render(request, "announce.html",
                       {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_dean = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有教学院长权限，无法访问。', 'name': info_dict["name"]})
     # 从课题表中获取所有待发布的课题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM PROJECT WHERE Pstatus = '待发布'")
@@ -2351,11 +2939,16 @@ def result_announcement(request):
         'name': request.session['name'],
         'no': request.session['no']
     }
-    # 检查用户身份是否是老师
-    if info_dict['role'] != '教师':
-        # 如果不是，则渲染通知页面
+    # 身份检查
+    if info_dict["role"] == "学生":
         return render(request, "announce.html",
                       {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_dean = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有教学院长权限，无法访问。', 'name': info_dict["name"]})
     # 获取课选题表中所有处于选题已被确认阶段的课题
     cursor = db.cursor()
     cursor.execute("SELECT * FROM SELECT_PROJECT WHERE SPstatus = '选题已被确认'")

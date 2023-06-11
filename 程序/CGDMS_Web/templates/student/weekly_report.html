@@ -16,10 +16,6 @@
             $('main-content').style.display = 'none';
             //显示弹窗
             $('pop').style.display = 'block';
-            // 设置弹窗的基本属性值
-            $('project_name').value = {{ project.name }}
-            $('project_type').value = {{ project.type }}
-            $('project_supervisor').value = {{ project.supervisor }}
             // 初始化提交按钮
             var submit_button;
             submit_button = $('submit_button');
@@ -36,16 +32,21 @@
                 $('weekly_report').value = weekly_report.content;
                 $('attachment').src = weekly_report.file
                 $('submit_time').value = weekly_report.time;
+                $('s_time').value = weekly_report.time;
                 $('report_status').value = weekly_report.status;
                 $('comment').value = weekly_report.comment;
                 $('comment_time').value = weekly_report.comment_time;
                 // 依据课题审核状态，修改弹窗内容
                 if (status === "通过"){
-                    submit_button.type = "button";
-                    submit_button.onclick = hidePop;
-                    submit_button.value = "关闭";
+                    submit_button.setAttribute("disabled", "disabled")
+                    $("weekly_report").setAttribute("disabled", "disabled")
+                    $("attachment").setAttribute("disabled", "disabled")
+                    submit_button.value = "已审核";
                 }
-                else if (status === "未通过"){
+                else{
+                    submit_button.removeAttribute("disabled")
+                    $("weekly_report").removeAttribute("disabled")
+                    $("attachment").removeAttribute("disabled")
                     $('action').value = "修改";
                     submit_button.type = "submit";
                     submit_button.value = "提交";
@@ -54,25 +55,25 @@
         }
         function hidePop(){
             $('main-content').style.display = 'block';
-            document.getElementsByClassName('pop')[0].style.display = 'none';
+            $('pop').style.display = 'none';
             $('extra').style.display =  'none';
         }
     </script>
     <div class="info_border" id="pop" style="display:none; margin: auto; left: 0; top:0">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
         <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h3>周进度报告</h3><hr/><br/>
-            <form method="post" action="/student/weekly_report/submit_report">
+            <form method="post" action="/student/weekly_report/submit_report/">
                 {% csrf_token %}
                 <label>课题名称：
-                    <input disabled class="disabled" id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="pname">
-                    <input id="project_name" style="display:none; border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                    <input disabled class="disabled" id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="pname" value="{{ project.name }}">
+                    <input id="project_name" style="display:none; border-radius: 10px;width: 48%" required='' type='text' name="project_name" value="{{ project.name }}" >
                 </label>
                 <label>课题类型：
-                    <input disabled class="disabled" id="project_type" style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                    <input disabled class="disabled" id="project_type" value="{{ project.type }}" style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
                 </label>
                 <label>指导教师：
-                    <input disabled class="disabled" id="project_supervisor" style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor">
+                    <input disabled class="disabled" id="project_supervisor" value="{{ project.supervisor }}" style="border-radius: 10px;width: 48%" required='' type='text' name="project_supervisor">
                 </label>
                 <hr/>
                 <div id="content">
@@ -84,9 +85,10 @@
                     </label>
                 </div>
                 <div id = "extra" style="display: none">
-                    <hr/>
+                    <br/><hr/><br/>
                     <label>提交时间
-                        <input disabled type="text" id="submit_time" name="submit_time">
+                        <input disabled type="text" id="submit_time" name="s_time">
+                        <input style="display: none" type="text" id="s_time" name="submit_time">
                     </label>
                     <label>审核状态：
                         <input disabled type="text" id="report_status">
@@ -99,16 +101,17 @@
                     </label>
                 </div>
                 <br/><hr/>
-                <div style="text-align: center">
-                    <label for="action"></label><input type="text" style="display: none" id="action" name="action"/>
-                    <input id="submit_button" type="submit" value="提交" />
+                    <label style="display: none" for="action"></label><input type="text" style="display: none" id="action" name="action"/>
+                <div class="form-group" style="text-align: center">
+                    <input style="width: 36%" id="submit_button" type="submit" value="提交" />
+                    <input style="width: 36%" onclick="hidePop()" type="button" value="关闭" />
                 </div>
             </form>
         </div>
     </div>
     <div id = "main-content" class="info_border">
-    <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
         <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h1>周进度报告</h1><hr/><br/>
             <div>
                      <label style="padding-right: 25px;" for="project_name">课题名称：
@@ -128,8 +131,18 @@
                 </div>
             <hr/>
             <div>
-                <input type="button" class="add" value="新建报告" onclick="showPop('', '新建')"/>
+                <script>
+                    var project = {
+                        "name": "{{ project.name }}",
+                        "type": "{{ project.type }}",
+                        "supervisor": "{{ project.supervisor }}"
+                    }
+                </script>
+                <input type="button" class="add" value="新建报告" onclick="showPop(project, '新建')"/>
                 <table>
+                    <script>
+                        var weekly_report_list = []
+                    </script>
                         <tr>
                             <th>提交时间</th>
                             <th>进展情况</th>
@@ -137,12 +150,9 @@
                             <th>审核时间</th>
                             <th>信息操作</th>
                         </tr>
-                    <script>
-                        var weekly_report_list = []
-                    </script>
                     {% for weekly_report in weekly_report_list %}
                             <tr>
-                                <td>{{ weekly_report.submit_time }}</td>
+                                <td>{{ weekly_report.time }}</td>
                                 <td>{{ weekly_report.content|truncatechars:10 }}</td>
                                 <td>{{ weekly_report.status }}</td>
                                 <td>{{ weekly_report.comment_time }}</td>
@@ -158,9 +168,9 @@
                                         }
                                     </script>
                                     {% if weekly_report.status == "通过" %}
-                                        <input type="button" value="查看" onclick="showPop(weekly_report,'{{ weekly_report.status }}')">
+                                        <input type="button" style="margin: auto" value="查看" onclick="showPop(weekly_report,'{{ weekly_report.status }}')">
                                     {% else %}
-                                        <input type="button" value="修改" onclick="showPop(weekly_report,'{{ weekly_report.status }}')">
+                                        <input type="button" style="margin: auto" value="修改" onclick="showPop(weekly_report,'{{ weekly_report.status }}')">
                                     {% endif %}
                                 </td>
                             </tr>
@@ -173,6 +183,5 @@
                 <br/><hr/>
             </div>
         </div>
-        <br/><br/><hr>
     </div>
 {% endblock %}

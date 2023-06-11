@@ -56,13 +56,10 @@
             $('extra').style.display =  'none';
         }
     </script>
-    <div class="pop" style="width:82%; margin: auto; left: 0; top:0">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
+    <div class="pop">
         <div class="border">
-            <hr/>
-            <h1 style="font-size: 24px">课题信息</h1>
-            <hr/><br/>
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h1 style="font-size: 24px">课题信息</h1><hr/><br/>
             <form method="post" action="/teacher/manager/project_review/pass/">
                 {% csrf_token %}
                 <label style="display: block">课题名称：
@@ -116,7 +113,7 @@
                     <input id="attachment" type="file" name="attachment"/>
                 </label>
                 <div id = "extra" style="display: none">
-                    <hr/>
+                    <br/><hr/><br/>
                     <label>提交时间
                         <input disabled class="disabled" type="text" id="submit_time" name="submit_time">
                     </label>
@@ -133,23 +130,22 @@
                         </select>
                     </label>
                 </div>
-                <hr/>
+                <br/><hr/><br/>
                 <label style="display: none" for="action"></label>
                 <input type="text" style="display: none" id="action" name="action"/>
                 <div class="form-group" style="padding: 0; margin: 0;">
-                    <input style="display: inline; width: 48%" id="submit_button" type="submit" onclick="hidePop()" value="提交" />
-                    <input style="display: inline; width: 48%" type="button" onclick="hidePop()" value="取消" />
+                    <input style="display: inline; width: 36%;margin: auto" id="submit_button" type="submit" onclick="hidePop()" value="提交" />
+                    <input style="display: inline; width: 36%;margin: auto" type="button" onclick="hidePop()" value="取消" />
                 </div>
             </form>
         </div>
     </div>
-    <div id="main-content" class = "form" style="text-align: center">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
-        <div class = 'child-form'>
+    <div id="main-content" class="info_border">
+        <div class = 'border'>
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/>
             <h1 style="font-size: 24px">课题审核</h1>
-            <hr/>
+            <hr/><br/>
             <table>
                 <tr>
                     <th>课题名称</th>
@@ -180,19 +176,16 @@
                                 }
                                 project_list.push(project_info)
                             </script>
-                            <input type="button" style="margin: auto" onclick="showPop(project_list['{{ project.index }}'], '{{ project.status }}')" value="审阅">
+                            <input type="button" style="margin: auto" onclick="showPop(project_list['{{ project.index }}'], '{{ project.status }}')" value="审核">
                         </td>
                     </tr>
                 {% empty %}
-                     <tr>
-                        <td>&nbsp</td>
-                        <td>&nbsp</td>
-                        <td>&nbsp</td>
-                        <td>&nbsp</td>
-                        <td>&nbsp</td>
+                     <tr style="height: 128px">
+                        <td colspan="5">暂无课题需审核</td>
                     </tr>
                 {% endfor %}
             </table>
+            <br/><hr/>
         </div>
     </div>
 {% endblock %}
