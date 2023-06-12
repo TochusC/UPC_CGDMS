@@ -22,6 +22,7 @@ from . import views
 urlpatterns = [
                   # 通用模块
                   path('', views.login_page),
+                  path('comment/', views.comment),
                   path('login/', views.login),
                   path('logout/', views.logout),
                   path('register/', views.register),
@@ -48,7 +49,8 @@ urlpatterns = [
                   path('student/thesis_final/submit_final/', views.submit_final),
                   # 教师模块
                   path('teacher/', views.teacher),
-                  path('role/', views.role),
+                  path('teacher/role/', views.role),
+                  path('teacher/information_summary/', views.information_summary),
                   # 指导教师模块
                   path('teacher/supervisor/', views.supervisor),
                   path('teacher/supervisor/project_proposal/', views.project_proposal),
@@ -70,10 +72,7 @@ urlpatterns = [
                   path('teacher/supervisor/draft_review/pass/', views.review_draft),
                   path('teacher/supervisor/final_review/', views.final_review),
                   path('teacher/supervisor/final_review/pass/', views.review_final),
-                  path('teacher/supervisor/thesis_score/', views.thesis_score),
-                  path('teacher/supervisor/thesis_score/score/', views.score_thesis),
                   path('teacher/supervisor/project_recommendation/', views.project_recommendation),
-                  path('teacher/supervisor/propose_project/', views.propose_project),
                   # 专业毕设负责人模块
                   path('teacher/manager/', views.manager),
                   path('teacher/manager/project_review/', views.project_review),
@@ -82,10 +81,10 @@ urlpatterns = [
                   path('teacher/manager/task_review/pass_task/', views.pass_task),
                   path('teacher/manager/reviewer_assignment/', views.reviewer_assignment),
                   path('teacher/manager/reviewer_assignment/assign/', views.assign_reviewer),
-                  path('teacher/manager/defense_assignment/', views.defense_assignment),
                   path('teacher/manager/group_assignment/', views.group_assignment),
                   path('teacher/manager/group_assignment/assign/', views.assign_group),
-                  path('teacher/manager/information_summary', views.information_summary),
+                  path('teacher/manager/group_assignment/assign_student/', views.assign_student),
+                  path('teacher/manager/group_assignment/re_assign/', views.reassign_group),
                   # 教学院长模块
                   path('teacher/dean/', views.dean),
                   path('teacher/dean/project_announcement/', views.project_announcement),
@@ -93,4 +92,12 @@ urlpatterns = [
                   path('teacher/dean/result_announcement/', views.result_announcement),
                   path('teacher/dean/result_announcement/announce/', views.announce_result),
                   path('teacher/dean/announce_result/', views.announce_result),
+                  # 教学秘书模块
+                  path('teacher/secretary/', views.secretary_index),
+                  path('teacher/secretary/thesis_score/', views.thesis_score),
+                  path('teacher/secretary/thesis_score/score/', views.score_thesis),
+                  path('teacher/secretary/defense_score/', views.defense_score),
+                  path('teacher/secretary/defense_score/score/', views.score_defense),
+                  path('teacher/secretary/score_announcement/', views.score_announcement),
+                  path('teacher/secretary/score_announcement/announce/', views.announce_score),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

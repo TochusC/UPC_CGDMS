@@ -1,0 +1,602 @@
+﻿@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&display=swap');
+
+body{
+    background-color: #E6E6E6;
+}
+/* 全局样式 */
+* {
+  box-sizing: border-box;
+}
+html, body {
+  padding: 0;
+  margin: 0;
+}
+/* 导航栏样式 */
+nav {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 10000;
+    box-shadow: 0 0 10px #ffffffcc;
+    background-color: #333333dd;
+    color: #fff;
+    padding: 10px 20px;
+}
+
+.logo img {
+  height: 50px;
+}
+
+.logo h1 {
+    white-space: nowrap;
+  font-size: 24px;
+  margin-left: 10px;
+}
+
+.nav-links {
+    padding: 0;
+    margin: 0;
+  display: flex;
+  list-style: none;
+    horiz-align: center;
+}
+
+.nav-links li {
+  margin-right: 20px;
+    border-left: #fff;
+    border-right: #fff;
+}
+
+.nav-links a {
+  color: #fff;
+  text-decoration: none;
+  font-size: 18px;
+}
+
+.second-links {
+    padding: 0;
+    margin: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    list-style: none;
+    horiz-align: center;
+}
+
+.second-links li {
+    padding: 5px;
+    margin: 0px;
+    margin-right: 20px;
+    border-left: #27496d;
+    border-right: #27496d;
+}
+
+.second-links a {
+  color: #27496d;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+.second-links li:hover{
+  border: 1px solid #27496d;
+  border-radius: 5px;
+}
+
+/* 侧边栏样式 */
+aside {
+    padding: 20px;
+    background-color: #333333bb;
+    box-shadow: 0 0 10px #999;
+    height: 100%;
+}
+
+h2 {
+  font-size: 24px;
+    color: #F0F0F0;
+  margin-bottom: 20px;
+}
+
+.side-links {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.side-links li {
+  margin-bottom: 10px;
+}
+
+.side-links a {
+    display: block;
+    padding: 10px 20px;
+    background-color: #FFFFFF22;
+    border-radius: 5px;
+    border: 2px solid #27496d88;
+    box-shadow: 0 0 2px #27496d66;
+    color: #F0F0F0;
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.side-links a:hover {
+  background-color: #27496d;
+    border-color: #FAFAFA;
+    box-shadow: 0 0 5px #27496d;
+  color: #fff;
+}
+
+/* 日历样式 */
+
+:root {
+    --primary-color: #F0F0F0;
+    --calendar-bg-color: #44444455;
+    --calendar-font-color: var(--primary-color);
+    --weekdays-border-bottom-color: #E0E0E0;
+    --calendar-date-hover-color: #27496d;
+    --calendar-current-date-color: #33333388;
+    --calendar-today-color: linear-gradient(to bottom, #444444, #22222233);
+    --calendar-today-innerborder-color: transparent;
+    --calendar-nextprev-bg-color: transparent;
+        --next-prev-arrow-color : var(--primary-color);
+    --calendar-border-radius: 16px;
+    --calendar-prevnext-date-color: #BDBDBD
+}
+
+
+.calendar {
+    border: #003778;
+    font-family: 'IBM Plex Sans', sans-serif;
+    max-width: 320px; /*change as per your design need */
+    min-width: 260px;
+    display: inline-block;
+    position: relative;
+    background: var(--calendar-bg-color);
+    color: var(--calendar-font-color);
+    box-sizing: border-box;
+    font-weight: normal;
+    border-radius: var(--calendar-border-radius);
+}
+
+.calendar-inner {
+    padding: 10px 10px;
+}
+
+.calendar .calendar-inner .calendar-body {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+}
+
+.calendar .calendar-inner .calendar-body div {
+    padding: 4px;
+    min-height: 30px;
+    line-height: 30px;
+    border: 1px solid transparent;
+    margin: 10px 2px 0px;
+}
+
+.calendar .calendar-inner .calendar-body div:nth-child(-n+7) {
+    border: 1px solid transparent;
+    border-bottom: 1px solid var(--weekdays-border-bottom-color);
+}
+
+.calendar .calendar-inner .calendar-body div:nth-child(-n+7):hover {
+    border: 1px solid transparent;
+    border-bottom: 1px solid var(--weekdays-border-bottom-color);
+}
+
+.calendar .calendar-inner .calendar-body div>a {
+    color: var(--calendar-font-color);
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+}
+
+.calendar .calendar-inner .calendar-body div:hover {
+    border: 1px solid var(--calendar-date-hover-color);
+    border-radius: 4px;
+}
+
+.calendar .calendar-inner .calendar-body div.empty-dates:hover {
+    border: 1px solid transparent;
+}
+
+.calendar .calendar-inner .calendar-controls {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.calendar .calendar-inner .calendar-today-date {
+    display: grid;
+    text-align: center;
+    cursor: pointer;
+    margin: 3px 0px;
+    background: var(--calendar-current-date-color);
+    padding: 8px 0px;
+    border-radius: 10px;
+    width: 80%;
+    margin: auto;
+}
+
+.calendar .calendar-inner .calendar-controls .calendar-year-month {
+    display: flex;
+    min-width: 100px;
+    justify-content: space-evenly;
+    align-items: center;
+}
+
+.calendar .calendar-inner .calendar-controls .calendar-next {
+    text-align: right;
+}
+
+.calendar .calendar-inner .calendar-controls .calendar-year-month .calendar-year-label,
+.calendar .calendar-inner .calendar-controls .calendar-year-month .calendar-month-label {
+    font-weight: 500;
+    font-size: 20px;
+}
+
+.calendar .calendar-inner .calendar-body .calendar-today {
+    background: var(--calendar-today-color);
+    border-radius: 4px;
+}
+
+.calendar .calendar-inner .calendar-body .calendar-today:hover {
+    border: 1px solid transparent;
+}
+
+.calendar .calendar-inner .calendar-body .calendar-today a {
+    outline: 2px solid var(--calendar-today-innerborder-color);
+}
+
+.calendar .calendar-inner .calendar-controls .calendar-next a,
+.calendar .calendar-inner .calendar-controls .calendar-prev a {
+    color: var(--calendar-font-color);
+    font-family: arial, consolas, sans-serif;
+    font-size: 26px;
+    text-decoration: none;
+    padding: 4px 12px;
+    display: inline-block;
+    background: var(--calendar-nextprev-bg-color);
+    margin: 10px 0 10px 0;
+}
+
+.calendar .calendar-inner .calendar-controls .calendar-next a svg,
+.calendar .calendar-inner .calendar-controls .calendar-prev a svg {
+    height: 20px;
+    width: 20px;
+}
+
+.calendar .calendar-inner .calendar-controls .calendar-next a svg path,
+.calendar .calendar-inner .calendar-controls .calendar-prev a svg path{
+    fill: var(--next-prev-arrow-color);
+}
+
+.calendar .calendar-inner .calendar-body .prev-dates,
+.calendar .calendar-inner .calendar-body .next-dates {
+    color: var(--calendar-prevnext-date-color);
+}
+
+.calendar .calendar-inner .calendar-body .prev-dates:hover,
+.calendar .calendar-inner .calendar-body .next-dates:hover {
+  border: 1px solid transparent;
+  pointer-events: none;
+}
+
+/* 查看信息页面 */
+h1{
+    font-size: 24px;
+    text-align: center;
+    color: #27496d;
+}
+h3,h4{
+    text-align: center;
+    color: #27496d;
+}
+
+table {
+    margin: auto;
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #ffffff88;
+}
+
+th,
+td {
+    padding: 10px;
+    border: 1px solid #ccc;
+    text-align: center;
+}
+
+tr:nth-child(even) {
+    background-color: #f2f2f2AA;
+}
+
+input[type="submit"]{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+        box-shadow: 0 0 4px #27496d;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #27496d;
+  color: #fff;
+}
+input[type="button"]{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+        box-shadow: 0 0 4px #27496d;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="button"].add{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+    box-shadow: 0 0 2px #27496d;
+    margin-bottom: 4px;
+    width: 32%;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="submit"].add{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+    box-shadow: 0 0 2px #27496d;
+    margin-bottom: 4px;
+    width: 32%;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="button"]:hover {
+  background-color: #27496d;
+  color: #fff;
+}
+input.disable[type="submit"]{
+  border-radius: 4px;
+  color: #333;
+    background-color: #E6E6E6;
+  transition: all 0.3s ease;
+}
+
+input.disable[type="submit"]:hover {
+  background-color: #27496d;
+  color: #fff;
+}
+
+/* 页脚样式 */
+.footer {
+    background-color: #222222bb;
+    color: #f0f0f0;
+    box-shadow: 0 0 10px #ffffffbb inset;
+    z-index: -10;
+    vertical-align: bottom;
+    padding: 20px;
+    text-align: center;
+    margin-top: 96px;
+}
+
+.footer p {
+  margin-top: 0;
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.footer ul {
+  list-style: none;
+  margin: 10px 0 0 0;
+  padding: 0;
+}
+
+.footer ul li {
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.footer ul li a {
+  color: #F0F0F0;
+  text-decoration: none;
+}
+
+.footer ul li a:hover {
+  text-decoration: underline;
+}
+
+hr {
+    border: 1px solid #27496d88;
+}
+
+
+li.head_navi{
+    border: 1px solid #ffffff00;
+    padding: 10px;
+    transition: all ease 0.3s;
+}
+li.head_navi:hover{
+    border: 1px solid #F5F5F5;
+    padding: 10px;
+    box-shadow: 0 0 3px #ffffffbb;
+    transition: all ease 0.3s;
+    border-radius: 6px;
+}
+
+div.img_center_div{
+      display: flex;
+      justify-content: center;
+      align-items: center;
+}
+
+.form-group {
+    width: 100%;
+  display: flex;
+  justify-content: space-between;
+}
+.form-group form {
+  width: 64%;
+}
+.form-group button {
+  width: 36%;
+    margin: auto;
+}
+
+div.info_border{
+    margin: auto;
+    width: 84%;
+    height: 100%;
+    background-color: #ffffffFD;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #aaa;
+    padding: 10px;
+    text-align: center;
+    z-index: 100;
+}
+
+nav[id="second-nav"]{
+    transition: all 0.3s ease;
+    background-color: #44444400;
+    border-radius: 5px;
+    box-shadow: 0 0 10px #ffffff88 inset;
+    height:0;
+}
+ul.second-links {
+    padding: 0;
+    margin: 0;
+    transition: all 0.3s ease;
+    display: flex;
+    list-style: none;
+    horiz-align: center;
+}
+
+ul.second-links li{
+    color: #27496d;
+    padding: 5px;
+    margin: 0px;
+    margin-right: 20px;
+    border: 1px solid #27496d00;
+    border-radius: 5px;
+    transition: all ease 0.3s;
+}
+
+ul.second-links li:hover{
+    border: 1px solid #fff;
+    box-shadow: 0 0 8px #fff;
+    border-radius: 5px;
+    transition: all ease 0.3s;
+}
+ul.second-links a {
+  color: #F0F0F0;
+  text-decoration: none;
+  font-size: 14px;
+}
+
+li.website_id{
+    color: #FAFAFA;
+    font-size: 3px;
+    margin-top: 12px;
+    text-align: center;
+    list-style: none;
+}
+
+div.border{
+    border: 2px solid #27496d;
+    border-radius: 8px;
+    padding: 32px;
+    width: 100%;
+    height:auto;
+    margin: auto;
+    margin-bottom: 5px;
+    margin-top: 5px;
+    text-align: left;
+}
+
+div.label-border{
+    border-left: 1px dotted #27496dAA;
+    border-right: 1px dotted #27496dAA;
+    padding-left: 32px;
+    padding-right: 32px;
+}
+
+input[disabled]{
+    background-color: #f8f8f8;
+}
+
+div.pop{
+    display: none;
+    margin: auto;
+    width: 84%;
+    height: 100%;
+    background-color: #ffffffFD;
+    border-radius: 10px;
+    box-shadow: 0 0 10px #aaa;
+    padding: 10px;
+    text-align: center;
+    z-index: 100;
+}
+
+input[type="submit"]{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+        box-shadow: 0 0 4px #27496d;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+input[type="submit"]:hover {
+  background-color: #27496d;
+  color: #fff;
+}
+input[type="button"]{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+        box-shadow: 0 0 4px #27496d;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="button"].add{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+    box-shadow: 0 0 2px #27496d;
+    margin-bottom: 4px;
+    width: 32%;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="submit"].add{
+  border-radius: 4px;
+  color: #333;
+    background-color: #ffffff66;
+    box-shadow: 0 0 2px #27496d;
+    margin-bottom: 4px;
+    width: 32%;
+  text-decoration: none;
+    transition: all 0.3s ease;
+}
+input[type="button"]:hover {
+  background-color: #27496d;
+  color: #fff;
+}
+input.disable[type="submit"]{
+  border-radius: 4px;
+  color: #333;
+    background-color: #E6E6E6;
+  transition: all 0.3s ease;
+}
+input.disable[type="submit"]:hover {
+  background-color: #27496d;
+  color: #fff;
+}
+input {
+  width: 80%;
+  margin-top: 20px;
+  padding: 10px;
+  /* 边框效果 */
+  border: 0;
+  outline: none;
+  border-bottom: 1px solid #fbc2eb;
+}

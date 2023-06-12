@@ -1,0 +1,62 @@
+{% extends 'teacher/secretary/secretary_structure.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        label{
+            display: block;
+        }
+    </style>
+    <div id = 'main-content' class="info_border">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+             <hr/><h3>总评成绩公布</h3><hr/><br/>
+            <table>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>指导教师</th>
+                    <th>选题学生</th>
+                    <th>论文评分</th>
+                    <th>答辩评分</th>
+                    <th>总评成绩</th>
+                    <th>公布状态</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.supervisor }}</td>
+                        <td>{{ project.student }}</td>
+                        <td>{{ project.thesis_score }}</td>
+                        <td>{{ project.defense_score }}</td>
+                        <td>{{ project.total_score }}</td>
+                        <td>
+                             {% if project.status == '已完成' %}
+                                 已公布
+                            {% else %}
+                                 未公布
+                            {% endif %}
+                        </td>
+                        <td>
+                           {% if project.status == '已完成' %}
+                               <input type="button" style="margin: auto"  disabled value="已公布">
+                            {% else %}
+                               <form method="post" action="/teacher/secretary/score_announcement/announce/">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="project_name" value="{{ project.name }}">
+                                    <input type="submit"  style="margin: auto; width: 96%" value="公布">
+                                </form>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr style="height: 128px">
+                        <td colspan="9" >暂无需评阅课题</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/><hr/>
+        </div>
+    </div>
+{% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% extends 'teacher/secretary/secretary_structure.html' %}
 {% load static %}
 {% block content %}
     <style>
@@ -16,18 +16,19 @@
             $('pop').style.display = 'block';
             $('main-content').style.display = 'none';
             // 设置弹窗信息
-            $('pname').value = project.name;
             $('project_name').value = project.name;
             $('project_type').value = project.type;
+            $('no').value = project.no;
+            $('tno').value = project.no;
             $('student_name').value = project.student;
             $('supervisor').value = project.supervisor;
             $('status').value = project.status;
-            $('content').innerHTML = project.content;
-            $('file').src = project.file;
-            $('time').value = project.time;
-            if (project.status === "已评阅"){
+            $('faculty').value = project.faculty;
+            $('major').value = project.major;
+            $('class').value = project.class;
+            if (project.status === "已录入"){
                 $('submit-button').disabled = true;
-                $('submit-button').value = "已评阅";
+                $('submit-button').value = "已录入成绩";
                 $('comment').disabled = true;
                 $('score').disabled = true;
                 $('comment').innerHTML = project.comment;
@@ -35,7 +36,7 @@
                 $('score_time').value = project.score_time;
             }else{
                 $('submit-button').disabled = false;
-                $('submit-button').value = "评阅"
+                $('submit-button').value = "录入成绩"
                 $('comment').innerHTML = "";
                 $('score').value = "";
                 $('score_time').value = "";
@@ -52,10 +53,9 @@
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h3>课题信息</h3><hr/><br/>
-                <form method="post" action="/teacher/supervisor/thesis_score/score/">
+                <form method="post" action="/teacher/secretary/defense_score/score/">
                     {% csrf_token %}
                     <label style="padding-right: 25px;">课题名称：
-                        <input id="pname" style="display:none; border-radius: 10px;width: 48%" required='' type='text' name="project_name">
                         <input id="project_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
                     </label>
                     <label>课题类型：
@@ -64,27 +64,32 @@
                     <label style="padding-right: 25px;">指导教师：
                         <input id="supervisor" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
                     </label>
+                    <hr/><br/>
                     <label style="padding-right: 25px;">选题学生：
-                        <input id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                        <input id="sname" style="display:none; border-radius: 10px;width: 48%" type='text' name="student_name">
+                        <input style="border-radius: 10px;width: 48%" id="student_name" disabled type='text'>
+                    </label>
+                    <label style="padding-right: 25px;">选题学生：
+                        <input id="no" style="display:none; border-radius: 10px;width: 48%" type='text' name="student_no">
+                        <input id="tno" style="border-radius: 10px;width: 48%" disabled type='text'>
+                    </label>
+                    <label style="padding-right: 25px;">所属学院：
+                        <input style="border-radius: 10px;width: 48%" id="faculty" disabled type='text'>
+                    </label>
+                    <label style="padding-right: 25px;">所属专业：
+                        <input style="border-radius: 10px;width: 48%" id="major" disabled type='text'>
+                    </label>
+                    <label style="padding-right: 25px;">所属班级：
+                        <input id="class" disabled style="border-radius: 10px;width: 48%" required='' type='text'>
                     </label>
                     <hr/><br/>
-                    <label style="padding-right: 25px;">论文内容：
-                        <textarea id="content" disabled  required='' type='text' name="student_name"></textarea>
-                    </label>
-                    <label style="padding-right: 25px;">论文附件：
-                        <input id="file" disabled type='file' name="student_name">
-                    </label><br/>
-                    <label style="padding-right: 25px;">提交时间：
-                        <input id="time" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
-                    </label>
-                    <hr/><br/>
-                    <label style="padding-right: 25px;">评阅状态：
+                    <label style="padding-right: 25px;">评分状态：
                         <input id="status" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
                     </label>
-                    <label style="padding-right: 25px;">评阅意见：
-                        <textarea id="comment" disabled required='' type='text' name="comment"></textarea>
+                    <label style="padding-right: 25px;">评分意见：
+                        <textarea id="comment" placeholder="请在这里输入您的评分意见" disabled required='' type='text' name="comment"></textarea>
                     </label>
-                    <label style="padding-right: 25px;">评阅得分：
+                    <label style="padding-right: 25px;">答辩得分：
                         <input id="score" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="score">
                     </label>
                     <label style="padding-right: 25px;">评阅时间：
@@ -100,7 +105,7 @@
     <div id = 'main-content' class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-             <hr/><h3>毕业论文评阅</h3><hr/><br/>
+             <hr/><h3>答辩成绩录入</h3><hr/><br/>
             <table>
                 <script>
                     var project_list = []
@@ -110,7 +115,7 @@
                     <th>课题类型</th>
                     <th>指导教师</th>
                     <th>选题学生</th>
-                    <th>评阅状态</th>
+                    <th>录入状态</th>
                     <th>信息操作</th>
                 </tr>
                 {% for project in project_list %}
@@ -125,11 +130,12 @@
                                 var project = {
                                     name: "{{ project.name }}",
                                     type: "{{ project.type }}",
+                                    no: "{{ project.no }}",
                                     student: "{{ project.student }}",
                                     supervisor: "{{ project.supervisor }}",
-                                    content:"{{ project.content }}",
-                                    file:"{{ project.file }}",
-                                    time:"{{ project.time }}",
+                                    faculty: "{{ project.faculty }}",
+                                    major:"{{ project.major }}",
+                                    class:"{{ project.class }}",
                                     status:"{{ project.status }}",
                                     score: "{{ project.score }}",
                                     comment: "{{ project.comment }}",
@@ -137,16 +143,16 @@
                                 }
                                 project_list.push(project)
                             </script>
-                           {% if project.status == '已评阅' %}
+                           {% if project.status == '已录入' %}
                                 <input type="submit" onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto;width: 96%" value="查看">
                             {% else %}
-                                <input type="submit"  onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto; width: 96%" value="评阅">
+                                <input type="submit"  onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto; width: 96%" value="录入成绩">
                             {% endif %}
                         </td>
                     </tr>
                 {% empty %}
                      <tr style="height: 128px">
-                        <td colspan="6" >暂无需评阅课题</td>
+                        <td colspan="6" >暂无答辩成绩需录入</td>
                     </tr>
                 {% endfor %}
             </table>

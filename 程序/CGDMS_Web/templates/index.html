@@ -1,13 +1,18 @@
 ﻿{% extends "structure.html" %}
+{% load static %}
 {% block content %}
     <!-- 内容部分 -->
-    <title>高校毕业设计管理系统</title>
-      <h1 style="text-align: center; color: #27496d;">欢迎来到高校毕业设计管理系统！</h1><br/>
-      <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
-        <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p>
-        <form action="/index/" method="post" style="display: none">
+    <div class="info_border">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+            <hr/><h1 style="text-align: center; color: #27496d;">欢迎来到毕业设计管理系统！</h1><hr/><br/>
+            <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
+            <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p>
+            <form action="/index/" method="post" style="display: none">
                 {% csrf_token %}
                 <input required='' type='text' name="Uno">
                 <input required='' type='password' name="Upwd">
-        </form>
+            </form>
+        </div>
+    </div>
 {% endblock %}

@@ -9,6 +9,29 @@ db = pymysql.connect(host='localhost',
                      database='cgdms')
 
 
+# 功能函数，获得所有留言
+def get_comment_list():
+    # 从留言表中获取所有留言
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM MESSAGE ORDER BY UTIME DESC;")
+    # 构造留言表
+    comment_list = []
+    maximum = 5
+    if cursor.rowcount < 5:
+        maximum = cursor.rowcount
+    for num in range(maximum):
+        comment = cursor.fetchone()
+        comment_time = comment[2].strftime("%Y-%m-%d %H:%M:%S")
+        comment_dict = {
+            "user": comment[0],
+            "role": comment[1],
+            "time": comment_time,
+            "content": comment[3],
+        }
+        comment_list.append(comment_dict)
+    return comment_list
+
+
 # 通用模块
 # 登录页面，网站的初始页面
 def login_page(request):
@@ -17,7 +40,8 @@ def login_page(request):
     :param request:HTTP请求
     :return render:渲染登录页面
     """
-    return render(request, "login_page.html")
+    message_list = get_comment_list()
+    return render(request, "login_page.html", {"message_list": message_list})
 
 
 # 登录功能，验证用户名和密码，并把用户信息存入session
@@ -132,7 +156,8 @@ def index(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'no': request.session['no'],
-        'name': request.session['name']
+        'name': request.session['name'],
+        'comment_list': get_comment_list()
     }
     # 渲染主页
     return render(request, "index.html", info_dict)
@@ -153,7 +178,8 @@ def showinfo(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'no': request.session['no'],
-        'name': request.session['name']
+        'name': request.session['name'],
+        'comment_list': get_comment_list()
     }
     # 获取表中的个人信息
     cursor = db.cursor()
@@ -202,7 +228,8 @@ def account(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 获取账户的注册时间
     cursor = db.cursor()
@@ -227,7 +254,8 @@ def change_password(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 检查两次输入的密码是否一致
     if request.POST['new_password'] != request.POST['new_password_confirm']:
@@ -250,6 +278,29 @@ def change_password(request):
                       {'message': '修改失败！请检查您的用户名和密码。', 'name': info_dict["name"]})
 
 
+# 评论功能
+def comment(request):
+    # 从session中获取用户信息
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    # 从POST表单中获取评论信息
+    comment = request.POST['comment']
+    # 获取当前时间
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 将数据插入到评论表中
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO MESSAGE VALUES ('" + info_dict['uno'] + "', '" +
+                   info_dict['role'] + "', '" + now + "', '" + comment + "');")
+    db.commit()
+    # 重定向至用户访问的上一个页面
+    return redirect(request.META['HTTP_REFERER'])
+
+
 # 学生模块
 # 学生主页
 def student(request):
@@ -266,7 +317,8 @@ def student(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 检查用户的身份
     if info_dict["role"] == "学生":
@@ -293,7 +345,8 @@ def project_selection(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
@@ -390,7 +443,8 @@ def select_project(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 查询学生的预选课题数量
     cursor = db.cursor()
@@ -462,8 +516,9 @@ def check_status(status, stage):
         "已提交论文定稿": 10,
         "论文定稿已审核": 11,
         "论文定稿已评阅": 12,
-        "已进行答辩": 13,
-        "已完成": 14
+        "已分配答辩组": 13,
+        "已录入答辩成绩": 14,
+        "已完成": 15
     }
     stage_dict = {
         "下达任务书": 1,
@@ -539,7 +594,8 @@ def browse_task(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
@@ -604,7 +660,8 @@ def open_report(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html", {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
@@ -679,7 +736,8 @@ def submit_report(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 初始化附件路径
     path = ""
@@ -733,7 +791,8 @@ def mid_term_check(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html",
@@ -806,7 +865,8 @@ def submit_progress(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 初始化附件路径
     path = ""
@@ -862,7 +922,8 @@ def weekly_report(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html",
@@ -934,7 +995,8 @@ def submit_weekly_report(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 初始化附件路径
     path = ""
@@ -998,7 +1060,8 @@ def thesis_draft(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html",
@@ -1068,7 +1131,8 @@ def submit_draft(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 获取论文草稿相关信息
     project_name = request.POST.get('project_name')
@@ -1125,7 +1189,8 @@ def thesis_final(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "教师":
         return render(request, "announce.html",
@@ -1208,7 +1273,8 @@ def submit_final(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 获取当前时间
     now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
@@ -1268,7 +1334,8 @@ def teacher(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "学生":
         return render(request, "announce.html",
@@ -1309,6 +1376,21 @@ def role(request):
                       {'message': '您没有' + userRole + '权限，无法访问。', 'name': self_info["name"]})
 
 
+# 信息统计页面
+def information_summary(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    self_info = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list(),
+    }
+    return render(request, "teacher/information_summary.html", self_info)
+
+
 # 指导教师模块
 def supervisor(request):
     """
@@ -1324,7 +1406,8 @@ def supervisor(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "学生":
         return render(request, "announce.html",
@@ -1354,7 +1437,8 @@ def project_proposal(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     if info_dict["role"] == "学生":
         return render(request, "announce.html",
@@ -1413,7 +1497,8 @@ def propose_project(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 从POST表单中获取课题相关信息
     project_name = request.POST["project_name"]
@@ -1472,7 +1557,8 @@ def project_confirmation(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -1612,7 +1698,8 @@ def task_issue(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -1689,7 +1776,8 @@ def issue_task(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 从POST表单中获取课题名称
     pname = request.POST["pname"]
@@ -1745,7 +1833,8 @@ def report_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -1856,7 +1945,8 @@ def mid_term_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -1933,7 +2023,8 @@ def pass_mid_term(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 从POST表单中获取课题名称
     pname = request.POST["project_name"]
@@ -1967,7 +2058,8 @@ def weekly_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2042,6 +2134,7 @@ def weekly_review(request):
     # 渲染周进度审阅页面
     return render(request, "teacher/supervisor/weekly_review.html", info_dict)
 
+
 # 周进度审阅功能
 def review_weekly(request):
     """
@@ -2086,7 +2179,8 @@ def draft_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2159,7 +2253,8 @@ def review_draft(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 从POST表单中获取审阅信息
     project_name = request.POST.get("project_name")
@@ -2191,7 +2286,8 @@ def final_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2256,85 +2352,6 @@ def final_review(request):
     return render(request, "teacher/supervisor/final_review.html", info_dict)
 
 
-# 论文评阅页面
-def thesis_score(request):
-    # 如果未登录，则重定向至登录页面
-    if 'uno' not in request.session:
-        return redirect('')
-    # 从session中获取用户信息，并构造信息字典
-    info_dict = {
-        'uno': request.session['uno'],
-        'role': request.session['role'],
-        'name': request.session['name'],
-        'no': request.session['no']
-    }
-    # 身份检查
-    if info_dict["role"] == "学生":
-        return render(request, "announce.html",
-                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
-    # 检查用户是否有指导教师权限
-    curse = db.cursor()
-    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_supervisor = '是';")
-    if curse.rowcount == 0:
-        return render(request, "announce.html",
-                      {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
-    # 从毕业论文表中查询所有以该老师为评阅教师的论文
-    cursor = db.cursor()
-    cursor.execute("SELECT * FROM Thesis_Final WHERE TNO = '" + info_dict["no"] + "';")
-    # 初始化论文列表
-    thesis_list = []
-    # 遍历论文信息，构造论文列表
-    for thesis_index in range(cursor.rowcount):
-        # 获取论文信息
-        thesis_info = cursor.fetchone()
-        # 从课题-学生-教师表中查询课题信息
-        cursor1 = db.cursor()
-        cursor1.execute("SELECT * FROM Project_Student_Teacher WHERE Pname = '" + thesis_info[0] + "';")
-        project_info = cursor1.fetchone()
-        if thesis_info[10] is None:
-            comment_time = ""
-        else:
-            comment_time = thesis_info[10].strftime("%Y-%m-%d %H:%M:%S")
-        # 构造论文信息字典
-        thesis_info_dict = {
-            "index": thesis_index,
-            "name": thesis_info[0],
-            "type": project_info[1],
-            "student": project_info[2],
-            "supervisor": project_info[3],
-            "content": thesis_info[1],
-            "file": thesis_info[2],
-            "time": thesis_info[3].strftime("%Y-%m-%d %H:%M:%S"),
-            "status": thesis_info[4],
-            "score": thesis_info[8],
-            "comment": thesis_info[9],
-            "score_time": comment_time
-        }
-        # 将论文信息字典添加至论文列表中
-        thesis_list.append(thesis_info_dict)
-    # 将论文列表添加至信息字典中
-    info_dict["project_list"] = thesis_list
-    # 渲染论文评阅页面
-    return render(request, "teacher/supervisor/thesis_score.html", info_dict)
-
-
-# 论文评阅功能
-def score_thesis(request):
-    # 从POST表单中获取相关数据
-    project_name = request.POST.get("project_name")
-    score = request.POST.get("score")
-    comment = request.POST.get("comment")
-    # 获取当前时间
-    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    # 更新毕业论文表中的评阅信息
-    cursor = db.cursor()
-    cursor.execute("UPDATE Thesis_Final SET TFscore = '" + score + "', TFstatus = '已评阅', TFscore_comment = '"
-                   + comment + "', TFscore_time = '" + now + "' WHERE Pname = '" + project_name + "';")
-    db.commit()
-    # 重定向至论文评阅页面
-    return redirect("/teacher/supervisor/thesis_score/")
-
-
 # 论文定稿审核功能
 def review_final(request):
     """
@@ -2347,7 +2364,8 @@ def review_final(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 从POST表单中获取审阅信息
     project_name = request.POST.get("project_name")
@@ -2388,7 +2406,8 @@ def manager(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2419,7 +2438,8 @@ def project_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2512,7 +2532,8 @@ def task_review(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2609,7 +2630,8 @@ def reviewer_assignment(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2694,11 +2716,6 @@ def assign_reviewer(request):
     return redirect('/teacher/manager/reviewer_assignment/')
 
 
-# TODO 答辩组创建页面
-def defense_assignment(request):
-    pass
-
-
 # 答辩组管理界面
 def group_assignment(request):
     # 如果未登录，则重定向至登录页面
@@ -2709,7 +2726,8 @@ def group_assignment(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2790,6 +2808,24 @@ def group_assignment(request):
         group_list.append(group_info_dict)
     # 将答辩组列表添加至信息字典中
     info_dict["group_list"] = group_list
+    # 从选题表中获取所有进行到论文定稿已评阅状态的课题
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Project_Student_Teacher WHERE SPstatus = '论文定稿已评阅';")
+    student_list = []
+    # 遍历所有课题
+    for num in range(cursor.rowcount):
+        # 构造学生信息字典
+        student_info = cursor.fetchone()
+        student_info_dict = {
+            "project": student_info[0],
+            "type": student_info[1],
+            "student": student_info[2],
+            "supervisor": student_info[3],
+        }
+        # 将学生信息字典添加至学生列表中
+        student_list.append(student_info_dict)
+    # 将学生列表添加至信息字典中
+    info_dict["student_list"] = student_list
     # 渲染答辩组管理页面
     return render(request, "teacher/manager/group_assignment.html", info_dict)
 
@@ -2821,10 +2857,45 @@ def assign_group(request):
     return redirect("/teacher/manager/group_assignment/")
 
 
+# 答辩组分配学生功能
+def assign_student(request):
+    # 从POST表单中获取分配数据
+    dpname = request.POST.get("dp_name")
+    sname = request.POST.get("sname")
+    # 从学生表中查询学生信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM STUDENT WHERE SName = '" + sname + "';")
+    sno = cursor.fetchone()[0]
+    # 获取当前时间
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 往答辩学生表中插入分配数据
+    cursor = db.cursor()
+    cursor.execute("INSERT INTO Defense_Student(DPname,Sno,DStime) VALUES ('" + dpname
+                   + "', '" + sno + "', '" + now + "');")
+    # 提交数据库事务
+    db.commit()
+    # 重定向至答辩组管理页面
+    return redirect("/teacher/manager/group_assignment/")
 
-# TODO 过程信息总结页面
-def information_summary(request):
-    pass
+
+# 重新分配答辩组功能
+def reassign_group(request):
+    # 从POST请求中获取答辩组信息
+    group_name = request.POST.get("group_name")
+    group_location = request.POST.get("group_location")
+    group_date = request.POST.get("group_date")
+    group_leader = request.POST.get("group_leader")
+    group_secretary = request.POST.get("group_secretary")
+    now = datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+    # 修改答辩组信息
+    cursor = db.cursor()
+    cursor.execute("UPDATE Defense_Panel SET DPlocation = '" + group_location + "', DPdate = '" + group_date +
+                   "', DPleader = '" + group_leader + "', DPsecretary = '" + group_secretary + "', DPtime = '" + now +
+                   "' WHERE DPname = '" + request.POST.get("group_name") + "';")
+    # 提交数据库事务
+    db.commit()
+    # 重定向至答辩组管理页面
+    return redirect("/teacher/manager/group_assignment/")
 
 
 # 教学院长模块主页
@@ -2842,7 +2913,8 @@ def dean(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2868,7 +2940,8 @@ def project_announcement(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2937,7 +3010,8 @@ def result_announcement(request):
         'uno': request.session['uno'],
         'role': request.session['role'],
         'name': request.session['name'],
-        'no': request.session['no']
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
     }
     # 身份检查
     if info_dict["role"] == "学生":
@@ -2995,3 +3069,255 @@ def announce_result(request):
     db.commit()
     # 重定向至发布双选结果页面
     return redirect("/teacher/dean/result_announcement/")
+
+
+# 教学秘书模块
+# 教学秘书主页
+def secretary_index(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有指导教师权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_teaching_secretary = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有权限，无法访问。', 'name': info_dict["name"]})
+    # 渲染教学秘书主页
+    return render(request, "teacher/secretary/index.html", info_dict)
+
+
+# 论文评阅页面
+def thesis_score(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有答辩秘书权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_teaching_secretary = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有答辩秘书权限，无法访问。', 'name': info_dict["name"]})
+    # 从毕业论文表中查询所有以该老师为评阅教师的论文
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM Thesis_Final WHERE TNO = '" + info_dict["no"] + "';")
+    # 初始化论文列表
+    thesis_list = []
+    # 遍历论文信息，构造论文列表
+    for thesis_index in range(cursor.rowcount):
+        # 获取论文信息
+        thesis_info = cursor.fetchone()
+        # 从课题-学生-教师表中查询课题信息
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Project_Student_Teacher WHERE Pname = '" + thesis_info[0] + "';")
+        project_info = cursor1.fetchone()
+        if thesis_info[10] is None:
+            comment_time = ""
+        else:
+            comment_time = thesis_info[10].strftime("%Y-%m-%d %H:%M:%S")
+        # 构造论文信息字典
+        thesis_info_dict = {
+            "index": thesis_index,
+            "name": thesis_info[0],
+            "type": project_info[1],
+            "student": project_info[2],
+            "supervisor": project_info[3],
+            "content": thesis_info[1],
+            "file": thesis_info[2],
+            "time": thesis_info[3].strftime("%Y-%m-%d %H:%M:%S"),
+            "status": thesis_info[4],
+            "score": thesis_info[8],
+            "comment": thesis_info[9],
+            "score_time": comment_time
+        }
+        # 将论文信息字典添加至论文列表中
+        thesis_list.append(thesis_info_dict)
+    # 将论文列表添加至信息字典中
+    info_dict["project_list"] = thesis_list
+    # 渲染论文评阅页面
+    return render(request, "teacher/secretary/thesis_score.html", info_dict)
+
+
+# 论文评阅功能
+def score_thesis(request):
+    # 从POST表单中获取相关数据
+    project_name = request.POST.get("project_name")
+    score = request.POST.get("score")
+    comment = request.POST.get("comment")
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 更新毕业论文表中的评阅信息
+    cursor = db.cursor()
+    cursor.execute("UPDATE Thesis_Final SET TFscore = '" + score + "', TFstatus = '已评阅', TFscore_comment = '"
+                   + comment + "', TFscore_time = '" + now + "' WHERE Pname = '" + project_name + "';")
+    db.commit()
+    # 重定向至论文评阅页面
+    return redirect("/teacher/secretary/thesis_score/")
+
+
+# 答辩得分录入页面
+def defense_score(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有答辩秘书权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_teaching_secretary = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有答辩秘书权限，无法访问。', 'name': info_dict["name"]})
+    # 调用存储过程，获取以该教师为答辩秘书的所有答辩课题信息
+    cursor = db.cursor()
+    cursor.execute("CALL GET_DEFENSE_PROJECT('" + info_dict['name'] + "');")
+    # 初始化课题列表
+    project_list = []
+    # 遍历课题信息，构造课题列表
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        # 如果课题已评阅，则将评阅时间转换为字符串
+        if project_info[10] is None:
+            status = "未录入"
+            score_time = ""
+        else:
+            status = "已录入"
+            score_time = project_info[10].strftime("%Y-%m-%d %H:%M:%S")
+        # 构造课题信息字典
+        project_dict = {
+            "index": project_index,
+            "name": project_info[0],
+            "type": project_info[1],
+            "no": project_info[2],
+            "student": project_info[3],
+            "supervisor": project_info[4],
+            "faculty": project_info[5],
+            "major": project_info[6],
+            "class": project_info[7],
+            "comment": project_info[8],
+            "score": project_info[9],
+            "score_time": score_time,
+            "status": status
+        }
+        # 将课题信息字典添加至课题列表中
+        project_list.append(project_dict)
+    # 将课题列表添加至信息字典中
+    info_dict["project_list"] = project_list
+    # 渲染答辩得分录入页面
+    return render(request, "teacher/secretary/defense_score.html", info_dict)
+
+
+# 答辩成绩录入功能
+def score_defense(request):
+    # 从POST表单中获取相关数据
+    student_no = request.POST.get("student_no")
+    score = request.POST.get("score")
+    comment = request.POST.get("comment")
+    # 获取当前时间
+    now = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    # 更新毕业论文表中的评阅信息
+    cursor = db.cursor()
+    cursor.execute("UPDATE Defense_Student SET DSscore = '" + score + "', DSstatus = '已发布', DScomment = '"
+                   + comment + "', DSscore_time = '" + now + "' WHERE Sno = '" + student_no + "';")
+    db.commit()
+    # 重定向至论文评阅页面
+    return redirect("/teacher/secretary/defense_score/")
+
+
+# 总评成绩公布页面
+def score_announcement(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    # 身份检查
+    if info_dict["role"] == "学生":
+        return render(request, "announce.html",
+                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
+    # 检查用户是否有答辩秘书权限
+    curse = db.cursor()
+    curse.execute("SELECT * FROM ROLE WHERE TNO = '" + info_dict["no"] + "' AND is_teaching_secretary = '是';")
+    if curse.rowcount == 0:
+        return render(request, "announce.html",
+                      {'message': '您没有答辩秘书权限，无法访问。', 'name': info_dict["name"]})
+    # 调用存储过程，获取所有以该老师为答辩秘书课题总评信息
+    cursor = db.cursor()
+    cursor.execute("CALL GET_SCORE('" + info_dict['name'] + "');")
+    # 初始化课题列表
+    project_list = []
+    # 遍历课题信息，构造课题列表
+    for project_index in range(cursor.rowcount):
+        project_info = cursor.fetchone()
+        # 构造课题信息字典
+        project_dict = {
+            "index": project_index,
+            "name": project_info[0],
+            "type": project_info[1],
+            "no": project_info[2],
+            "student": project_info[3],
+            "supervisor": project_info[4],
+            "defense_score": project_info[5],
+            "thesis_score": project_info[6],
+            "status": project_info[7]
+        }
+        total_score = project_dict['defense_score'] * 0.6 + project_dict['thesis_score'] * 0.4
+        project_dict['total_score'] = int(total_score)
+        # 将课题信息字典添加至课题列表中
+        project_list.append(project_dict)
+    # 将课题列表添加至信息字典中
+    info_dict["project_list"] = project_list
+    # 渲染总评成绩公布页面
+    return render(request, "teacher/secretary/score_announcement.html", info_dict)
+
+
+# 公布总评成绩功能
+def announce_score(request):
+    # 从POST表单中获取相关数据
+    project_name = request.POST.get("project_name")
+    # 更新选题表信息，将课题状态更改为已完成
+    cursor = db.cursor()
+    cursor.execute("UPDATE Select_Project SET SPstatus = '已完成' WHERE Pname = '" + project_name + "';")
+    db.commit()
+    # 重定向至总评成绩公布页面
+    return redirect("/teacher/secretary/score_announcement/")

@@ -1,0 +1,156 @@
+{% extends 'teacher/secretary/secretary_structure.html' %}
+{% load static %}
+{% block content %}
+    <style>
+        label{
+            display: block;
+        }
+    </style>
+    <script>
+        var project_list=[];
+        function $(id){
+            return document.getElementById(id);
+        }
+        function showPop(project){
+            // 隐藏主体，显示弹窗
+            $('pop').style.display = 'block';
+            $('main-content').style.display = 'none';
+            // 设置弹窗信息
+            $('pname').value = project.name;
+            $('project_name').value = project.name;
+            $('project_type').value = project.type;
+            $('student_name').value = project.student;
+            $('supervisor').value = project.supervisor;
+            $('status').value = project.status;
+            $('content').innerHTML = project.content;
+            $('file').src = project.file;
+            $('time').value = project.time;
+            if (project.status === "已评阅"){
+                $('submit-button').disabled = true;
+                $('submit-button').value = "已评阅";
+                $('comment').disabled = true;
+                $('score').disabled = true;
+                $('comment').innerHTML = project.comment;
+                $('score').value = project.score;
+                $('score_time').value = project.score_time;
+            }else{
+                $('submit-button').disabled = false;
+                $('submit-button').value = "评阅"
+                $('comment').innerHTML = "";
+                $('score').value = "";
+                $('score_time').value = "";
+                $('comment').disabled = false
+                $('score').disabled = false
+            }
+        }
+        function hidePop(){
+            $('main-content').style.display = 'block';
+            $('pop').style.display = 'none';
+        }
+    </script>
+    <div id="pop" class="info_border" style="display: none">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>课题信息</h3><hr/><br/>
+                <form method="post" action="/teacher/secretary/thesis_score/score/">
+                    {% csrf_token %}
+                    <label style="padding-right: 25px;">课题名称：
+                        <input id="pname" style="display:none; border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                        <input id="project_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                    </label>
+                    <label>课题类型：
+                        <input id="project_type" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="project_type">
+                    </label>
+                    <label style="padding-right: 25px;">指导教师：
+                        <input id="supervisor" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                    </label>
+                    <label style="padding-right: 25px;">选题学生：
+                        <input id="student_name" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                    </label>
+                    <hr/><br/>
+                    <label style="padding-right: 25px;">论文内容：
+                        <textarea id="content" disabled  required='' type='text' name="student_name"></textarea>
+                    </label>
+                    <label style="padding-right: 25px;">论文附件：
+                        <input id="file" disabled type='file' name="student_name">
+                    </label><br/>
+                    <label style="padding-right: 25px;">提交时间：
+                        <input id="time" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                    </label>
+                    <hr/><br/>
+                    <label style="padding-right: 25px;">评阅状态：
+                        <input id="status" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                    </label>
+                    <label style="padding-right: 25px;">评阅意见：
+                        <textarea id="comment" disabled required='' type='text' name="comment"></textarea>
+                    </label>
+                    <label style="padding-right: 25px;">评阅得分：
+                        <input id="score" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="score">
+                    </label>
+                    <label style="padding-right: 25px;">评阅时间：
+                        <input id="score_time" disabled style="border-radius: 10px;width: 48%" required='' type='text' name="student_name">
+                    </label><hr/><br/>
+                    <div class="form-group">
+                        <input id="submit-button" style="width: 36%; margin: auto" type="submit" value="评阅" />
+                        <input style="width: 36%; margin: auto" type="button" onclick="hidePop()" value="关闭" />
+                    </div>
+                </form>
+        </div>
+    </div>
+    <div id = 'main-content' class="info_border">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+             <hr/><h3>毕业论文评阅</h3><hr/><br/>
+            <table>
+                <script>
+                    var project_list = []
+                </script>
+                <tr>
+                    <th>课题名称</th>
+                    <th>课题类型</th>
+                    <th>指导教师</th>
+                    <th>选题学生</th>
+                    <th>评阅状态</th>
+                    <th>信息操作</th>
+                </tr>
+                {% for project in project_list %}
+                    <tr>
+                        <td>{{ project.name }}</td>
+                        <td>{{ project.type }}</td>
+                        <td>{{ project.supervisor }}</td>
+                        <td>{{ project.student }}</td>
+                        <td>{{ project.status }}</td>
+                        <td>
+                            <script>
+                                var project = {
+                                    name: "{{ project.name }}",
+                                    type: "{{ project.type }}",
+                                    student: "{{ project.student }}",
+                                    supervisor: "{{ project.supervisor }}",
+                                    content:"{{ project.content }}",
+                                    file:"{{ project.file }}",
+                                    time:"{{ project.time }}",
+                                    status:"{{ project.status }}",
+                                    score: "{{ project.score }}",
+                                    comment: "{{ project.comment }}",
+                                    score_time: "{{ project.score_time }}",
+                                }
+                                project_list.push(project)
+                            </script>
+                           {% if project.status == '已评阅' %}
+                                <input type="submit" onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto;width: 96%" value="查看">
+                            {% else %}
+                                <input type="submit"  onclick="showPop(project_list['{{ project.index }}'])" style="margin: auto; width: 96%" value="评阅">
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% empty %}
+                     <tr style="height: 128px">
+                        <td colspan="6" >暂无需评阅课题</td>
+                    </tr>
+                {% endfor %}
+            </table>
+            <br/><hr/>
+        </div>
+    </div>
+{% endblock %}

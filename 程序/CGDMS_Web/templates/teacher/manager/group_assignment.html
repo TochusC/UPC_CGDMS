@@ -1,4 +1,4 @@
-{% extends 'teacher/supervisor/supervisor_structure.html' %}
+{% extends 'teacher/manager/manager_structure.html' %}
 {% load static %}
 {% block content %}
     <style>
@@ -20,11 +20,124 @@
             $('newGroup').style.display = 'none';
             $('main-content').style.display = 'block';
         }
+        function showCheckGroup(group){
+            $('checkGroup').style.display = 'block';
+            $('main-content').style.display = 'none';
+            $('group_name').value = group.name;
+            $('group_location').value = group.location;
+            $('group_date').value = group.date;
+            $('group_faculty').value = group.faculty;
+            $('group_leader').value = group.leader;
+            $('group_secretary').value = group.secretary
+            for(var i = 0; i < group.member_list.length; i++){
+                var newRow = document.createElement('tr');
+                newRow.className = 'extras'
+                var newCell = document.createElement('td');
+                var newInput = document.createElement('input');
+                newInput.style.borderRadius = '5px';
+                newInput.style.margin = 'auto';
+                newInput.setAttribute('type', 'text');
+                newInput.disabled = true;
+                newInput.setAttribute('name', 'group_member_id');
+                newInput.setAttribute('value', group.member_list[i].id);
+                newCell.appendChild(newInput);
+                newRow.appendChild(newCell);
+                newCell = document.createElement('td');
+                newInput = document.createElement('input');
+                newInput.style.borderRadius = '5px';
+                newInput.style.margin = 'auto';
+                newInput.disabled = true;
+                newInput.setAttribute('type', 'text');
+                newInput.setAttribute('name', 'group_member_name');
+                newInput.setAttribute('value', group.member_list[i].name);
+                newCell.appendChild(newInput);
+                newRow.appendChild(newCell);
+                $('existed_member').appendChild(newRow);
+            }
+        }
+        function showAlterGroup(group){
+            $('alterGroup').style.display = 'block';
+            $('main-content').style.display = 'none';
+            $('alt_group_name').value = group.name;
+            $('t_alt_group_name').value = group.name;
+            $('alt_group_date').value = group.date;
+            $('alt_group_location').value = group.location;
+            $('alt_group_faculty').value = group.faculty;
+            $('alt_group_leader').value = group.leader;
+            $('alt_group_secretary').value = group.secretary
+            for(var i = 0; i < group.member_list.length; i++){
+                var newRow = document.createElement('tr');
+                newRow.className = 'alt_extras'
+                var newCell = document.createElement('td');
+                var newInput = document.createElement('input');
+                newInput.setAttribute('type', 'text');
+                newInput.disabled = true;
+                newInput.style.borderRadius = '5px';
+                newInput.style.margin = 'auto';
+                newInput.setAttribute('name', 'group_member_id');
+                newInput.setAttribute('value', group.member_list[i].id);
+                newCell.appendChild(newInput);
+                newRow.appendChild(newCell);
+                newCell = document.createElement('td');
+                newInput = document.createElement('input');
+                newInput.style.borderRadius = '5px';
+                newInput.style.margin = 'auto';
+                newInput.disabled = true;
+                newInput.setAttribute('type', 'text');
+                newInput.setAttribute('name', 'group_member_name');
+                newInput.setAttribute('value', group.member_list[i].name);
+                newCell.appendChild(newInput);
+                newRow.appendChild(newCell);
+                $('alt_existed_member').appendChild(newRow);
+            }
+        }
+        function hideCheckGroup(){
+            $('checkGroup').style.display = 'none';
+            $('main-content').style.display = 'block';
+            while (document.getElementsByClassName('alt_extras').length > 0){
+                document.getElementsByClassName('alt_extras')[0].remove();
+            }
+        }
+        function hideAlterGroup(){
+            $('alterGroup').style.display = 'none';
+            $('main-content').style.display = 'block';
+            while (document.getElementsByClassName('extras').length > 0){
+                document.getElementsByClassName('extras')[0].remove();
+            }
+        }
+        function showAssignStudent(group_name){
+            $('assignStudent').style.display = 'block';
+            $('main-content').style.display = 'none';
+            // 将所有class为dp_name的标签的值设置为group_name
+            var dp_name = document.getElementsByClassName('dp_name');
+            for(var i = 0; i < dp_name.length; i++){
+                dp_name[i].value = group_name;
+            }
+        }
+        function hideAssignStudent(){
+            $('assignStudent').style.display = 'none';
+            $('main-content').style.display = 'block';
+        }
         function addNewMember(){
             var index = 0;
             $newRow = document.createElement('tr');
-            $newRow.innerHTML = '<td><label for="group_member_id"></label><input style="border-radius: 5px; padding: 0;margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/></td><td><label for="group_member_name"></label><input type="text" style="border-radius: 5px;padding: 0;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/></td>';
+            $newRow.className = "newMember";
+            $newRow.innerHTML = '<td><label for="group_member_id"></label><input style="border-radius: 5px; margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/></td><td><label for="group_member_name"></label><input type="text" style="border-radius: 5px;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/></td>';
             $('member').appendChild($newRow);
+        }
+        function removeNewMember(){
+            var extras = document.getElementsByClassName("new_member");
+        }
+        function addAltMember(){
+            var index = 0;
+            $newRow = document.createElement('tr');
+            $newRow.className = "alt_extras";
+            $newRow.innerHTML = '<td><label for="group_member_id"></label><input style="border-radius: 5px; margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/></td><td><label for="group_member_name"></label><input type="text" style="border-radius: 5px;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/></td>';
+            $('alt_existed_member').appendChild($newRow);
+        }
+        function removeAltMember(){
+            var extras = document.getElementsByClassName("alt_extras");
+            extras[extras.length-1].remove();
         }
     </script>
     <div class="info_border" id='main-content'>
@@ -34,7 +147,7 @@
             <input type="button" class="add" value="新建答辩组" onclick="showNewGroup()"/>
                 <table>
                     <script>
-                        var weekly_report_list = []
+                        var group_list = []
                     </script>
                         <tr>
                             <th>答辩组名称</th>
@@ -42,30 +155,50 @@
                             <th>答辩组日期</th>
                             <th>答辩组组长</th>
                             <th>答辩小组秘书</th>
-                            <th>答辩学生分配</th>
+                            <th >答辩学生分配</th>
                             <th>已分配学生</th>
-                            <th>信息操作</th>
+                            <th style="width: 20%">信息操作</th>
                         </tr>
-                    <script>
-                        var group_list = []
-                    </script>
                     {% for group in group_list %}
                             <tr>
-                                <td>{{ group.time }}</td>
+                                <td>{{ group.name }}</td>
                                 <td>{{ group.location }}</td>
                                 <td>{{ group.date }}</td>
                                 <td>{{ group.leader }}</td>
                                 <td>{{ group.secretary }}</td>
-                                <td><input type="button" style="margin: auto" value="分配"></td>
+                                <td><input type="button" style="margin: auto" value="分配" onclick="showAssignStudent('{{ group.name }}')"></td>
                                 <td>
                                     <p>{{ group.count }}</p>
                                 </td>
                                 <td>
-                                    <script></script>
-                                    <div class="form-group">
-                                        <input type="button" style="width:36%; margin: auto" value="修改">
-                                        <input type="button" style="width:36%; margin: auto" value="删除">
-                                    </div>
+                                    <form method="post" action="/teacher/manager/group_assignment/delete/">
+                                        {% csrf_token %}
+                                        <div class="form-group">
+                                            <script>
+                                                var member_list = []
+                                                {% for member in group.member_list %}
+                                                    var member = {
+                                                        id: '{{ member.no }}',
+                                                        name: '{{ member.name }}'
+                                                    }
+                                                    member_list.push(member)
+                                                {% endfor %}
+                                                group = {
+                                                    name: '{{ group.name }}',
+                                                    location: '{{ group.location }}',
+                                                    date: '{{ group.date }}',
+                                                    faculty: '{{ group.faculty }}',
+                                                    leader: '{{ group.leader }}',
+                                                    secretary: '{{ group.secretary }}',
+                                                    member_list: member_list,
+                                                }
+                                                group_list.push(group)
+                                            </script>
+                                            <input type="button" style="width:44%; margin: auto" value="查看" onclick="showCheckGroup(group_list['{{ group.index }}'])" >
+                                            <input style="display: none" type="hidden" name="dpname" value="{{ group.name }}">
+                                            <input type="button" style="width:44%; margin: auto" value="修改" onclick="showAlterGroup(group_list['{{ group.index }}'])">
+                                        </div>
+                                    </form>
                                 </td>
                             </tr>
                     {% empty %}
@@ -84,42 +217,162 @@
                 <form action="/teacher/manager/group_assignment/assign/" method="post">
                     {% csrf_token %}
                     <label>答辩组名称：
-                        <input type="text" name="group_name" id="group_name" placeholder="请输入答辩组名称"/>
+                        <input type="text" required name="group_name" placeholder="请输入答辩组名称"/>
                     </label>
                     <label>答辩组地点：
-                        <input type="text" name="group_location" id="group_location" placeholder="请输入答辩组地点"/>
+                        <input type="text" required name="group_location" placeholder="请输入答辩组地点"/>
                     </label>
                     <label>答辩组日期：
-                        <input type="date" name="group_date" id="group_date" placeholder="请输入答辩组日期"/>
-                    </label><br/>
+                        <input type="text" required name="group_date" placeholder="请输入答辩组日期"/>
+                    </label>
                     <label>答辩组学院：
-                        <input type="text" name="group_faculty" id="group_faculty" placeholder="请输入答辩组学院"/>
+                        <input type="text" required name="group_faculty" placeholder="请输入答辩组学院"/>
                     </label>
                     <label>答辩组组长：
-                        <input type="text" name="group_leader" id="group_leader" placeholder="请输入答辩组组长"/>
+                        <input type="text" required name="group_leader" placeholder="请输入答辩组组长"/>
                     </label>
                     <label>答辩小组秘书：
-                        <input type="text" name="group_secretary" id="group_secretary" placeholder="请输入答辩小组秘书"/>
+                        <input type="text"  name="group_secretary" placeholder="请输入答辩小组秘书"/>
                     </label><hr/>
                     <input type="button" value="新建成员" onclick="addNewMember()" class="add">
+                    <input type="button" value="删除成员" onclick="removeNewMember()" class="add">
                     <table id="member">
                         <tr>
                             <th>工号</th>
                             <th>姓名</th>
                         </tr>
                         <tr>
-                            <td>
-                                <label for="group_member_id"></label><input style="border-radius: 5px; padding: 0;margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/>
+                             <td>
+                                <label for="group_member_id"></label><input style="border-radius: 5px;margin: auto" type="text" name="group_member_id" id="group_member_id" placeholder="请输入答辩组成员工号"/>
                             </td>
                             <td>
-                                <label for="group_member_name"></label><input type="text" style="border-radius: 5px;padding: 0;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/>
+                                <label for="group_member_name"></label><input type="text" style="border-radius: 5px;margin: auto" name="group_member_name" id="group_member_name" placeholder="请输入答辩组成员姓名"/>
+                            </td>
+                        </tr>
+                    </table><br/><hr><br/>
+                    <div class="form-group">
+                        <input style="width: 36%;margin:auto" disabled type="submit" value="提交">
+                        <input style="width: 36%;margin:auto" type="button" value="取消" class="cancel" onclick="hideNewGroup()">
+                    </div>
+                </form>
+            </div>
+    </div>
+    <div id="checkGroup" class="pop">
+            <div class="border">
+                <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+                <hr/><h3>答辩组信息</h3><hr/><br/>
+                <form action="/teacher/manager/group_assignment/assign/" method="post">
+                    {% csrf_token %}
+                    <label>答辩组名称：
+                        <input disabled type="text" name="group_name" id="group_name" placeholder="请输入答辩组名称"/>
+                    </label>
+                    <label>答辩组地点：
+                        <input disabled type="text" name="group_location" id="group_location" placeholder="请输入答辩组地点"/>
+                    </label>
+                    <label>答辩组日期：
+                        <input disabled type="text" name="group_date" id="group_date" placeholder="请输入答辩组日期"/>
+                    </label><br/>
+                    <label>答辩组学院：
+                        <input disabled type="text" name="group_faculty" id="group_faculty" placeholder="请输入答辩组学院"/>
+                    </label>
+                    <label>答辩组组长：
+                        <input disabled type="text" name="group_leader" id="group_leader" placeholder="请输入答辩组组长"/>
+                    </label>
+                    <label>答辩小组秘书：
+                        <input disabled type="text" name="group_secretary" id="group_secretary" placeholder="请输入答辩小组秘书"/>
+                    </label><hr/>
+                    <input disabled type="button" value="新建成员" class="add">
+                    <input disabled type="button" value="删除成员" class="add">
+                    <table id="existed_member">
+                        <tr>
+                            <th>工号</th>
+                            <th>姓名</th>
+                        </tr>
+                    </table><br/><hr><br/>
+                    <div class="form-group">
+                        <input style="width: 36%;margin:auto" disabled type="submit" value="提交">
+                        <input style="width: 36%;margin:auto" type="button" value="取消" class="cancel" onclick="hideCheckGroup()">
+                    </div>
+                </form>
+            </div>
+    </div>
+    <div id="alterGroup" class="pop">
+            <div class="border">
+                <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+                <hr/><h3>答辩组信息</h3><hr/><br/>
+                <form action="/teacher/manager/group_assignment/re_assign/" method="post">
+                    {% csrf_token %}
+                    <label>答辩组名称：
+                        <input type="text" name="group_name" id="alt_group_name" placeholder="请输入答辩组名称"/>
+                        <input type="text" name="group_name" id="t_alt_group_name" placeholder="请输入答辩组名称"/>
+                    </label>
+                    <label>答辩组地点：
+                        <input type="text" name="group_location" id="alt_group_location" placeholder="请输入答辩组地点"/>
+                    </label>
+                    <label>答辩组日期：
+                        <input type="date" required name="group_date" id="alt_group_date" placeholder="请输入答辩组日期"/>
+                    </label><br/>
+                    <label>答辩组学院：
+                        <input disabled type="text" name="alt_group_faculty" id="alt_group_faculty" placeholder="请输入答辩组学院"/>
+                    </label>
+                    <label>答辩组组长：
+                        <input type="text" name="group_leader" id="alt_group_leader" placeholder="请输入答辩组组长"/>
+                    </label>
+                    <label>答辩小组秘书：
+                        <input type="text" name="group_secretary" id="alt_group_secretary" placeholder="请输入答辩小组秘书"/>
+                    </label><hr/>
+                    <input  type="button" value="新建成员" onclick="addAltMember()" class="add">
+                    <input  type="button" value="删除成员" onclick="removeAltMember()" class="add">
+                    <table id="alt_existed_member">
+                        <tr>
+                            <th>工号</th>
+                            <th>姓名</th>
                         </tr>
                     </table><br/><hr><br/>
                     <div class="form-group">
                         <input style="width: 36%;margin:auto" type="submit" value="提交">
-                        <input style="width: 36%;margin:auto" type="button" value="取消" class="cancel" onclick="hideNewGroup()">
+                        <input style="width: 36%;margin:auto" type="button" value="取消" class="cancel" onclick="hideAlterGroup()">
                     </div>
                 </form>
+            </div>
+    </div>
+    <div id="assignStudent" class="pop">
+            <div class="border">
+                <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+                <hr/><h3>分配答辩学生</h3><hr/><br/>
+                <table>
+                    <tr>
+                        <th>课题名称</th>
+                        <th>课题类型</th>
+                        <th>指导教师</th>
+                        <th>学生姓名</th>
+                        <th>信息操作</th>
+                    </tr>
+                    {% for student in student_list %}
+                        <tr>
+                            <td>{{ student.project }}</td>
+                            <td>{{ student.type }}</td>
+                            <td>{{ student.supervisor }}</td>
+                            <td>{{ student.student }}</td>
+                            <td>
+                                <form method="post" action="/teacher/manager/group_assignment/assign_student/">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="dp_name" class="dp_name">
+                                    <input type="hidden" name="sname" value="{{ student.student }}" id="student_name">
+                                    <input style="margin: auto" type="submit" value="选择">
+                                </form>
+                            </td>
+                        </tr>
+                    {% empty %}
+                        <tr style="height: 128px">
+                            <td colspan="5">暂无学生可分配</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+                <br/><hr/>
+                <div style="text-align: center">
+                    <input type="button" onclick="hideAssignStudent()" value="关闭">
+                </div>
             </div>
     </div>
 {% endblock %}

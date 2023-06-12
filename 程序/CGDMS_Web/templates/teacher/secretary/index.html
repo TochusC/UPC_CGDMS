@@ -1,13 +1,11 @@
-{% extends 'teacher/manager/manager_structure.html' %}
+{% extends 'teacher/secretary/secretary_structure.html' %}
 {% load static %}
 {% block content %}
     <div class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-            <hr/><h2 style="text-align: center; color: #27496d">毕设负责人{{ name }}，您好！</h2>
-            <hr/><br/><h1>欢迎来到毕业设计负责人模块！</h1><br/><hr/>
+            <hr/><h2 style="text-align: center; color: #27496d">教学秘书{{ name }}，您好！</h2>
+            <hr/><br/><h1>欢迎来到教学秘书模块！</h1><br/><hr/>
             <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
             <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p><hr/>
-        </div>
-    </div>
 {% endblock %}

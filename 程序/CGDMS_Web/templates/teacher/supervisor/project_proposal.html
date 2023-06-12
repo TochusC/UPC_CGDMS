@@ -9,7 +9,7 @@
         }
         select{
             margin-right: 60px;
-            width: 30%;
+            width: auto;
         }
         textarea {
             margin-top: 20px;
@@ -77,9 +77,8 @@
         }
     </script>
     <div class="pop" style="width:82%; margin: auto; left: 0; top:0">
-        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <br/><br/>
         <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/>
             <h1 style="font-size: 24px">课题信息</h1>
             <hr/><br/>
@@ -87,7 +86,7 @@
                 {% csrf_token %}
                 <label>课题名称：
                     <input style="display: none" disabled id="old_project_name" name="old_project_name">
-                    <input style="border-radius: 10px;width: 48%" required='' type='text' id="project_name" name="project_name">
+                    <input style="border-radius: 10px;width: 48%" required='' placeholder="请在这里输入您的课题名称" type='text' id="project_name" name="project_name">
                 </label>
                 <label alt='请输入课题名称' placeholder='课题名称' style="position:relative; left: 28%"></label>
                 <div style="margin-top: 20px; margin-bottom: 20px">
@@ -115,8 +114,8 @@
                     </label>
                 </div>
                 <div style="margin-top: 20px; margin-bottom: 20px">
-                    <label>是否结合生产实践和社会实际：
-                        <select name="is_practical">
+                    <label style="">是否结合生产实践和社会实际：
+                        <select style="width: auto" name="is_practical">
                               <option value="true" selected>是</option>
                               <option value="false">否</option>
                         </select>
@@ -129,7 +128,7 @@
                 </div>
                 <label>附加文件：
                     <input id="attachment" type="file" name="attachment"/>
-                </label>
+                </label><br/><br/>
                 <div id = "extra" style="display: none">
                     <hr/>
                     <label>提交时间

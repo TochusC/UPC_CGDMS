@@ -223,6 +223,10 @@ a {
 * {
   box-sizing: border-box;
 }
+html, body {
+  padding: 0;
+  margin: 0;
+}
 
 /* 导航栏样式 */
 nav {
@@ -247,8 +251,8 @@ nav {
 .nav-links {
     padding: 0;
     margin: 0;
-  display: flex;
-  list-style: none;
+    display: flex;
+    list-style: none;
     horiz-align: center;
 }
 
@@ -264,39 +268,45 @@ nav {
   font-size: 18px;
 }
 
-.second-links {
+nav[id="second-nav"]{
+    transition: all 0.3s ease;
+    background-color: #ffffff88;
+    box-shadow: 0 0 5px #27496d inset;
+    height:0;
+}
+ul.second-links {
     padding: 0;
     margin: 0;
-      transition: all 0.3s ease;
-  display: flex;
-  list-style: none;
+    transition: all 0.3s ease;
+    display: flex;
+    list-style: none;
     horiz-align: center;
 }
-
-.second-links li {
+ul.second-links li{
+    color: #27496d;
     padding: 5px;
     margin: 0px;
     margin-right: 20px;
-    border-left: #27496d;
-    border-right: #27496d;
+    border: 1px solid #27496d00;
+    border-radius: 5px;
+    transition: all ease 0.3s;
 }
-
-.second-links a {
+ul.second-links li:hover{
+    border: 1px solid #27496d;
+    box-shadow: 0 0 5px #27496d;
+    border-radius: 5px;
+    transition: all ease 0.3s;
+}
+ul.second-links a {
   color: #27496d;
   text-decoration: none;
   font-size: 14px;
 }
-
-.second-links li:hover{
-  border: 1px solid #27496d;
-  border-radius: 5px;
-}
-
 /* 侧边栏样式 */
 aside {
-
-  padding: 20px;
-      background-color: #FFFFFF66;
+    border-radius: 5px;
+    padding: 20px;
+    background-color: #FFFFFF66;
     box-shadow: 0 0 4px #999;
     height: 100%;
 }
@@ -319,8 +329,10 @@ h2 {
 .side-links a {
   display: block;
   padding: 10px 20px;
-  border-radius: 4px;
-  background-color: #ddd;
+  background-color: #FAFAFA;
+    border-radius: 5px;
+    border: 2px solid #27496d88;
+    box-shadow: 0 0 2px #27496d66;
   color: #333;
   text-decoration: none;
   transition: all 0.3s ease;
@@ -328,6 +340,8 @@ h2 {
 
 .side-links a:hover {
   background-color: #27496d;
+    border-color: #FAFAFA;
+    box-shadow: 0 0 5px #27496d;
   color: #fff;
 }
 
@@ -348,17 +362,21 @@ h2 {
     --calendar-prevnext-date-color: #BDBDBD
 }
 
-
+@media screen and (max-width: 4000px) {
+  .calendar {
+    display: none;
+  }
+}
 .calendar {
     border: #003778;
+    box-shadow: 0 0 4px #27496d;
     font-family: 'IBM Plex Sans', sans-serif;
     max-width: 320px; /*change as per your design need */
-    min-width: 260px;
+    min-width: 10px;
     display: inline-block;
     position: relative;
     background: var(--calendar-bg-color);
     color: var(--calendar-font-color);
-    box-sizing: border-box;
     font-weight: normal;
     border-radius: var(--calendar-border-radius);
 }
@@ -577,51 +595,52 @@ label {
     font-weight: bold;
     font-size: 16px;
 }
-        select {
-          font-size: 14px;
-          padding: 8px;
-          border: 1px solid #ddd;
-          border-radius: 4px;
-        }
+select {
+  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
 
 /* 页脚样式 */
 .footer {
-    background-color: #FFFFFF66;
-    box-shadow: 0 0 2px #999;
+    margin-top: 96px;
+    border: #FAFAFA 2px solid;
+    background-color: #003778E0;
+    border-radius: 6px;
+    color: #F0F0F0;
+    box-shadow: 0 0 5px #000 inset;
     z-index: -10;
     vertical-align: bottom;
-
-  padding: 20px;
-  text-align: center;
-  margin-top: 50px; /* 可根据需要进行修改 */
+    padding: 20px;
+    text-align: center;
 }
-
+.footer:hover{
+    box-shadow: 0 0 8px #000 inset;
+}
 .footer p {
   margin-top: 0;
   font-size: 18px;
   font-weight: bold;
 }
-
 .footer ul {
   list-style: none;
   margin: 10px 0 0 0;
   padding: 0;
 }
-
 .footer ul li {
-  margin-bottom: 5px;
+  margin: 10px;
   font-size: 16px;
 }
-
 .footer ul li a {
-  color: #333;
-  text-decoration: none;
+    text-decoration: none;
+    color: #F0F0F0;
+    transition: all ease 0.3s;
 }
-
 .footer ul li a:hover {
   text-decoration: underline;
+    transition: all ease 0.3s;
 }
-
 hr {
     border: 1px solid #27496d55;
 }
@@ -716,10 +735,18 @@ div.child-form{
     text-align: left;
 }
 
-div.second-navi{
-      transition: all 0.3s ease;
+li.head_navi{
+    border: 1px solid #ffffff00;
+    padding: 10px;
+    transition: all ease 0.3s;
 }
-
+li.head_navi:hover{
+    border: 1px solid #F5F5F5;
+    padding: 10px;
+    box-shadow: 0 0 5px #ffffffbb;
+    transition: all ease 0.3s;
+    border-radius: 6px;
+}
 li.website_id{
     font-size: 3px;
     margin-top: 12px;
@@ -744,6 +771,19 @@ div.label-border{
     border-right: 1px dotted #27496dAA;
     padding-left: 32px;
     padding-right: 32px;
+}
+p.proverb{
+    color: #27496d;
+    text-align: center;
+    text-shadow: 0 0 4px #fff;
+    transition: all ease 0.3s;
+}
+p.proverb:hover{
+    color: #27496d;
+    font-size: 20px;
+    text-align: center;
+    text-shadow: 0 0 4px #27496d;
+    transition: all ease 0.3s;
 }
 
 input[disabled]{

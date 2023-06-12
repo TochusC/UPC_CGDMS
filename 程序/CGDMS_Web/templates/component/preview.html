@@ -1,20 +1,13 @@
 {% load static %}
 <!DOCTYPE html>
 <html>
-<title>高校毕设管理系统</title>
+<title>毕业设计管理系统</title>
   <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
         <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
         <link rel="shortcut icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
   </head>
   <style>
-      li.head_navi{
-          padding: 10px;
-      }
-      li:hover{
-          border: 1px solid #F5F5F5;
-          border-radius: 5px;
-      }
   </style>
   <body style="height: 100%; display: block">
         <script>
@@ -26,7 +19,7 @@
                 return document.getElementById(id);
             }
             function ShowSecondNav(id){
-                $("second-nav").style.display = "block"
+                $("second-nav").style.height = "52px";
                 if(id===1){
                     $("nav1").style.display = "inline"
                     $("nav2").style.display = "none"
@@ -35,6 +28,11 @@
                     $("nav1").style.display = "none"
                     $("nav2").style.display = "inline"
                 }
+            }
+            function hideSecondNav(){
+                $("second-nav").style.height = "0px";
+                $("nav1").style.display = "none"
+                $("nav2").style.display = "none"
             }
         </script>
 
@@ -49,37 +47,36 @@
                   <span><img src="{% static 'img/logo_white.png' %}" alt="中国石油大学（华东）"/></span>
                   <span><img src="{% static 'img/text-white.png' %}" alt=""/></span>
               </div>
-                  <ul id = 'student' class="nav-links">
+                  <ul id='student' class="nav-links">
                     <li class="head_navi"><a href="/">首页</a></li>
                     <li class="head_navi"><a href="/" onmouseover="ShowSecondNav(1)" onclick="return AccessDenied">学生中心</a></li>
                     <li class="head_navi"><a href="/" onmouseover="ShowSecondNav(2)" onclick="return AccessDenied">教师中心</a></li>
                     <li class="head_navi"><a href="/">退出系统</a></li>
                   </ul>
             </nav>
-            <nav id = "second-nav" style="display: none;transition: all 0.5s ease;background-color: #27496d35; height:53px">
-                <div id="nav1" style="float: right">
+            <nav id="second-nav">
+                <div></div>
+                <div id="nav1" style="display: none; float: right">
                   <ul class="second-links">
-                    <li style="color: #27496d" onmouseover="return AccessDenied"><a href="/">学生选题</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">查看任务书</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">开题报告</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">中期检查</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">周进度报告</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">论文草稿</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">论文定稿</a></li>
-                      <li style="color: #27496d" onclick="return AccessDenied"><a href="/">查看答辩信息</a></li>
+                    <li onclick="return AccessDenied"><a href="/">学生选题</a></li>
+                      <li onclick="return AccessDenied"><a href="/">查看任务书</a></li>
+                      <li onclick="return AccessDenied"><a href="/">开题报告</a></li>
+                      <li onclick="return AccessDenied"><a href="/">中期检查</a></li>
+                      <li onclick="return AccessDenied"><a href="/">周进度报告</a></li>
+                      <li onclick="return AccessDenied"><a href="/">论文草稿</a></li>
+                      <li onclick="return AccessDenied"><a href="/">论文定稿</a></li>
+                      <li onclick="return AccessDenied"><a href="/">查看答辩信息</a></li>
                   </ul>
                 </div>
-                <div id="nav2" style="float: right">
+                <div id="nav2" style="display: none; float: right">
                   <ul class="second-links">
-                    <li style="color: #27496d"><a href="/" onclick="return AccessDenied">指导教师</a></li>
-                    <li style="color: #27496d"><a href="/" onclick="return AccessDenied">毕业设计负责人</a></li>
-                    <li style="color: #27496d"><a href="/" onclick="return AccessDenied">教学院长</a></li>
-                    <li style="color: #27496d"><a href="/" onclick="return AccessDenied">教学秘书</a></li>
-                     <li style="color: #27496d"><a href="/" onclick="return AccessDenied">答辩秘书</a></li>
+                    <li><a href="/" onclick="return AccessDenied">指导教师</a></li>
+                    <li><a href="/" onclick="return AccessDenied">毕业设计负责人</a></li>
+                    <li><a href="/" onclick="return AccessDenied">教学院长</a></li>
+                    <li><a href="/" onclick="return AccessDenied">教学秘书</a></li>
                   </ul>
                 </div>
             </nav>
-
             <!-- 左侧边栏 -->
             <aside style = 'width: 14%; position: absolute; left: 0%; height: 100%'>
             <hr/><br/>
@@ -91,9 +88,8 @@
                 {% endblock %}
                  <br/><hr/><br/>
             </aside>
-
             <!-- 内容部分 -->
-            <main style= "display:block; width: 69%; position: absolute; left: 14%; height: 90%">
+            <main onmouseenter="hideSecondNav()" style= "display:block; width: 69%; position: absolute; left: 14%; height: 90%">
                 <br/><hr>
                 <div style="margin-top: 96px; margin-bottom: 60px;">
                     {% block content %}
@@ -113,9 +109,7 @@
                         <li class = "website_id">鲁ICP备2022042182号-1</li>
                     </ul>
                 </address>
-
                 </div>
-
             </main>
 
             <!-- 右侧边栏 -->
@@ -125,19 +119,16 @@
                     <img style="height: auto;width: 48%" src="{% static 'img/logo.png' %}" alt=""/>
                 </div>
                 <br/><hr/><br/>
-
-    <div style="
+                <div style="
     text-align: center;
     background-color: #F0F0F0;
     border-radius: 10px;
     box-shadow: 0 0 3px #aaa;">
-        <input type="button" onclick="showPop()" style="margin: 12px auto" value = '注册账号'>
-    </div><br/><hr/><br/>
-
+                    <input type="button" onclick="showPop()" style="margin: 12px auto" value = '注册账号'>
+                </div><br/><hr/><br/>
                 <div class="calendar"></div>
                 <script src = "{% static '/js/calender.js' %}"></script>
                 <br/><br/><hr/><br/>
             </aside>
-        </div>
   </body>
 </html>

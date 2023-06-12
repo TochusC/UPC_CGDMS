@@ -4,7 +4,7 @@
 <title>毕业设计管理系统</title>
   <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+        <link rel="stylesheet" type="text/css" href="{% static 'css/special_style.css' %}">
         <link rel="shortcut icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
   </head>
   <body onmouseenter="hideSecondNav()" style="height: 100%; display: block">
@@ -67,8 +67,9 @@
             }
         </script>
         <!-- 背景动效 -->
-        <script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
-        <canvas height="926" width="1920" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; " id="c_n1"></canvas>
+        <canvas height="926" width="1920" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 1; " id="canvas"></canvas>
+        <script type="text/javascript" src ="{% static 'js/dat.gui.min.js' %}"></script>
+        <script type="text/javascript" src ="{% static 'js/script.js' %}"></script>
         <!-- 导航栏 -->
         <div>
             <nav>
@@ -117,7 +118,7 @@
             <aside class="side" style = 'width: 14%; position: absolute; left: 0;'>
             <hr/><br/>
                 <div class="img_center_div" style="">
-                    <img style="height: auto;width: 74%" src="{% static 'img/word.png' %}" alt=""/>
+                    <img style="height: auto;width: 74%" src="{% static 'img/word_white.png' %}" alt=""/>
                 </div>
                 <br/><hr/><br/>
                 {% block aside %}
@@ -141,7 +142,7 @@
                            </address>
                         </div>
                     </div>
-                    <br/><hr>
+                    <br/><hr style="border: 1px solid #F6F6F688">
                     <address>
                         <ul>
                             <li class = "website_id">鲁ICP备2022042182号-1</li>
@@ -177,7 +178,7 @@
                             </table><br/><hr/>
                         </div>
                     </div>
-                 <div id = "newMessage" class="pop" style="position:fixed;left: 40%; top: 10%;margin: auto; height: auto; width: auto;">
+                 <div id = "newMessage" class="pop" style="display: none; position:fixed;left: 40%; top: 10%;margin: auto; height: auto; width: auto;">
                         <div class="border" style="width: 100%; margin-bottom:5px;margin-right: 0; margin-left: 0;">
                         <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
                             <hr/><h1>新建留言</h1><hr/>
@@ -199,7 +200,7 @@
             <aside style = 'position: absolute; left: 83%;width: 17%; z-index:-1; height: 100%'>
                     <hr/><br/>
                 <div class="img_center_div">
-                    <img style="height: auto;width: 48%" src="{% static 'img/logo.png' %}" alt=""/>
+                    <img style="height: auto;width: 48%" src="{% static 'img/logo_white.png' %}" alt=""/>
                 </div>
                 <br/><hr/><br/>
                 <div class="calendar"></div>
