@@ -123,6 +123,22 @@
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h1>任务书审核</h1><hr/><br/>
+            <hr/><h3>相关说明</h3><hr/>
+                <table class="info">
+                    <tr>
+                        <th>任务书的要求</th>
+                    <tr>
+                    <tr>
+                        <td>选题结束后，指导教师应及时向学生下达任务书。</td>
+                    </tr>
+                    <tr>
+                        <td>任务书既要明确毕业设计内容、预期目标、进度安排等基本要求，同时又要体现对课程目标和相应毕业要求的支撑。</td>
+                    </tr>
+                    <tr>
+                        <td>任务书经专业负责人审核通过后发布，指导教师不得随意更改，如确需更改，需经专业负责人审核批准</td>
+                    </tr>
+                </table><br/><hr/>
+            <h3>任务书管理</h3><hr/><br/>
             <table>
                 <tr>
                     <th>课题名称</th>
@@ -164,7 +180,9 @@
                         <td colspan="5">暂无任务书需审核</td>
                     </tr>
                 {% endfor %}
-            </table>
+            </table><br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

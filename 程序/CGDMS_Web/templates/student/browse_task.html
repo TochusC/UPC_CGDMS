@@ -51,6 +51,8 @@
                 <label>提交时间：
                     <input disabled value="{{ task_book.time }}" type="text" name="submit_time" style="width: 48%; border-radius: 10px">
                 </label><br/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

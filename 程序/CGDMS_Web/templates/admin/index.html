@@ -1,20 +1,17 @@
-{% extends 'teacher/dean/dean_structure.html' %}
+{% extends 'admin/admin_structure.html' %}
 {% load static %}
 {% block content %}
     <div class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
-            <hr/><h2 style="text-align: center; color: #27496d">教学院长{{ name }}，您好！</h2>
-            <hr/><br/><h1>欢迎来到教学院长模块！</h1><br/><hr/>
+            <hr/><h2 style="text-align: center; color: #27496d">管理员{{ name }}，您好！</h2>
+            <hr/><br/><h1>欢迎来到管理界面！</h1><br/><hr/>
              <table class="info">
                 <tr>
                     <th>相关说明</th>
                 <tr>
                 <tr>
-                    <td>教学院长需要完成课题发布、双选结果发布两项任务。</td>
-                </tr>
-                <tr>
-                    <td>教学院长可在过程信息统计页面浏览系统中所有课题的材料提交情况</td>
+                 <td><p class="proverb">人生的价值，即以其人对于当代所做的工作为尺度。</p></td>
                 </tr>
             </table><br/><hr/>
             <script src="{% static 'js/clock.js' %}"></script>

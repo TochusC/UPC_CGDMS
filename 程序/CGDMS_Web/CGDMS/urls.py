@@ -27,7 +27,6 @@ urlpatterns = [
                   path('logout/', views.logout),
                   path('register/', views.register),
                   path('index/', views.index),
-                  path('admin/', admin.site.urls),
                   path('showinfo/', views.showinfo),
                   path('account/', views.account),
                   path('change_password/', views.change_password),
@@ -52,6 +51,7 @@ urlpatterns = [
                   path('teacher/', views.teacher),
                   path('teacher/role/', views.role),
                   path('teacher/information_summary/', views.information_summary),
+                  path('teacher/user_summary/', views.user_summary),
                   # 指导教师模块
                   path('teacher/supervisor/', views.supervisor),
                   path('teacher/supervisor/project_proposal/', views.project_proposal),
@@ -101,4 +101,8 @@ urlpatterns = [
                   path('teacher/secretary/defense_score/score/', views.score_defense),
                   path('teacher/secretary/score_announcement/', views.score_announcement),
                   path('teacher/secretary/score_announcement/announce/', views.announce_score),
+                  # 管理员模块
+                  path('admin/', views.admin),
+                  path('admin/information_summary/', views.admin_info),
+                  path('admin/user_summary/', views.admin_user),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

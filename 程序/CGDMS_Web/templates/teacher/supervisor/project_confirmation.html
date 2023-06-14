@@ -18,7 +18,19 @@
     <div class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-            <hr/><h1>已确认选题</h1><hr/><br/>
+            <hr/><h1>确认选题</h1><hr/>
+            <table class="info">
+                <tr>
+                    <th>相关说明</th>
+                <tr>
+                <tr>
+                    <td>指导老师可在此页面对学生的课题预选进行确认。</td>
+                </tr>
+                <tr>
+                    <td>确认选题后，学生的预选志愿将会被清空，同时学生的选题状态将会被锁定，学生将无法预选其他课题。</td>
+                </tr>
+            </table><br/><hr/>
+            <hr/><h3>已确认选题</h3><hr/><br/>
                 <table>
                     <tr>
                         <th>课题名称</th>
@@ -54,7 +66,7 @@
                     </tr>
                 {% endfor %}
             </table><br/><hr/>
-           <h1>确认选题</h1><hr/><br/>
+           <h3>确认选题</h3><hr/><br/>
             <table style="width: 100%">
                 <tr>
                     <th>课题名称</th>
@@ -97,6 +109,8 @@
                     </tr>
                 {% endfor %}
             </table><br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

@@ -8,7 +8,7 @@
                  alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h1>欢迎来到信息统计页面！</h1><hr/>
             <h3>课题信息总览</h3><hr/>
-            <h4>选题总数：{{ project_list|length }}&nbsp&nbsp&nbsp&nbsp已完成课题数：{{ finished  }}</h4>
+            <h4>选题总数：{{ project_list|length }}</h4>
             <table>
                 <tr>
                     <th>课题名称</th>
@@ -28,9 +28,36 @@
                 {% empty %}
                 {% endfor %}
             </table>
-            <br/><hr/>
-            <script src="{% static 'js/clock.js' %}"></script>
-            <div id="clock">获取时间中...</div>
+            <hr/>
+            <script>
+              // 基于准备好的dom，初始化echarts实例
+              var myChart = echarts.init(document.getElementById('main'));
+              // 指定图表的配置项和数据
+              var option = {
+                title: {
+                  text: 'ECharts 入门示例'
+                },
+                tooltip: {},
+                legend: {
+                  data: ['销量']
+                },
+                xAxis: {
+                  data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
+                },
+                yAxis: {},
+                series: [
+                  {
+                    name: '销量',
+                    type: 'bar',
+                    data: [5, 20, 36, 10, 10, 20]
+                  }
+                ]
+              };
+
+              // 使用刚指定的配置项和数据显示图表。
+              myChart.setOption(option);
+            </script>
+            <div id="main" style="width: 600px;height:400px;"></div>
         </div>
     </div>
 {% endblock %}

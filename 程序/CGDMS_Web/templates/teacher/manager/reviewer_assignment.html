@@ -1,4 +1,4 @@
-{% extends 'teacher/dean/dean_structure.html' %}
+{% extends 'teacher/manager/manager_structure.html' %}
 {% load static %}
 {% block content %}
     <style>
@@ -126,6 +126,8 @@
                 {% endfor %}
             </table>
             <br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

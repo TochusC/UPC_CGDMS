@@ -6,6 +6,14 @@
   }
 }
 
+aside h4{
+    color: #27496d;
+}
+aside h4:hover{
+    font-size: 18px;
+    text-shadow: 0 0 10px #27496d;
+}
+
 body{
     background-color: #E6E6E6;
 }
@@ -537,11 +545,11 @@ table.info, table.linfo{
     margin-top: 32px;
     width: 100%;
 }
-table.info, table.linfo th{
+table.info th, table.linfo th{
     color: #27496d;
     transition: all ease 0.3s
 }
-table.info, table.linfo th:hover{
+table.info th:hover, table.linfo th:hover{
     color: #27496d;
     text-shadow: 0 0 8px #27496d;
     font-size: 18px;
@@ -554,8 +562,7 @@ table.linfo tr td{
     font-size: 16px;
     text-align: left;
 }
-table.info, table.linfo tr td:hover{
-    text-align: left;
+table.info tr td:hover, table.linfo tr td:hover{
     text-shadow: 0 0 8px #3366cc88;
 }
 th,

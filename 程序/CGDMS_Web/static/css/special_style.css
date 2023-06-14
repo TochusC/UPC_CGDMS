@@ -292,13 +292,75 @@ h3,h4{
     color: #27496d;
 }
 
+
 table {
     margin: auto;
     width: 100%;
     border-collapse: collapse;
     background-color: #ffffff88;
 }
+table thead tr td{
+    font-weight: bold;
+    color: #27496d;
+}
+table.info, table.linfo{
+    margin-top: 32px;
+    width: 100%;
+}
+table.info th, table.linfo th{
+    color: #27496d;
+    transition: all ease 0.3s
+}
+table.info th:hover, table.linfo th:hover{
+    color: #27496d;
+    text-shadow: 0 0 8px #27496d;
+    font-size: 18px;
+    transition: all ease 0.3s
+}
+* {
+    transition: all ease 0.3s;
+}
 
+aside h2{
+    color: #F0F0F0;
+    text-shadow: 0 0 4px #f0f0f0;
+}
+aside h2:hover{
+    font-size: 28px;
+    text-shadow: 0 0 10px #F0F0F0;
+}
+
+aside h4{
+    color: #F0F0F0;
+    text-shadow: 0 0 2px #f0f0f0;
+}
+aside h4:hover{
+    font-size: 18px;
+    text-shadow: 0 0 10px #F0F0F0;
+}
+
+p.proverb{
+    color: #27496d;
+    text-shadow: 0 0 8px #27496d;
+    text-align: center;
+    transition: all ease 0.3s;
+}
+p.proverb:hover{
+    color: #27496d;
+    font-size: 20px;
+    text-shadow: 0 0 16px #27496d;
+    text-align: center;
+    transition: all ease 0.3s;
+}
+
+
+table.linfo tr td{
+    font-size: 16px;
+    text-align: left;
+}
+table.info tr td:hover, table.linfo tr td:hover{
+    text-shadow: 0 0 8px #3366cc88;
+}
 th,
 td {
     padding: 10px;
@@ -520,7 +582,16 @@ div.label-border{
     padding-left: 32px;
     padding-right: 32px;
 }
-
+.control{
+    text-shadow: 0 0 6px #f0f0f0;
+}
+.control:hover{
+    font-size: 20px;
+    text-shadow: 0 0 12px #f0f0f0;
+}
+li[id='control']:hover{
+    box-shadow: 0 0 12px #F0F0F0;
+}
 input[disabled]{
     background-color: #f8f8f8;
 }
@@ -601,4 +672,14 @@ input {
   border: 0;
   outline: none;
   border-bottom: 1px solid #fbc2eb;
+}
+
+div[id='clock']{
+    color: #27496d;
+    margin-top: 32px;
+    text-align: center;
+}
+div[id='clock']:hover{
+    font-size: 18px;
+    text-shadow: 0 0 8px #27496d;
 }

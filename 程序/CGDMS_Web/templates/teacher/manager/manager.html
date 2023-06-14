@@ -6,8 +6,19 @@
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h2 style="text-align: center; color: #27496d">毕设负责人{{ name }}，您好！</h2>
             <hr/><br/><h1>欢迎来到毕业设计负责人模块！</h1><br/><hr/>
-            <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
-            <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p><hr/>
+            <table class="info">
+                <tr>
+                    <th>相关说明</th>
+                <tr>
+                <tr>
+                    <td>毕设负责人需要完成课题审核、任务书审核、评阅教师分配、答辩小组管理等四项任务。</td>
+                </tr>
+                <tr>
+                    <td>毕设负责人可在过程信息统计页面浏览系统中所有课题的材料提交情况</td>
+                </tr>
+            </table><br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

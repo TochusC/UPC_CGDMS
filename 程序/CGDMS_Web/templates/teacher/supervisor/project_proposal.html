@@ -157,7 +157,19 @@
     <div id="main-content" class = "info_border">
         <div class = 'border'>
                  <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-        <hr/><h1 style="font-size: 24px">课题申报</h1><hr/>
+        <hr/><h1 style="font-size: 24px">课题申报</h1><hr/><br/><hr/>
+            <h3>相关说明</h3><hr/>
+            <table class="info">
+                <tr>
+                    <th>对课题的要求</th>
+                <tr>
+                <tr>
+                    <td>课题应符合专业培养目标和课程目标要求，注重与生产实践、科学研究、社会实际、经济发展等结合，有一定的学术水平或实用价值</td>
+                </tr>
+                <tr>
+                    <td>选题难度和工作量要适宜，使学生既能得到综合训练，又能在规定时间内经过努力可以完成</td>
+                </tr>
+            </table><br/><hr/>
             <div class="label-border">
                 <h2 style="color:#27496d;" >已申报课题：</h2>
                 <input type="button" class="add" value="申报课题"
@@ -207,6 +219,8 @@
                 </table>
             </div>
             <br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

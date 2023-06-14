@@ -1,0 +1,9 @@
+{% extends 'component/navigation.html/' %}
+{% block aside %}
+  <h2>{{ name }}, 您好</h2>
+  <ul class="side-links">
+    <li><a href="/admin/information_summary">课题状态统计</a></li>
+    <li><a href="/admin/user_summary">账号统计</a></li>
+    <li><a href="/admin/command">控制台</a></li>
+  </ul>
+{% endblock %}

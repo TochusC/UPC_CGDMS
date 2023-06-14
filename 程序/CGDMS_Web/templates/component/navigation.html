@@ -4,7 +4,18 @@
 <title>毕业设计管理系统</title>
   <head>
         <meta http-equiv="Content-type" content="text/html; charset=utf-8" />
-        <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+        {% if role == '管理员' %}
+            <!-- 背景动效 -->
+            <canvas height="926" width="1920" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 1; " id="canvas"></canvas>
+            <script type="text/javascript" src ="{% static 'js/dat.gui.min.js' %}"></script>
+            <script type="text/javascript" src ="{% static 'js/script.js' %}"></script>
+            <link rel="stylesheet" type="text/css" href="{% static 'css/special_style.css' %}">
+        {% else %}
+            <!-- 背景动效 -->
+            <script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
+            <canvas height="926" width="1920" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; " id="c_n1"></canvas>
+            <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
+        {% endif %}
         <link rel="shortcut icon" href="{% static 'img/logo.png' %}" type="image/x-icon">
   </head>
   <body onmouseenter="hideSecondNav()" style="height: 100%; display: block">
@@ -66,9 +77,7 @@
                 return false
             }
         </script>
-        <!-- 背景动效 -->
-        <script type="text/javascript" src ="{% static 'js/canvas-nest.min.js' %}"></script>
-        <canvas height="926" width="1920" style="position: fixed; top: 0; left: 0; z-index: -1; opacity: 0.5; " id="c_n1"></canvas>
+
         <!-- 导航栏 -->
         <div>
             <nav>
@@ -80,6 +89,9 @@
                         <li class="head_navi"><a href="/index/">首页</a></li>
                         <li class="head_navi"><a href="/student" onmouseover="ShowSecondNav(1)">学生中心</a></li>
                         <li class="head_navi"><a href="/teacher" onmouseover="ShowSecondNav(2)">教师中心</a></li>
+                        {% if role == '管理员' %}
+                          <li id="control" class="head_navi"><a class="control" href="/admin/">管理界面</a></li>
+                        {% endif %}
                         <li class="head_navi"><a href="/logout/">退出系统</a></li>
                       </ul>
             </nav>
@@ -115,18 +127,36 @@
             </nav>
             <!-- 左侧边栏 -->
             <aside class="side" style = 'width: 14%; position: absolute; left: 0;'>
-            <hr/><br/>
+            {% if role == '管理员' %}
+                <hr style="border: 1px solid #ffffff99" /><br/>
+            {% else %}
+                <hr style="border: 1px solid #ffffff99" /><br/>
+            {% endif %}
                 <div class="img_center_div" style="">
-                    <img style="height: auto;width: 74%" src="{% static 'img/word.png' %}" alt=""/>
+                    {% if role == '管理员' %}
+                        <img style="height: auto;width: 74%" src="{% static 'img/word_white.png' %}" alt=""/>
+                    {% else %}
+                        <img style="height: auto;width: 74%" src="{% static 'img/word.png' %}" alt=""/>
+                    {% endif %}
                 </div>
-                <br/><hr/><br/>
+                <br/>
+                {% if role == '管理员' %}
+                    <hr style="border: 1px solid #ffffff99" /><br/>
+                {% else %}
+                    <hr/><br/>
+                {% endif %}
                 {% block aside %}
                 {% endblock %}
                  <br/><hr/><br/>
             </aside>
             <!-- 内容部分 -->
             <main style= "display:block; width: 69%; position: absolute; left: 14%; height: 90%">
-                <br/><hr>
+                <br/>
+                {% if role == '管理员' %}
+                    <hr style="border: 1px solid #ffffff99" /><br/>
+                {% else %}
+                    <hr/><br/>
+                {% endif %}
                 <div style="margin-top: 32px; margin-bottom: 60px;">
                     {% block content %}
                     {% endblock %}
@@ -141,7 +171,12 @@
                            </address>
                         </div>
                     </div>
-                    <br/><hr>
+                    <br/>
+                    {% if role == '管理员' %}
+                        <hr style="border: 1px solid #ffffff99" /><br/>
+                    {% else %}
+                        <hr style="border: 1px solid #ffffff99" /><br/>
+                    {% endif %}
                     <address>
                         <ul>
                             <li class = "website_id">鲁ICP备2022042182号-1</li>
@@ -197,14 +232,34 @@
             </main>
             <!-- 右侧边栏 -->
             <aside style = 'position: absolute; left: 83%;width: 17%; z-index:-1; height: 100%'>
-                    <hr/><br/>
+                    {% if role == '管理员' %}
+                        <hr style="border: 1px solid #ffffff99" /><br/>
+                    {% else %}
+                        <hr/><br/>
+                    {% endif %}
                 <div class="img_center_div">
-                    <img style="height: auto;width: 48%" src="{% static 'img/logo.png' %}" alt=""/>
+                    {% if role == '管理员' %}
+                        <img style="height: auto;width: 74%" src="{% static 'img/logo_white.png' %}" alt=""/>
+                    {% else %}
+                        <img style="height: auto;width: 74%" src="{% static 'img/logo.png' %}" alt=""/>
+                    {% endif %}
                 </div>
-                <br/><hr/><br/>
+                <br/>
+                {% if role == '管理员' %}
+                    <hr style="border: 1px solid #ffffff99" /><br/>
+                {% else %}
+                    <hr/><br/>
+                {% endif %}
+                <br/>
                 <div class="calendar"></div>
                 <script src = "{% static '/js/calender.js' %}"></script>
-                <br/><br/><hr/><br/>
+                <br/><br/>
+                {% if role == '管理员' %}
+                    <hr style="border: 1px solid #ffffff99" /><br/>
+                {% else %}
+                    <hr/><br/>
+                {% endif %}
+                <br/>
             </aside>
         </div>
   </body>

@@ -15,7 +15,7 @@
         }
     </style>
     <div class="info_border">
-        <div class="border" style="margin-bottom: 64px">
+        <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
             <hr/><h1>双选结果公布</h1><hr/><br/>
             <table>
@@ -49,6 +49,8 @@
                 {% endfor %}
             </table>
         <br/><hr/>
+        <script src="{% static 'js/clock.js' %}"></script>
+        <div id="clock">获取时间中...</div>
         </div>
     </div>
 {% endblock %}

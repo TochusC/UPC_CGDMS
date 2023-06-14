@@ -1,6 +1,7 @@
 import datetime
 import os
 import pymysql
+import pyecharts
 from django.shortcuts import render, redirect
 
 db = pymysql.connect(host='localhost',
@@ -314,7 +315,7 @@ def student(request):
         'comment_list': get_comment_list()
     }
     # 检查用户的身份
-    if info_dict["role"] == "学生":
+    if info_dict["role"] != "教师":
         # 如果是学生，则渲染学生主页
         return render(request, "student/student_index.html", info_dict)
     else:
@@ -1444,7 +1445,40 @@ def information_summary(request):
         'no': request.session['no'],
         'comment_list': get_comment_list(),
     }
+    # 初始化游标
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_TEACHER")
+    # 获取所有课题信息
+    project_list = cursor.fetchall()
+    self_info['project_list'] = project_list
+    cursor =db.cursor()
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_TEACHER WHERE SPstatus = '已完成'")
+    self_info['finished'] = cursor.rowcount
     return render(request, "teacher/information_summary.html", self_info)
+
+
+def user_summary(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    self_info = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list(),
+    }
+    # 初始化游标
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM user")
+    # 获取所有课题信息
+    user_list = []
+    for num in range(cursor.rowcount):
+        user_info = cursor.fetchone()
+        user = [user_info[0], user_info[1], user_info[2], user_info[3].strftime("%Y-%m-%d %H:%M:%S")]
+        user_list.append(user)
+    self_info['user_list'] = user_list
+    return render(request, "teacher/user_summary.html", self_info)
 
 
 # 指导教师模块
@@ -3377,3 +3411,71 @@ def announce_score(request):
     db.commit()
     # 重定向至总评成绩公布页面
     return redirect("/teacher/secretary/score_announcement/")
+
+# 管理员模块
+def admin(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 从session中获取用户信息，并构造信息字典
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    # 身份检查
+    if info_dict["role"] != "管理员":
+        return render(request, "announce.html",
+                      {'message': '您并没有管理员权限', 'name': info_dict["name"]})
+    # 渲染管理员页面
+    return render(request, "admin/index.html", info_dict)
+
+
+# 信息统计页面
+def admin_info(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    self_info = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list(),
+    }
+    # 初始化游标
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_TEACHER")
+    # 获取所有课题信息
+    project_list = cursor.fetchall()
+    self_info['project_list'] = project_list
+    cursor =db.cursor()
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_TEACHER WHERE SPstatus = '已完成'")
+    self_info['finished'] = cursor.rowcount
+    return render(request, "admin/information_summary.html", self_info)
+
+
+def admin_user(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    self_info = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list(),
+    }
+    # 初始化游标
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM user")
+    # 获取所有课题信息
+    user_list = []
+    for num in range(cursor.rowcount):
+        user_info = cursor.fetchone()
+        user = [user_info[0], user_info[1], user_info[2], user_info[3].strftime("%Y-%m-%d %H:%M:%S")]
+        user_list.append(user)
+    self_info['user_list'] = user_list
+    return render(request, "admin/user_summary.html", self_info)
