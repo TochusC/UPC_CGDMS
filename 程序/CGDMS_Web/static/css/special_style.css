@@ -674,6 +674,19 @@ input {
   border-bottom: 1px solid #fbc2eb;
 }
 
+textarea{
+    margin-top: 20px;
+  display: block;
+  width: 94%;
+  padding: 10px;
+  font-size: 14px;
+  line-height: 1.5;
+  border-radius: 4px;
+  box-sizing: border-box;
+  margin-bottom: 20px;
+    height: 160px;
+}
+
 div[id='clock']{
     color: #27496d;
     margin-top: 32px;

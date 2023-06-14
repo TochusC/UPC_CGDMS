@@ -177,19 +177,7 @@ def showinfo(request):
     }
     # 获取表中的个人信息
     cursor = db.cursor()
-    if request.session['role'] == '教师':
-        # 从教师表中获取个人信息
-        cursor.execute("SELECT * FROM TEACHER WHERE Uno = '" + info_dict['uno'] + "';")
-        no, name, gender, birth, fname, mname, title, username = cursor.fetchone()
-        # 构造个人信息字典
-        self_info = {
-            "gender": gender,
-            "birth": birth,
-            "fname": fname,
-            "mname": mname,
-            "title": title,
-        }
-    else:
+    if request.session['role'] == '学生':
         # 从学生表中获取个人信息
         cursor.execute("SELECT * FROM STUDENT WHERE UNO = '" + request.session['uno'] + "';")
         no, name, gender, birth, fname, mname, cname, username = cursor.fetchone()
@@ -200,6 +188,18 @@ def showinfo(request):
             "fname": fname,
             "mname": mname,
             "cname": cname
+        }
+    else:
+        # 从教师表中获取个人信息
+        cursor.execute("SELECT * FROM TEACHER WHERE Uno = '" + info_dict['uno'] + "';")
+        no, name, gender, birth, fname, mname, title, username = cursor.fetchone()
+        # 构造个人信息字典
+        self_info = {
+            "gender": gender,
+            "birth": birth,
+            "fname": fname,
+            "mname": mname,
+            "title": title,
         }
     # 将个人信息添加到信息字典中
     info_dict.update(self_info)
@@ -3479,3 +3479,28 @@ def admin_user(request):
         user_list.append(user)
     self_info['user_list'] = user_list
     return render(request, "admin/user_summary.html", self_info)
+
+
+def command(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    self_info = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list(),
+    }
+    # 初始化游标
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM user")
+    # 获取所有课题信息
+    user_list = []
+    for num in range(cursor.rowcount):
+        user_info = cursor.fetchone()
+        user = [user_info[0], user_info[1], user_info[2], user_info[3].strftime("%Y-%m-%d %H:%M:%S")]
+        user_list.append(user)
+    self_info['user_list'] = user_list
+    return render(request, "admin/command.html", self_info)
+

@@ -149,7 +149,13 @@
                 {% endif %}
                 {% block aside %}
                 {% endblock %}
-                 <br/><hr/><br/>
+                 <br/>
+                {% if role == '管理员' %}
+                    <hr style="border: 1px solid #ffffff99" /><br/>
+                {% else %}
+                    <hr style="border: 1px solid #ffffff99" /><br/>
+                {% endif %}
+                <br/>
             </aside>
             <!-- 内容部分 -->
             <main style= "display:block; width: 69%; position: absolute; left: 14%; height: 90%">

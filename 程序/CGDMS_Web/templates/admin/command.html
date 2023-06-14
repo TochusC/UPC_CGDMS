@@ -1,0 +1,93 @@
+{% extends "admin/admin_structure.html" %}
+{% load static %}
+{% block content %}
+    <style>
+    p.proverb{
+        color: #EFEFEF;
+        text-shadow: 0 0 8px #EFEFEF;
+        text-align: center;
+        transition: all ease 0.3s;
+    }
+    p.proverb:hover{
+        color: #EFEFEF;
+        font-size: 20px;
+        text-shadow: 0 0 16px #EFEFEF;
+        text-align: center;
+        transition: all ease 0.3s;
+    }
+        hr{
+            border: 1px solid #ffffff88;
+        }
+        div[id='clock']{
+            color: #EFEFEF;
+            margin-top: 32px;
+            text-align: center;
+        }
+        div[id='clock']:hover{
+            font-size: 18px;
+            text-shadow: 0 0 8px #fff;
+        }
+        h1,h2,h3,h4,h5,p{
+            color: #EFEFEF;
+        }
+        input[type="button"]{
+
+          border-radius: 4px;
+          color: #EFEFEF;
+             background-color: #333;
+                box-shadow: 0 0 4px #27496d;
+          text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        input[type="button"]{
+          border-radius: 4px;
+          color: #EFEFEF;
+             background-color: #333;
+                box-shadow: 0 0 4px #27496d;
+          text-decoration: none;
+            transition: all 0.3s ease;
+        }
+    </style>
+    <script src="{% static 'js/echarts.js' %}"></script>
+    <div class="info_border" style="background-color: #222222">
+        <div class="border" style="border: 1px solid #ffffff88">
+            <img src="{%static 'img/text_logo_white.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h1>控制台</h1><hr/>
+            <p class="proverb">人生的价值，即以其人对于当代所做的工作为尺度。</p><hr/>
+            <form action="" method="post">
+                {% csrf_token %}
+                <br/>
+                 <textarea style="color:#EFEFEF; height:300px;margin: auto; background-color: #333333" placeholder="请在此输入控制台指令..."></textarea>
+            </form>
+            <br/>
+            <div style="text-align: center">
+                <input style="margin: auto" type="button" value="提交">
+            </div>
+            <br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
+        </div>
+    </div>
+    <br/>
+    <div class="info_border" style="background-color: #222222">
+        <div class="border" style="border: 1px solid #ffffff88">
+            <img src="{%static 'img/text_logo_white.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h1>流程控制</h1><hr/>
+            <br/><div style="text-align: center">
+                <input style="margin: auto" type="button" value="开始选题">
+            </div><br/>
+             <div style="text-align: center">
+                <input style="margin: auto" type="button" value="结束选题">
+            </div><br/>
+             <div style="text-align: center">
+                <input style="margin: auto" type="button" value="开始确认选题">
+            </div><br/>
+             <div style="text-align: center">
+                <input style="margin: auto" type="button" value="结束确认选题">
+            </div><br/>
+            <hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
+        </div>
+    </div>
+{% endblock %}
