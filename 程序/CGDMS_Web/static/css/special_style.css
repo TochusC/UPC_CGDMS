@@ -428,7 +428,9 @@ div.img_center_div{
       justify-content: center;
       align-items: center;
 }
-
+* {
+    transition: all ease 0.3s;
+}
 .form-group {
     width: 100%;
   display: flex;

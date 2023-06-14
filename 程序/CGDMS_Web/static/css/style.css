@@ -1,5 +1,11 @@
 ﻿@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@100;200;300;400;500;600;700&display=swap');
 
+@media screen and (max-width: 768px) {
+  aside{
+      display: none;
+  }
+}
+
 body{
     background-color: #E6E6E6;
 }
@@ -14,7 +20,7 @@ input[type="text"] {
   margin: 0 0 1em;
   padding: 1em;
   border: 1px solid #cccccc;
-  border-radius: 1.5em;
+  border-radius: 8px;
   background: #ffffffAA;
   resize: none;
   outline: none;
@@ -75,7 +81,7 @@ input[type="password"] {
   margin: 0 0 1em;
   padding: 1em;
   border: 1px solid #cccccc;
-  border-radius: 1.5em;
+  border-radius: 8px;
   background: #fffffFAA;
   resize: none;
   outline: none;
@@ -523,7 +529,35 @@ table {
     border-collapse: collapse;
     background-color: #ffffff88;
 }
-
+table thead tr td{
+    font-weight: bold;
+    color: #27496d;
+}
+table.info, table.linfo{
+    margin-top: 32px;
+    width: 100%;
+}
+table.info, table.linfo th{
+    color: #27496d;
+    transition: all ease 0.3s
+}
+table.info, table.linfo th:hover{
+    color: #27496d;
+    text-shadow: 0 0 8px #27496d;
+    font-size: 18px;
+    transition: all ease 0.3s
+}
+* {
+    transition: all ease 0.3s;
+}
+table.linfo tr td{
+    font-size: 16px;
+    text-align: left;
+}
+table.info, table.linfo tr td:hover{
+    text-align: left;
+    text-shadow: 0 0 8px #3366cc88;
+}
 th,
 td {
     padding: 10px;
@@ -788,4 +822,13 @@ p.proverb:hover{
 
 input[disabled]{
     background-color: #f8f8f8;
+}
+div[id='clock']{
+    color: #27496d;
+    margin-top: 32px;
+    text-align: center;
+}
+div[id='clock']:hover{
+    font-size: 18px;
+    text-shadow: 0 0 8px #27496d;
 }

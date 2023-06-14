@@ -51,29 +51,21 @@ def login(request):
     :param request: HTTP请求
     :return redirect:重定向至主页
     """
+    # 从POST表单中获取账号密码
+    uno = request.POST['uno']
+    upwd = request.POST['upwd']
     # 从数据库中验证用户名和密码
     cursor = db.cursor()
-    cursor.execute(
-        "SELECT * FROM user WHERE Uno = '" + request.POST['uno'] + "' AND Upassword = '" + request.POST['upwd'] + "';")
+    cursor.execute("CALL GET_USER('" + uno + "','" + upwd + "');");
     # 如果查询到结果
     if cursor.rowcount == 1:
-        # 获取账号信息
-        account_info = cursor.fetchone()
-        uno = account_info[0]
-        user_role = account_info[2]
-        cursor = db.cursor()
-        # 依据账户身份的不同，分别从不同的表中查询信息
-        if user_role == '学生':
-            cursor.execute("SELECT * FROM STUDENT WHERE UNO = '" + uno + "';")
-        else:
-            cursor.execute("SELECT * FROM TEACHER WHERE UNO = '" + uno + "';")
         # 获取个人信息
         self_info = cursor.fetchone()
         # 将个人信息存入session
-        request.session['uno'] = uno.__str__()
-        request.session['role'] = user_role
-        request.session['no'] = self_info[0].__str__()
-        request.session['name'] = self_info[1].__str__()
+        request.session['uno'] = uno
+        request.session['role'] = self_info[0]
+        request.session['no'] = self_info[1]
+        request.session['name'] = self_info[2]
         request.session.set_expiry(0)
         # 重定向到主页
         return redirect('/index/')
@@ -81,7 +73,8 @@ def login(request):
     else:
         # 返回页面，并提示错误信息
         return render(request, "announce.html",
-                      {'message': '登录失败！请检查您的用户名和密码。'})
+                      {'message': '登录失败！请检查您的用户名和密码。'
+                          , 'name': '用户'})
 
 
 # 注册功能
@@ -234,7 +227,7 @@ def account(request):
     # 获取账户的注册时间
     cursor = db.cursor()
     cursor.execute("SELECT Utime FROM USER WHERE UNO = '" + request.session['uno'] + "';")
-    info_dict['time'] = cursor.fetchone()[0]
+    info_dict['time'] = cursor.fetchone()[0].strftime("%Y-%m-%d %H:%M:%S")
     # 渲染账户信息页面
     return render(request, "account.html", info_dict)
 
@@ -494,6 +487,17 @@ def cancel_select(request):
     return redirect("/student/project_selection")
 
 
+# 功能函数，实现提交时附件的写入功能
+def write_attachment(attachment, path):
+    if attachment is not None:
+        if not os.path.exists(path):
+            os.makedirs(path)
+            path = os.path.join(path, attachment.name)
+            file = open(path, "wb")
+            for chunk in attachment.chunks():
+                file.write(chunk)
+            file.close()
+
 # 功能函数，实现课题所处阶段的检查功能，用于判断相关操作是否可进行
 def check_status(status, stage):
     """
@@ -535,6 +539,7 @@ def check_status(status, stage):
         "提交论文定稿": 9,
         "审核论文定稿": 10,
         "评阅论文定稿": 11,
+        "查看答辩信息": 13,
     }
     status_index = status_dict[status]
     if status_index < stage_dict[stage]:
@@ -564,18 +569,6 @@ def check_status(status, stage):
             return '''访问拒绝，课题正处于'答辩'阶段。'''
     else:
         return "操作允许"
-
-
-# 功能函数，实现提交时附件的写入功能
-def write_attachment(attachment, path):
-    if attachment is not None:
-        if not os.path.exists(path):
-            os.makedirs(path)
-            path = os.path.join(path, attachment.name)
-            file = open(path, "wb")
-            for chunk in attachment.chunks():
-                file.write(chunk)
-            file.close()
 
 
 # 浏览任务书
@@ -1318,6 +1311,69 @@ def submit_final(request):
     return redirect("/student/thesis_final/")
 
 
+# 查看答辩信息页面
+def defense_info(request):
+    # 如果未登录，则重定向至登录页面
+    if 'uno' not in request.session:
+        return redirect('')
+    # 获取session中的用户信息
+    info_dict = {
+        'uno': request.session['uno'],
+        'role': request.session['role'],
+        'name': request.session['name'],
+        'no': request.session['no'],
+        'comment_list': get_comment_list()
+    }
+    if info_dict["role"] == "教师":
+        return render(request, "announce.html",
+                      {'message': '老师，这里是学生中心哦！', 'name': info_dict['name']})
+    # 获取该学生的选题信息
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM PROJECT_STUDENT_Teacher WHERE SName = '" +
+                   info_dict["name"] + "'")
+    # 如果学生已选题
+    if cursor.rowcount == 1:
+        # 获取选题信息，并从中获取学生所选课题名称
+        selected_project_info = cursor.fetchone()
+        # 检查选题的所处阶段，是否已经到达任务书阶段
+        status = selected_project_info[4]
+        message = check_status(status, "查看答辩信息")
+        # 如果不允许操作，则返回错误信息
+        if not message == "操作允许":
+            return render(request, 'student/announce.html',
+                          {'message': message, 'name': info_dict['name']})
+        # 构造课题信息字典
+        project_info_dict = {
+            'name': selected_project_info[0],
+            'type': selected_project_info[1],
+            'supervisor': selected_project_info[3]
+        }
+        # 将课题信息加入至信息字典
+        info_dict['project'] = project_info_dict
+        # 调用存储过程，获取该学生的答辩信息
+        cursor = db.cursor()
+        cursor.execute("CALL GET_DEFENSE_INFO('" + info_dict["no"] + "')")
+        defense_info = cursor.fetchone()
+        if defense_info[7] is not None:
+            score_time = defense_info[7].strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            score_time = ""
+        # 构造答辩信息字典
+        defense_info_dict = {
+            "name": defense_info[0],
+            "leader": defense_info[1],
+            "secretary": defense_info[2],
+            "date": defense_info[3].strftime('%Y-%m-%d'),
+            "location": defense_info[4],
+            "comment": defense_info[5],
+            "score": defense_info[6],
+            "score_time": score_time,
+            "status": defense_info[8]
+        }
+        # 将答辩信息加入至信息字典
+        info_dict['defense_info'] = defense_info_dict
+        # 渲染答辩信息页面
+        return render(request, 'student/defense_info.html', info_dict)
 # 教师中心页面
 def teacher(request):
     """

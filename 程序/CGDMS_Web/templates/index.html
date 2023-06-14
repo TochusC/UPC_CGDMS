@@ -5,9 +5,26 @@
     <div class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-            <hr/><h1 style="text-align: center; color: #27496d;">欢迎来到毕业设计管理系统！</h1><hr/><br/>
-            <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
-            <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p>
+            <hr/><h1 style="text-align: center; color: #27496d;">欢迎来到毕业设计管理系统！</h1><hr/>
+            <table class="linfo">
+                <tr>
+                    <th>相关说明</th>
+                <tr>
+                <tr>
+                    <td>学校毕业设计管理系统实现了对毕业设计（论文）过程和教学管理工作主要环节的在线管理。</td>
+                </tr>
+                <tr>
+                    <td>管理系统分为学生中心和教师中心两大模块，分别负责学生和老师两种不同用户身份的业务管理，真正实现了操作管理流程的无纸化、网络化</td>
+                </tr>
+                <tr>
+                    <td>由于管理系统初次使用，难免有不足、不全面的地方，恳请广大师生谅解</td>
+                </tr>
+                <tr>
+                    <td>如果在使用过程中遇到问题以及有对管理系统的建议和意见，可发送至tochusc@gmail.com，我们将及时解决您的问题，并结合您的建议，不断完善毕业设计管理系统</td>
+                </tr>
+            </table><br/><hr/>
+            <script src="{% static 'js/clock.js' %}"></script>
+            <div id="clock">获取时间中...</div>
             <form action="/index/" method="post" style="display: none">
                 {% csrf_token %}
                 <input required='' type='text' name="Uno">

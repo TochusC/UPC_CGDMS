@@ -47,6 +47,7 @@ urlpatterns = [
                   path('student/thesis_draft/submit_draft/', views.submit_draft),
                   path('student/thesis_final/', views.thesis_final),
                   path('student/thesis_final/submit_final/', views.submit_final),
+                  path('student/defense_info/', views.defense_info),
                   # 教师模块
                   path('teacher/', views.teacher),
                   path('teacher/role/', views.role),

@@ -1,8 +1,29 @@
 {% extends "student/student_structure.html" %}
+{% load static %}
 {% block content %}
     <!-- 内容部分 -->
-    <title>高校毕业设计管理系统</title>
-    <h1 style="text-align: center; color: #27496d;">欢迎来到学生中心！</h1><br/>
-    <p style="text-align: center; color: #27496d;">现在正处于选题阶段!</p>
-    <p style="text-align: center; color: #27496d;">请在规定时间内完成选题!</p>
+    <div class="info_border">
+        <div class="border">
+        <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h1 style="text-align: center; color: #27496d;">欢迎来到学生中心！</h1><hr/><br/>
+            <hr/><h3>相关说明</h3><hr/>
+            <table class="linfo">
+                <tr>
+                    <th>对学生的要求</th>
+                <tr>
+                <tr>
+                    <td>1、原则上，学生应具备进行毕业设计的知识和能力，并取得培养方案规定的学分。</td>
+                </tr>
+                <tr>
+                    <td>2、学生须严格遵守学校和学院有关管理规定，保证充足的时间和精力开展毕业设计。</td>
+                </tr>
+                <tr>
+                    <td>3、学生应按指导教师要求，认真完成规定的毕业设计各项任务，并主动接受指导和检查。</td>
+                </tr>
+                <tr>
+                    <td>4、学生在毕业设计过程中，应恪守学术诚信，不得弄虚作假或抄袭他人成果</td>
+                </tr>
+            </table><br/><hr/>
+        </div>
+    </div>
 {% endblock %}

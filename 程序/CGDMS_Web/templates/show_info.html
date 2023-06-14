@@ -4,6 +4,7 @@
     <div class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
+            <hr/><h1>个人信息</h1>
             <hr/>
             {% if role == '管理员' %}
                 <h3>{{ name }}管理员，您好！</h3>
@@ -17,51 +18,49 @@
                 <h3>{{ name }}老师，您好！</h3>
                 <h4>鹤发银丝映日月，丹心热血沃新花。</h4>
             {% endif %}
-           <hr>
-                <!--个人信息表格-->
-           <h3>个人信息</h3>
             <hr/><br/>
-                <table style="width: 100%">
+                <table style="width: 88%">
+                    <thead>
+                        <tr>
+                            <td colspan="7">个人信息表</td>
+                        </tr>
+                    </thead>
                     <tr>
+                        <th colspan="2">姓名</th>
+                        <td colspan="2">{{ name }}</td>
                         <th>身份</th>
-                        <td>{{ role }}</td>
+                        <td colspan="2">{{ role }}</td>
                     </tr>
                     <tr>
-                        <th>学号</th>
-                        <td>{{ no }}</td>
-                    </tr>
-                    <tr>
-                        <th>名字</th>
-                        <td>{{ name }}</td>
-                    </tr>
-                    <tr>
+                        {% if role == '学生' %}
+                            <th colspan="2">学号</th>
+                        {% else %}
+                            <th colspan="2">工号</th>
+                        {% endif %}
+                        <td colspan="2">{{ no }}</td>
                         <th>性别</th>
-                        <td>{{ gender }}</td>
+                        <td colspan="2">{{ gender }}</td>
                     </tr>
                     <tr>
-                        <th>出生日期</th>
-                        <td>{{ birth }}</td>
-                    </tr>
-                    <tr>
-                        <th>学院</th>
-                        <td>{{ fname }}</td>
-                    </tr>
-                    <tr>
-                        <th>专业</th>
-                        <td>{{ mname }}</td>
-                    </tr>
-                    {% if role == '学生' %}
-                        <tr>
+                        <th colspan="2">出生日期</th>
+                        <td colspan="2">{{ birth }}</td>
+                         {% if role == '学生' %}
                             <th>班级</th>
-                            <td>{{ cname }}</td>
-                        </tr>
-                    {% else %}
-                        <tr>
+                            <td colspan="2">{{ cname }}</td>
+                        {% else %}
                             <th>职称</th>
-                            <td>{{ title }}</td>
-                        </tr>
-                    {% endif %}
-                </table>
+                            <td colspan="2">{{ title }}</td>
+                        {% endif %}
+                    </tr>
+                    <tr>
+                        <th colspan="2">学院</th>
+                        <td colspan="4">{{ fname }}</td>
+                    </tr>
+                    <tr>
+                        <th colspan="2">专业</th>
+                        <td colspan="5">{{ mname }}</td>
+                    </tr>
+                </table><br/><hr/>
             </div>
     </div>
 {% endblock %}

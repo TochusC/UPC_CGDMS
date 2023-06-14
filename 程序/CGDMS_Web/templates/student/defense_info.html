@@ -1,0 +1,68 @@
+{% extends "student/student_structure.html" %}
+{% load static %}
+{% block content %}
+    <!-- 内容部分 -->
+    <style>
+        label{
+            display: block;
+        }
+    </style>
+    <div class="info_border">
+        <div class="border">
+            <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/><br/><br/>
+            <hr/><h3>答辩信息</h3><hr/><br/>
+                <label style="padding-right: 25px;" for="project_name">课题名称：
+                    <input value = "{{ project.name }}" disabled class="disabled" id="project_name" style="border-radius: 10px;width: 48%" required='' type='text' name="project_name">
+                </label>
+                <label>课题类型：
+                    <input disabled value="{{ project.type }}" class="disabled" style="border-radius: 10px;width: 48%" type="text" id="type" name="type">
+                </label>
+                <label>指导教师：
+                    <input disabled value="{{ project.supervisor }}" class="disabled" style="border-radius: 10px;width: 48%" type="text" id="supervisor" name="supervisor">
+                </label>
+                <hr/><br/>
+                <div>
+                    <label>答辩组名称:
+                        <input type="text" disabled value="{{ defense_info.name }}">
+                    </label>
+                </div>
+                <div>
+                    <label>答辩组组长:
+                        <input type="text" disabled value="{{ defense_info.leader }}">
+                    </label>
+                </div>
+                <div>
+                    <label>答辩秘书:
+                        <input type="text" disabled value="{{ defense_info.secretary }}">
+                    </label>
+                </div>
+                <div>
+                    <label>答辩日期
+                        <input type="text" disabled value="{{ defense_info.date }}">
+                    </label>
+                </div>
+                <label>答辩地点：
+                    <input type="text" disabled value="{{ defense_info.name }}">
+                </label>
+                <label>答辩状态
+                    {% if defense_info.status == '未发布' %}
+                        <input type="text" disabled value="未答辩">
+                    {% else %}
+                        <input type="text" disabled value="已答辩">
+                    {% endif %}
+                </label>
+                <hr/><br/>
+                {% if defense_info.status != '未发布' %}
+                    <label>评分意见：
+                        <textarea disabled>{{ defense_info.comment }}</textarea>
+                    </label>
+                    <label>答辩评分：
+                        <input disabled type="text" value="{{ defense_info.score }}">
+                    </label>
+                    <label>评分时间：
+                        <input disabled type="text" value="{{ defense_info.score_time }}">
+                    </label><hr/>
+                {% endif %}
+        </div>
+    </div>
+{% endblock %}

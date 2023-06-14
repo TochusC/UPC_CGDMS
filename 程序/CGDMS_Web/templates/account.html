@@ -6,7 +6,7 @@
     <div class="info_border">
         <div class="border">
             <img src="{%static 'img/text_logo.png' %}" alt="中国石油大学（华东）" style="width: auto; height: 64px; margin-top: 20px; margin-bottom: 1px"/>
-            <hr/>
+            <hr/><h1>账号管理</h1><hr/>
             {% if role == '管理员' %}
                 <h3>{{ name }}管理员，您好！</h3>
                 <h4>人生的价值，即以其人对于当代所做的工作为尺度。</h4>
@@ -21,25 +21,26 @@
             {% endif %}
            <hr>
             <h4>账户名称：{{ uno }}</h4>
+            <h4>注册时间: {{ time }}</h4>
             <hr/>
-            <h3>修改密码</h3>
-            <div style="margin: auto; width: 400px">
-                <form method="post" action="/change_password/">
-                {% csrf_token %}
-                    <input type="hidden" name="uno" value="{{ uno }}" />
-                  <label><strong>当前密码:</strong></label><br />
-                  <input type="password" name="current_password" required /><br /><br />
-                  <label><strong>新密码:</strong></label><br />
-                  <input type="password" name="new_password" required /><br /><br />
-                  <label><strong>确认新密码:</strong></label><br />
-                  <input type="password" name="new_password_confirm" required /><br /><br />
-                  <hr/>
-                    <div style="text-align: center">
-                      <input type="submit" value="修改" />
-                  </div><div style="margin: auto">
-                  </div>
-                </form>
-            </div>
+            <h3>修改密码</h3><hr/><br/>
+                <div style="margin: auto; width: 400px">
+                    <form method="post" action="/change_password/">
+                    {% csrf_token %}
+                        <input type="hidden" name="uno" value="{{ uno }}" />
+                      <label><strong>当前密码:</strong></label><br />
+                      <input type="password" name="current_password" required /><br /><br />
+                      <label><strong>新密码:</strong></label><br />
+                      <input type="password" name="new_password" required /><br /><br />
+                      <label><strong>确认新密码:</strong></label><br />
+                      <input type="password" name="new_password_confirm" required /><br /><br />
+                      <hr/>
+                        <div style="text-align: center">
+                          <input type="submit" value="修改" />
+                      </div><div style="margin: auto">
+                      </div>
+                    </form>
+                </div>
         </div>
     </div>
 {% endblock %}
