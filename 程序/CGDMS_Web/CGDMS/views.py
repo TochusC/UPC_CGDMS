@@ -1,7 +1,6 @@
 import datetime
 import os
 import pymysql
-import pyecharts
 from django.shortcuts import render, redirect
 
 db = pymysql.connect(host='localhost',
