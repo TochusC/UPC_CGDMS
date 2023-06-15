@@ -2556,6 +2556,10 @@ def project_review(request):
         no = project_info[8]
         cursor2.execute("SELECT * FROM TEACHER WHERE TNO = '" + no + "';")
         teacher_info = cursor2.fetchone()
+        if project_info[7] is None:
+            comment_time = ''
+        else:
+            comment_time = project_info[7].strftime("%Y-%m-%d %H:%M:%S")
         # 构造课题信息字典
         project_info_dict = {
             "index": num,
@@ -2563,10 +2567,10 @@ def project_review(request):
             "type": project_info[1],
             "info": project_info[2],
             "file": project_info[3],
-            "time": project_info[4],
+            "time": project_info[4].strftime("%Y-%m-%d %H:%M:%S"),
             "status": project_info[5],
             "comment": project_info[6],
-            "comment_time": project_info[7],
+            "comment_time": comment_time,
             "supervisor": teacher_info[1],
             "tno": teacher_info[0]
         }
