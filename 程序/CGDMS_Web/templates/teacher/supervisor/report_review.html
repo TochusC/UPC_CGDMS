@@ -22,13 +22,21 @@
             var comment = $('comment')
             comment.value = open_report.comment;
             $('comment_time').value = open_report.comment_time;
-            if(open_report.status === "通过")
+            if(open_report.status === "通过"){
                 $('通过').setAttribute("selected", "selected");
                 $('result').setAttribute("disabled", "disabled");
                 comment.setAttribute("disabled", "disabled");
                 var submit_button = $('submit_button')
                 submit_button.setAttribute("disabled", "disabled");
                 submit_button.value = "已审阅";
+            }
+            else{
+                $('result').disable = false;
+                comment.disable = false;
+                var submit_button = $('submit_button')
+                submit_button.disable = false;
+                submit_button.value = "提交";
+            }
         }
         function hidePop(){
             $('main-content').style.display = 'block';

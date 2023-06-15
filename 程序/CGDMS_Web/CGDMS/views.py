@@ -378,8 +378,9 @@ def project_selection(request):
             # 从预选信息中获取项目名称
             pname = pre_select_project[1]
             # 获取项目及老师信息
-            cursor.execute("SELECT * FROM PROJECT_TEACHER WHERE Pname = '" + pname + "'")
-            info = cursor.fetchone()
+            cursor1 = db.cursor()
+            cursor1.execute("SELECT * FROM PROJECT_TEACHER WHERE Pname = '" + pname + "'")
+            info = cursor1.fetchone()
             # 构造项目字典
             project = {
                 "name": info[0],
@@ -1963,7 +1964,7 @@ def report_review(request):
                 "time": open_report_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 "status": open_report_info[4],
                 "comment": open_report_info[5],
-                "comment_time": open_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
+                "comment_time": comment_time
             }
             project_info_dict["status"] = open_report_info[4]
             # 将开题报告信息字典添加至已选课题信息字典中
@@ -2302,13 +2303,17 @@ def draft_review(request):
             # 获取论文草稿信息
             draft_info = cursor.fetchone()
             # 构造论文草稿信息字典
+            if draft_info[6] is not None:
+                comment_time = draft_info[6].strftime("%Y-%m-%d %H:%M:%S")
+            else:
+                comment_time = '未审阅'
             draft_dict = {
                 "content": draft_info[1],
                 "file": draft_info[2],
-                "time": draft_info[3],
+                "time": draft_info[3].strftime("%Y-%m-%d %H:%M:%S"),
                 "status": draft_info[4],
                 "comment": draft_info[5],
-                "comment_time": draft_info[6]
+                "comment_time": comment_time
             }
             project_info_dict["status"] = draft_info[4]
             # 将论文草稿列表添加至课题信息字典中
@@ -3291,38 +3296,50 @@ def defense_score(request):
         return render(request, "announce.html",
                       {'message': '您没有答辩秘书权限，无法访问。', 'name': info_dict["name"]})
     # 调用存储过程，获取以该教师为答辩秘书的所有答辩课题信息
-    cursor = db.cursor()
-    cursor.execute("CALL GET_DEFENSE_PROJECT('" + info_dict['name'] + "');")
-    # 初始化课题列表
     project_list = []
-    # 遍历课题信息，构造课题列表
-    for project_index in range(cursor.rowcount):
-        project_info = cursor.fetchone()
-        # 如果课题已评阅，则将评阅时间转换为字符串
-        if project_info[10] is None:
-            status = "未录入"
-            score_time = ""
-        else:
-            status = "已录入"
-            score_time = project_info[10].strftime("%Y-%m-%d %H:%M:%S")
-        # 构造课题信息字典
-        project_dict = {
-            "index": project_index,
-            "name": project_info[0],
-            "type": project_info[1],
-            "no": project_info[2],
-            "student": project_info[3],
-            "supervisor": project_info[4],
-            "faculty": project_info[5],
-            "major": project_info[6],
-            "class": project_info[7],
-            "comment": project_info[8],
-            "score": project_info[9],
-            "score_time": score_time,
-            "status": status
-        }
-        # 将课题信息字典添加至课题列表中
-        project_list.append(project_dict)
+    index = 0;
+    cursor = db.cursor()
+    cursor.execute("SELECT DPname FROM Defense_Panel WHERE DPsecretary = '" + info_dict["name"] + "';")
+    for index in range(cursor.rowcount):
+        dpname = cursor.fetchone()[0]
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT Sno FROM Defense_Student WHERE DPname = '" + dpname + "';")
+        for index0 in range(cursor1.rowcount):
+            sno = cursor1.fetchone()[0]
+            cursor2 = db.cursor()
+            cursor2.execute("SELECT Pname FROM Select_Project WHERE Sno = '" + sno + "';")
+            pname = cursor2.fetchone()[0]
+            cursor3 = db.cursor()
+            cursor3.execute("SELECT Pname,Ptype,STUDENT.Sno,STUDENT.Sname,Tname,fname,mname,cno,DScomment,DSscore,DSscore_time,DSstatus "
+                            "FROM PROJECT_STUDENT_TEACHER,student,Defense_Student "
+                            "WHERE Pname = '" + pname + "' AND PROJECT_STUDENT_TEACHER.Sname = student.Sname AND Defense_Student.Sno = student.Sno;")
+            project_info = cursor3.fetchone()
+            # 如果课题已评阅，则将评阅时间转换为字符串
+            if project_info[10] is None:
+                status = "未录入"
+                score_time = ""
+            else:
+                status = "已录入"
+                score_time = project_info[10].strftime("%Y-%m-%d %H:%M:%S")
+            # 构造课题信息字典
+            project_dict = {
+                "index": index,
+                "name": project_info[0],
+                "type": project_info[1],
+                "no": project_info[2],
+                "student": project_info[3],
+                "supervisor": project_info[4],
+                "faculty": project_info[5],
+                "major": project_info[6],
+                "class": project_info[7],
+                "comment": project_info[8],
+                "score": project_info[9],
+                "score_time": score_time,
+                "status": status
+            }
+            # 将课题信息字典添加至课题列表中
+            project_list.append(project_dict)
+            index += 1
     # 将课题列表添加至信息字典中
     info_dict["project_list"] = project_list
     # 渲染答辩得分录入页面

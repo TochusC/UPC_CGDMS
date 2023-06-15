@@ -126,7 +126,8 @@
             $('member').appendChild($newRow);
         }
         function removeNewMember(){
-            var extras = document.getElementsByClassName("new_member");
+            var extras = document.getElementsByClassName("newMember");
+            extras[extras.length-1].remove();
         }
         function addAltMember(){
             var index = 0;
@@ -253,7 +254,7 @@
                         </tr>
                     </table><br/><hr><br/>
                     <div class="form-group">
-                        <input style="width: 36%;margin:auto" disabled type="submit" value="提交">
+                        <input style="width: 36%;margin:auto" type="submit" value="提交">
                         <input style="width: 36%;margin:auto" type="button" value="取消" class="cancel" onclick="hideNewGroup()">
                     </div>
                 </form>
