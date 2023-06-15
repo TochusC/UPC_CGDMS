@@ -1659,11 +1659,6 @@ def project_confirmation(request):
     if curse.rowcount == 0:
         return render(request, "announce.html",
                       {'message': '您没有指导教师权限，无法访问。', 'name': info_dict["name"]})
-    # 检查用户身份是否是教师
-    if not info_dict["role"] == "教师":
-        #  渲染通知页面，提示用户身份错误
-        return render(request, "announce.html",
-                      {'message': '同学，请不要随便进入教师的页面哦！', 'name': info_dict["name"]})
     # 初始化预选信息列表
     pre_selection_info = []
     # 获取该老师的课题预选信息
