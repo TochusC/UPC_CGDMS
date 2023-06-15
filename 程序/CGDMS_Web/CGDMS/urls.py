@@ -106,4 +106,5 @@ urlpatterns = [
                   path('admin/information_summary/', views.admin_info),
                   path('admin/user_summary/', views.admin_user),
                   path('admin/command/', views.command),
+                  path('admin/command/push/', views.command_push),
               ] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

@@ -16,7 +16,11 @@
             $('pop').style.display = 'block';
             $('main-content').style.display = 'none';
             // 设置弹窗信息
-            $('pname').value = project.name;
+            // 将所有class为pname的value属性设为project.name
+            var pnames = document.getElementsByClassName('pname');
+            for(var i=0; i<pnames.length; i++){
+                pnames[i].value = project.name;
+            }
             $('project_name').value = project.name;
             $('project_type').value = project.type;
             $('student_name').value = project.student;
@@ -65,7 +69,7 @@
                             <td>
                                 <form method="post" action="/teacher/manager/reviewer_assignment/assign/">
                                     {% csrf_token %}
-                                    <input type="hidden" id="pname" name="project_name">
+                                    <input type="hidden" class="pname" name="project_name">
                                     <input type="hidden" id="pname" name="tno" value="{{ teacher.no }}">
                                     <input type="submit" style="margin: auto" value="选择">
                                 </form>

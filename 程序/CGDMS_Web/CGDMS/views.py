@@ -800,7 +800,7 @@ def mid_term_check(request):
         selected_project_info = cursor.fetchone()
         # 检查选题状态，是否允许操作
         status = selected_project_info[2]
-        message = check_status(status, "提交开题报告")
+        message = check_status(status, "提交中期检查")
         # 如果不允许操作，则返回错误信息
         if not message == "操作允许":
             return render(request, 'student/announce.html', {'message': message, 'name': info_dict['name']})
@@ -1812,12 +1812,13 @@ def task_issue(request):
             "supervisor": project_info[3],
             "student_name": project_info[2],
         }
+        cursor1 = db.cursor()
         # 获取课题任务书信息
-        cursor.execute("SELECT * FROM Task_Book WHERE PNAME = '" + project_info[0] + "';")
+        cursor1.execute("SELECT * FROM Task_Book WHERE PNAME = '" + project_info[0] + "';")
         # 如果课题任务书已存在，则构造任务书信息字典
-        if cursor.rowcount == 1:
+        if cursor1.rowcount == 1:
             # 获取课题任务书信息
-            task_book_info = cursor.fetchone()
+            task_book_info = cursor1.fetchone()
             # 构造课题任务书信息字典
             task_book_dict = {
                 "content": task_book_info[1],
@@ -1948,11 +1949,12 @@ def report_review(request):
             "student": project_info[2],
         }
         # 从开题报告表中查找该课题的开题报告信息
-        cursor.execute("SELECT * FROM Open_Report WHERE PNAME = '" + project_info[0] + "';")
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Open_Report WHERE PNAME = '" + project_info[0] + "';")
         # 如果查找到结果，则开题报告已存在，构造开题报告信息字典，以供教师查看审阅
-        if cursor.rowcount == 1:
+        if cursor1.rowcount == 1:
             # 获取开题报告信息
-            open_report_info = cursor.fetchone()
+            open_report_info = cursor1.fetchone()
             # 构造开题报告信息字典
             if open_report_info[6] is not None:
                 comment_time = open_report_info[6].strftime("%Y-%m-%d %H:%M:%S")
@@ -2060,11 +2062,12 @@ def mid_term_review(request):
             "student_name": project_info[2],
         }
         # 从中期检查表中查找该课题的开题报告信息
-        cursor.execute("SELECT * FROM Middle_Check WHERE PNAME = '" + project_info[0] + "';")
+        cursor1 = db.cursor()
+        cursor1.execute("SELECT * FROM Middle_Check WHERE PNAME = '" + project_info[0] + "';")
         # 如果查找到结果，则开题报告已存在，构造开题报告信息字典，以供教师查看审阅
-        if cursor.rowcount == 1:
+        if cursor1.rowcount == 1:
             # 获取中期检查信息
-            mid_term_info = cursor.fetchone()
+            mid_term_info = cursor1.fetchone()
             # 构造中期检查信息字典
             if mid_term_info[6] is not None:
                 comment_time = mid_term_info[6].strftime("%Y-%m-%d %H:%M:%S")
@@ -2175,12 +2178,13 @@ def weekly_review(request):
         # 初始化周进度列表
         weekly_report_list = []
         # 从周进度表中查找该课题的周进度信息
-        cursor.execute("SELECT * FROM Weekly_Report WHERE PNAME = '"
+        cursor_vice = db.cursor()
+        cursor_vice.execute("SELECT * FROM Weekly_Report WHERE PNAME = '"
                        + project_info[0] + "' ORDER BY WRtime DESC;")
         # 如果查找到结果，则周进度已存在，构造周进度信息字典，以供教师查看审阅
-        if cursor.rowcount >= 1:
-            for num in range(cursor.rowcount):
-                weekly_report_info = cursor.fetchone()
+        if cursor_vice.rowcount >= 1:
+            for num in range(cursor_vice.rowcount):
+                weekly_report_info = cursor_vice.fetchone()
                 if num == 0:
                     project_info_dict["time"] = weekly_report_info[3].strftime("%Y-%m-%d %H:%M:%S")
                     if weekly_report_info[4] == "审核中":
@@ -2297,11 +2301,12 @@ def draft_review(request):
             "student_name": project_info[2],
         }
         # 从论文草稿表中查找该课题的论文草稿信息
-        cursor.execute("SELECT * FROM Thesis_Draft WHERE PNAME = '" + project_info[0] + "';")
+        cursor_vice = db.cursor()
+        cursor_vice.execute("SELECT * FROM Thesis_Draft WHERE PNAME = '" + project_info[0] + "';")
         # 如果查找到结果，则论文草稿已存在，构造论文草稿信息字典，以供教师查看审阅
-        if cursor.rowcount == 1:
+        if cursor_vice.rowcount == 1:
             # 获取论文草稿信息
-            draft_info = cursor.fetchone()
+            draft_info = cursor_vice.fetchone()
             # 构造论文草稿信息字典
             if draft_info[6] is not None:
                 comment_time = draft_info[6].strftime("%Y-%m-%d %H:%M:%S")
@@ -2408,11 +2413,12 @@ def final_review(request):
             "student_name": project_info[2],
         }
         # 从论文草稿表中查找该课题的论文草稿信息
-        cursor.execute("SELECT * FROM Thesis_Final WHERE PNAME = '" + project_info[0] + "';")
+        cursor_vice = db.cursor()
+        cursor_vice.execute("SELECT * FROM Thesis_Final WHERE PNAME = '" + project_info[0] + "';")
         # 如果查找到结果，则论文草稿已存在，构造论文草稿信息字典，以供教师查看审阅
-        if cursor.rowcount == 1:
+        if cursor_vice.rowcount == 1:
             # 获取论文草稿信息
-            final_info = cursor.fetchone()
+            final_info = cursor_vice.fetchone()
             # 构造论文草稿信息字典
             final_dict = {
                 "content": final_info[1],
@@ -3518,4 +3524,12 @@ def command(request):
         user_list.append(user)
     self_info['user_list'] = user_list
     return render(request, "admin/command.html", self_info)
+
+def command_push(request):
+    # 如果未登录，则重定向至登录页面
+    command = request.POST('command')
+    cursor = db.cursor()
+    cursor.execute("command")
+    #重定向至上一个页面
+    return redirect('/teacher/admin/command')
 
