@@ -1,5 +1,34 @@
-# UPC_CGDMS
-## 数据库课程设计大作业-高校毕业设计管理系统🤗
-### 使用Django搭建的WEB网站，内附有详细的文档介绍，施工中🛠️
-### 网页已部署在服务器上，访问[4stra.cn](http://www.4stra.cn)即可抢先体验~
-![网页预览图](https://github.com/TochusC/UPC_CGDMS/blob/main/preview.png)
+<div align="center">
+
+<img src="docs/img/logo.png" style="margin-bottom: 0; height: 64%; width: 64%;">
+
+---
+
+<h1> 高校毕业设计管理系统 </h1>
+
+### 使用Django搭建的WEB网站，内附详细的文档介绍
+
+[![version](https://img.shields.io/badge/Version-1.0.0-blue)](https://github.com/TochusC/Infinite-Journey)
+[![course](https://img.shields.io/badge/UPC-DB_CourseDesign-blue)](https://github.com/TochusC/Infinite-Journey)
+
+[![madewithlove](https://img.shields.io/badge/made_with-%E2%9D%A4-red?style=for-the-badge&labelColor=orange)](https://github.com/TochusC/Infinite-Journey)
+
+
+[**简体中文**](./README.md)
+
+
+[中国石油大学(华东)](https://upc.edu.cn/)-数据库课程设计-课设项目(95分)
+
+</div>
+
+---
+
+## 网站预览💻
+
+![MainPage.png](./docs/img/MainPage.png)
+
+![001.png](./docs/img/001.png)
+
+![002.png](./docs/img/002.png)
+
+![003.png](./docs/img/003.png)
