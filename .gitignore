@@ -1,0 +1,9 @@
+.idea
+.vscode
+
+*/.idea
+*/.vscode
+
+*/.bkf
+*/.tmp
+*/.tmpk
